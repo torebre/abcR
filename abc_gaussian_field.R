@@ -21,14 +21,6 @@ mu.x <- matrix(rep(kMean, grid.length^2), ncol = 1)
 cov.mat.x <- toeplitz(sapply(1:grid.length^2, function(d) { CovarianceFunction(d)}))
 
 
-# Create a single sample realisation
-# simulation <- grf(n = grid.length^2, grid = expand.grid(1:grid.length, 1:grid.length), 
-#                  cov.model = "exponential", cov.pars = c(kVariance, kPhi), mean = kMean)
-# random.sample <- matrix(simulation$data, nrow = 1)
-
-random.sample <- mvrnorm(n = 1, rep(kMean, grid.length^2), cov.mat)
-image(matrix(random.sample, nrow = grid.length, ncol = grid.length))
-
 # To avoid extra complexity, the observation points do not 
 # overlap with the prediction points
 obs.coords = matrix(nrow = 3, ncol = 2)
@@ -63,8 +55,9 @@ cov.mat.y.x <- sapply(1:obs.length, function(obs.index) {
   })
 })
 
-x.sample <- matrix(mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length^2, ncol = 1, byrow = T)
 
+
+# Compute inverses
 cov.mat.x.inv <- solve(cov.mat.x)
 cov.mat.y.inv <- solve(cov.mat.y)
 
@@ -73,38 +66,53 @@ mu.y.given.x <- mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (x.sample - mu.x)
 cov.mat.y.given.x <- cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x
 
 # Now the parameters for the distribution to y average given x
-mu.y.avg <- kMean
+mu.y.avg <- mean(mu.y.given.x)
 A <- matrix(1/obs.length, nrow = 1, ncol = obs.length)
 var.y.avg <- A %*% cov.mat.y.given.x %*% t(A)
 
+#sample.y.avg <- rnorm(n = 1, mean = mu.y.avg, sd = sqrt(var.y.avg))
 
-sample.y.avg <- rnorm(n = 1, mean = mu.y.avg, sd = sqrt(var.y.avg))
-
-
-cov.mat.x.inv <- solve(cov.mat.x)
-cov.mat.y.inv <- solve(cov.mat.y)
+y.test.avg <- 10
 
 
 
-# # Create mean vector and covariance matrix based on the calculations 
-# # done previously in the problem
-# B1 = matrix(0, nrow = length(observations.indices), ncol = length(random.sample))
-# for(i in 1:length(observations.indices)) {
-#   B1[i, observations.indices] <- 1
-# }
+pnorm(y.test.avg, mean = mu.y.avg, sd = sqrt(var.y.avg))
+
+MultivariateGaussian <- function(my.x, my.mu, my.sigma, my.sigma.inv) {
+  (2 * pi)^-(length(my.mu) / 2) * sqrt((det(my.sigma))) * exp(-(1/2) * t((my.x - my.mu)) %*% my.sigma.inv %*% (my.x - my.mu))
+}
+
+RandomWalkMetropolisHastingsMCMC <- function(previous.sample) {
+  # Using the prior as the proposal distribution
+  x.proposal <- matrix(mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length^2, ncol = 1, byrow = T)  
+  
+  old.my.mu.y.given.x <- mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (previous.sample - mu.x)
+  my.mu.y.given.x <- mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (x.proposal - mu.x)
+  
+  old.y.avg.given.x <- pnorm(y.test.avg, mean = old.my.mu.y.given.x, sd = sqrt(var.y.avg))
+  new.y.avg.given.x <- pnorm(y.test.avg, mean = my.mu.y.avg, sd = sqrt(var.y.avg))
+  
+  # Metropolis-Hastings ratio
+  log.ratio <- log(MultivariateGaussian(x.proposal, mu.x, cov.mat.x, cov.mat.x.inv) + new.y.avg.given.x 
+                   - MultivariateGaussian(previous.sample, mu.x, cov.mat.x, cov.mat.x.inv) - old.y.avg.given.x)
+  
+  if(runif(1) < min(1, exp(log.ratio))) {
+    return(x.proposal)
+  }
+  else {
+    return(previous.sample)
+  }
+}
 
 
+for(i in 1:100) {
+  x.current <- matrix(mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length^2, ncol = 1, byrow = T)  
+  x.current <- RandomWalkMetropolisHastingsMCMC <- function(x.current)
+}
 
 
-sigma22fInv = solve(diag(length(observations.indices)) + B1 %*% cov.mat %*% t(B1))
-mu2 = rep(kMean, length(random.sample)) + t(cov.mat) %*% t(B1) %*% sigma22fInv %*% (obs.with.noise - kMean)
-cov.mat.2 = cov.mat - t(cov.mat) %*% t(B1) %*% sigma22fInv %*% B1 %*% cov.mat
-
-
-cond.mean <- matrix(data = mu2, nrow = grid.length, ncol = grid.length)
-
-filled.contour(1:grid.length, 1:grid.length, matrix(random.sample, nrow = grid.length, ncol = grid.length), color = heat.colors)
-
-filled.contour(1:grid.length, 1:grid.length, cond.mean, color = heat.colors)
+# cond.mean <- matrix(data = mu2, nrow = grid.length, ncol = grid.length)
+# filled.contour(1:grid.length, 1:grid.length, matrix(random.sample, nrow = grid.length, ncol = grid.length), color = heat.colors)
+# filled.contour(1:grid.length, 1:grid.length, cond.mean, color = heat.colors)
 
 
