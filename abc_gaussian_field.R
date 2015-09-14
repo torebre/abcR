@@ -6,7 +6,7 @@ kPhi <- 5
 kVariance <- 4
 kMean <- 10
 kDistance.between.gridlines <- 10
-grid.length <- 5
+grid.length <- 20
 
 
 CovarianceFunction <- function(distance) {
@@ -38,6 +38,8 @@ obs.coords[3, 2] <- 25
 
 obs.length <- dim(obs.coords)[1]
 
+observations <- matrix(c(15, 12, 15), nrow = 3, ncol = 1)
+
 mu.y <- matrix(rep(kMean, obs.length), ncol = 1)
 
 cov.mat.y <- matrix(sapply(1:obs.length, function(x.index) {
@@ -67,15 +69,36 @@ cov.mat.y.x <- sapply(1:obs.length, function(obs.index) {
 cov.mat.x.inv <- solve(cov.mat.x)
 cov.mat.y.inv <- solve(cov.mat.y)
 
-x.proposal <-
-  matrix(
-    mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length ^ 2, ncol = 1, byrow = T
-  )
+# x.proposal <-
+#   matrix(
+#     mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length ^ 2, ncol = 1, byrow = T
+#   )
+
+
+# Expressions for x given y
+mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
+cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x)
+
+samples.x.given.y <- mvrnorm(n = 50, mu = mu.x.given.y, Sigma = cov.mat.x.given.y)
+mean.samples.x.given.y <- sapply(1:grid.length^2, function(x) {
+  mean(samples.x.given.y[x, ])
+})
+mean.samples.x.given.y.matrix <- matrix(mean.samples.x.given.y, nrow = grid.length, ncol = grid.length, byrow = T)
+
+filled.contour(1:grid.length, 1:grid.length, mean.samples.x.given.y.matrix, color = heat.colors)
+title("Mean of samples from x given y")
+
+
+
 # Set up expressions for y given x
 mu.y.given.x <-
   mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (x.sample - mu.x)
 cov.mat.y.given.x <-
   cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x
+
+filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = heat.colors)
+title("Mean of samples x given y")
+
 
 # Now the parameters for the distribution to y average given x
 mu.y.avg <- mean(mu.y.given.x)
@@ -192,6 +215,8 @@ samples.mean.matrix <-
   matrix(samples.mean, nrow = grid.length, ncol = grid.length, byrow = T)
 
 
+filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = heat.colors)
+title("Mean of samples from x given y average")
 
 
 # ABC approach
@@ -209,11 +234,25 @@ counter <- 1
 while (counter <= length(abc.samples)) {
   abc.prior <- mvrnorm(mu = mu.x, Sigma = cov.mat.x)
   if (StatisticDistanceFunction(abc.prior.avg, y.test.avg) < kTolerance) {
+    print(paste("Got sample: ", counter))
     abc.samples[[counter]] <- abc.prior
     counter <- counter + 1
   }
 }
 
+
+abc.samples.mean <-
+  (1 / length(abc.samples)) * sapply(1:grid.length ^ 2, function(x) {
+    sum(sapply(abc.samples, function(abc.sample) {
+      abc.sample[[x]]
+    }))
+  })
+
+abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length)
+
+
+filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = heat.colors)
+title("Mean of samples from x given y average using ABC")
 
 
 
