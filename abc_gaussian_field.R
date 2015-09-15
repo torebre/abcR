@@ -5,8 +5,10 @@ library(geoR)
 kPhi <- 5
 kVariance <- 4
 kMean <- 10
-kDistance.between.gridlines <- 10
+kDistance.between.gridlines <- 2
 grid.length <- 20
+
+kColours <- terrain.colors
 
 
 CovarianceFunction <- function(distance) {
@@ -14,16 +16,29 @@ CovarianceFunction <- function(distance) {
 }
 
 CalculateCovariance <-
-  function(x1.coord, y1.coord, x2.coord, y2.coord, DistanceCovarFunc)  {
-    CovarianceFunction(sqrt((x1.coord - y1.coord) ^ 2 + (x2.coord - y2.coord) ^
-                              2))
+  function(x1.coord, y1.coord, x2.coord, y2.coord)  {
+    CovarianceFunction(sqrt((x1.coord - y1.coord)^2 + (x2.coord - y2.coord)^2))
   }
 
 mu.x <- matrix(rep(kMean, grid.length ^ 2), ncol = 1)
-cov.mat.x <-
-  toeplitz(sapply(1:grid.length ^ 2, function(d) {
-    CovarianceFunction(d)
-  }))
+# cov.mat.x <-
+#   toeplitz(sapply(1:grid.length ^ 2, function(d) {
+#     CovarianceFunction(d)
+#   }))
+
+cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
+  sapply(1:grid.length, function(y1) {
+    sapply(1:grid.length, function(x2) {
+      sapply(1:grid.length, function(y2) {
+        CalculateCovariance(x1, x2, y1, y2)
+      })
+    })
+  })
+}), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
+
+# image(cov.mat.x)
+filled.contour(cov.mat.x)
+
 
 
 # To avoid extra complexity, the observation points do not
@@ -33,12 +48,13 @@ obs.coords[1, 1] <- 5
 obs.coords[1, 2] <- 5
 obs.coords[2, 1] <- 15
 obs.coords[2, 2] <- 15
-obs.coords[3, 1] <- 25
-obs.coords[3, 2] <- 25
+obs.coords[3, 1] <- 12
+obs.coords[3, 2] <- 3
 
 obs.length <- dim(obs.coords)[1]
 
-observations <- matrix(c(15, 12, 15), nrow = 3, ncol = 1)
+observations <- matrix(c(1, 1, 1), nrow = 3, ncol = 1)
+# observations <- matrix(c(25), nrow = 1, ncol = 1)
 
 mu.y <- matrix(rep(kMean, obs.length), ncol = 1)
 
@@ -47,13 +63,12 @@ cov.mat.y <- matrix(sapply(1:obs.length, function(x.index) {
     CalculateCovariance(obs.coords[x.index, 1], obs.coords[y.index, 1], obs.coords[x.index, 1], obs.coords[y.index, 1])
   })
 }), nrow = obs.length, byrow = T)
+image(cov.mat.y)
+filled.contour(cov.mat.y)
 
-
-# For the prediction points the coordinates are
-# the indices times kDistance.between.gridlines
 pred.coords <- matrix(sapply(1:grid.length, function(x) {
   sapply(1:grid.length, function(y) {
-    c(x * kDistance.between.gridlines, y * kDistance.between.gridlines)
+    c(x, y)
   })
 }), ncol = 2, byrow = T)
 
@@ -63,17 +78,9 @@ cov.mat.y.x <- sapply(1:obs.length, function(obs.index) {
   })
 })
 
-
-
 # Compute inverses
 cov.mat.x.inv <- solve(cov.mat.x)
 cov.mat.y.inv <- solve(cov.mat.y)
-
-# x.proposal <-
-#   matrix(
-#     mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length ^ 2, ncol = 1, byrow = T
-#   )
-
 
 # Expressions for x given y
 mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
@@ -81,11 +88,12 @@ cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x
 
 samples.x.given.y <- mvrnorm(n = 50, mu = mu.x.given.y, Sigma = cov.mat.x.given.y)
 mean.samples.x.given.y <- sapply(1:grid.length^2, function(x) {
-  mean(samples.x.given.y[x, ])
+  mean(samples.x.given.y[ , x])
 })
 mean.samples.x.given.y.matrix <- matrix(mean.samples.x.given.y, nrow = grid.length, ncol = grid.length, byrow = T)
 
-filled.contour(1:grid.length, 1:grid.length, mean.samples.x.given.y.matrix, color = heat.colors)
+filled.contour(1:grid.length, 1:grid.length, mean.samples.x.given.y.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
 title("Mean of samples from x given y")
 
 
@@ -96,7 +104,7 @@ mu.y.given.x <-
 cov.mat.y.given.x <-
   cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x
 
-filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = heat.colors)
+filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
 title("Mean of samples x given y")
 
 
@@ -215,7 +223,7 @@ samples.mean.matrix <-
   matrix(samples.mean, nrow = grid.length, ncol = grid.length, byrow = T)
 
 
-filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = heat.colors)
+filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = kColours)
 title("Mean of samples from x given y average")
 
 
@@ -251,7 +259,7 @@ abc.samples.mean <-
 abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length)
 
 
-filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = heat.colors)
+filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
 title("Mean of samples from x given y average using ABC")
 
 
