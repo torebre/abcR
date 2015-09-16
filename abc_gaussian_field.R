@@ -94,13 +94,24 @@ mean.samples.x.given.y <- sapply(1:grid.length^2, function(x) {
   mean(samples.x.given.y[ , x])
 })
 mean.samples.x.given.y.matrix <- matrix(mean.samples.x.given.y, nrow = grid.length, ncol = grid.length, byrow = T)
+var.samples.x.given.y.matrix <- matrix(sapply(1:grid.length^2, function(x) {
+  var(samples.x.given.y[ , x])
+}), nrow = grid.length, ncol = grid.length, byrow = T)
 
+image(mean.samples.x.given.y.matrix)
+title('Mean of samples from x given y"')
 # Plot mean of samples showing x given y
 filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
                seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
                mean.samples.x.given.y.matrix, color = kColours, 
                plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
-title("Mean of samples from x given y")
+title('Mean of samples from x given y')
+
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               var.samples.x.given.y.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title('Variance x given y')
 
 # Set up expressions for y given x
 x.sample <- mvrnorm(n = 1, mu = mu.x, Sigma = cov.mat.x)
@@ -199,8 +210,26 @@ samples.mean <-
 samples.mean.matrix <-
   matrix(samples.mean, nrow = grid.length, ncol = grid.length, byrow = T)
 
-filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = kColours)
-title("Mean of samples from x given y average")
+samples.mcmc <- sapply(1:length(sub.samples), function(index) {
+  sub.samples[[index]]
+})
+# samples.matrix <- matrix(samples.mcmc, nrow = grid.length, ncol = grid.length, byrow = T)
+# samples.var.matrix <- var(samples.matrix)
+samples.var.matrix <- matrix(sapply(1:dim(samples.mcmc)[1], function(x) {
+  var(samples.mcmc[x, ])
+}), nrow = grid.length, ncol = grid.length, byrow = T)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               samples.var.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title('MCMC: Variance x given y average')
+
+# filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = kColours)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               samples.mean.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title("MCMC: Mean of samples from x given y average")
 
 
 # ABC approach
@@ -225,23 +254,48 @@ while (counter <= length(abc.samples)) {
 }
 
 abc.samples.mean <-
-  (1 / length(abc.samples)) * sapply(1:grid.length ^ 2, function(x) {
-    sum(sapply(abc.samples, function(abc.sample) {
+  sapply(1:grid.length ^ 2, function(x) {
+    mean(sapply(abc.samples, function(abc.sample) {
       abc.sample[[x]]
     }))
   })
 
 abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length)
-
-
-filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
+# filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               abc.samples.mean.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
 title("Mean of samples from x given y average using ABC")
+
+
+abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
+  var(sapply(abc.samples, function(abc.sample) {
+    abc.sample[[x]]
+  }))}), nrow = grid.length, ncol = grid.length, byrow = T)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               abc.samples.var.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title('ABC: Variance x given y average')
 
 
 # Sampling from the prior
 x.samples <- mvrnorm(n = 50, mu = mu.x, Sigma = cov.mat.x)
-x.samples.mean <- sapply(1:grid.length^2, function(x) {
+x.samples.mean <- matrix(sapply(1:grid.length^2, function(x) {
   mean(x.samples[ , x])
-})
-filled.contour(x.samples, color = kColours)
+}), nrow = grid.length, ncol = grid.length, byrow = T)
+# filled.contour(x.samples.mean, color = kColours)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               x.samples.mean, color = kColours)
+title('Mean of 50 samples from x')
 
+x.samples.var <- matrix(sapply(1:grid.length^2, function(x) {
+  var(x.samples[ , x])
+}), nrow = grid.length, ncol = grid.length, byrow = T)
+# filled.contour(x.samples.var)
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               x.samples.var, color = kColours)
+title('Variance 50 samples from x')
