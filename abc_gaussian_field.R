@@ -5,13 +5,14 @@ library(geoR)
 kPhi <- 5
 kVariance <- 4
 kMean <- 10
-kDistance.between.gridlines <- 2
-grid.length <- 20
+kDistance.between.gridlines <- 4
+grid.length <- 10
 
 kColours <- terrain.colors
 
-
+# Functions for calculating the covariance
 CovarianceFunction <- function(distance) {
+  print(distance)
   kVariance * exp(-distance / kPhi)
 }
 
@@ -20,54 +21,51 @@ CalculateCovariance <-
     CovarianceFunction(sqrt((x1.coord - y1.coord)^2 + (x2.coord - y2.coord)^2))
   }
 
+# Set up mean and covariance matrix for x
 mu.x <- matrix(rep(kMean, grid.length ^ 2), ncol = 1)
-# cov.mat.x <-
-#   toeplitz(sapply(1:grid.length ^ 2, function(d) {
-#     CovarianceFunction(d)
-#   }))
-
-cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
-  sapply(1:grid.length, function(y1) {
-    sapply(1:grid.length, function(x2) {
-      sapply(1:grid.length, function(y2) {
+cov.mat.x <- matrix(sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(x1) {
+  sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(y1) {
+    sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(x2) {
+      sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(y2) {
         CalculateCovariance(x1, x2, y1, y2)
       })
     })
   })
 }), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
+filled.contour(1:grid.length^2, 1:grid.length^2, cov.mat.x)
 
-# image(cov.mat.x)
-filled.contour(cov.mat.x)
-
-
+# Add some points were the values are known
 
 # To avoid extra complexity, the observation points do not
 # overlap with the prediction points
 obs.coords = matrix(nrow = 3, ncol = 2)
-obs.coords[1, 1] <- 5
+obs.coords[1, 1] <- 3
 obs.coords[1, 2] <- 5
-obs.coords[2, 1] <- 15
-obs.coords[2, 2] <- 15
-obs.coords[3, 1] <- 12
-obs.coords[3, 2] <- 3
+obs.coords[2, 1] <- 21
+obs.coords[2, 2] <- 21
+obs.coords[3, 1] <- 21
+obs.coords[3, 2] <- 37
 
 obs.length <- dim(obs.coords)[1]
 
-observations <- matrix(c(1, 1, 1), nrow = 3, ncol = 1)
+observations <- matrix(c(20, 1, 20), nrow = 3, ncol = 1)
 # observations <- matrix(c(25), nrow = 1, ncol = 1)
 
+# Set up mean and covariance matrix for y
 mu.y <- matrix(rep(kMean, obs.length), ncol = 1)
-
 cov.mat.y <- matrix(sapply(1:obs.length, function(x.index) {
   sapply(1:obs.length, function(y.index) {
-    CalculateCovariance(obs.coords[x.index, 1], obs.coords[y.index, 1], obs.coords[x.index, 1], obs.coords[y.index, 1])
+    CalculateCovariance(obs.coords[x.index, 1], obs.coords[y.index, 1], obs.coords[x.index, 2], obs.coords[y.index, 2])
   })
 }), nrow = obs.length, byrow = T)
 image(cov.mat.y)
+title('Covariance matrix y')
 filled.contour(cov.mat.y)
+title('Covariance matrix y')
 
-pred.coords <- matrix(sapply(1:grid.length, function(x) {
-  sapply(1:grid.length, function(y) {
+# Compute the covariances between x and y
+pred.coords <- matrix(sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(x) {
+  sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(y) {
     c(x, y)
   })
 }), ncol = 2, byrow = T)
@@ -77,6 +75,11 @@ cov.mat.y.x <- sapply(1:obs.length, function(obs.index) {
     CalculateCovariance(obs.coords[obs.index, 1], pred.coords[pred.index, 1], obs.coords[obs.index, 2], pred.coords[pred.index, 2])
   })
 })
+
+image(1:(grid.length^2), 1:length(observations), cov.mat.y.x)
+title('Covariance between x and y')
+filled.contour(cov.mat.y.x)
+title('Covariance between x and y')
 
 # Compute inverses
 cov.mat.x.inv <- solve(cov.mat.x)
@@ -92,46 +95,42 @@ mean.samples.x.given.y <- sapply(1:grid.length^2, function(x) {
 })
 mean.samples.x.given.y.matrix <- matrix(mean.samples.x.given.y, nrow = grid.length, ncol = grid.length, byrow = T)
 
-filled.contour(1:grid.length, 1:grid.length, mean.samples.x.given.y.matrix, color = kColours, 
+# Plot mean of samples showing x given y
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               mean.samples.x.given.y.matrix, color = kColours, 
                plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
 title("Mean of samples from x given y")
 
-
-
 # Set up expressions for y given x
+x.sample <- mvrnorm(n = 1, mu = mu.x, Sigma = cov.mat.x)
 mu.y.given.x <-
   mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (x.sample - mu.x)
 cov.mat.y.given.x <-
   cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x
-
-filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
-title("Mean of samples x given y")
-
 
 # Now the parameters for the distribution to y average given x
 mu.y.avg <- mean(mu.y.given.x)
 A <- matrix(1 / obs.length, nrow = 1, ncol = obs.length)
 var.y.avg <- A %*% cov.mat.y.given.x %*% t(A)
 
-#sample.y.avg <- rnorm(n = 1, mean = mu.y.avg, sd = sqrt(var.y.avg))
+# Set the observed average to be the average of the observations
+y.test.avg <- mean(observations)
 
-y.test.avg <- 10
-
-# pnorm(y.test.avg, mean = mu.y.avg, sd = sqrt(var.y.avg))
-
+# Evaluates a multivariate Gaussian
 MultivariateGaussian <-
   function(my.x, my.mu, my.sigma, my.sigma.inv) {
     (2 * pi) ^ -(length(my.mu) / 2) * sqrt((det(my.sigma))) * exp(-(1 / 2) * t(my.x - my.mu) %*% my.sigma.inv %*% (my.x - my.mu))
   }
 
+# Random walk Metropolis-Hastings MCMC function for getting samples 
+# from x given y average
 RandomWalkMetropolisHastingsMCMC <- function(previous.sample) {
   # Using the prior as the proposal distribution
   x.proposal <-
     matrix(
       mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length ^ 2, ncol = 1, byrow = T
     )
-  
-  # print(MultivariateGaussian(x.proposal, mu.x, cov.mat.x, cov.mat.x.inv))
   
   old.my.mu.y.given.x <-
     mu.y + t(cov.mat.y.x) %*% cov.mat.x.inv %*% (previous.sample - mu.x)
@@ -143,24 +142,11 @@ RandomWalkMetropolisHastingsMCMC <- function(previous.sample) {
   new.y.avg.given.x <-
     pnorm(y.test.avg, mean = mean(my.mu.y.given.x), sd = sqrt(var.y.avg))
   
-  print(paste("old.y.avg.given.x: ", log(old.y.avg.given.x)))
-  print(paste("new.y.avg.given.x: ", log(new.y.avg.given.x)))
-  print(paste("new: ", log(
-    MultivariateGaussian(x.proposal, mu.x, cov.mat.x, cov.mat.x.inv)
-  )))
-  print(paste("old: ", log(
-    MultivariateGaussian(previous.sample, mu.x, cov.mat.x, cov.mat.x.inv)
-  )))
-  
   # Metropolis-Hastings ratio
   log.ratio <-
     log(MultivariateGaussian(x.proposal, mu.x, cov.mat.x, cov.mat.x.inv)) + log(new.y.avg.given.x) - log(MultivariateGaussian(previous.sample, mu.x, cov.mat.x, cov.mat.x.inv)) - log(old.y.avg.given.x)
   
-  print(paste('log ratio: ', log.ratio))
-  print(exp(log.ratio))
-  
   if (runif(1) < min(1, exp(log.ratio))) {
-    print('Accepting')
     return(x.proposal)
   }
   else {
@@ -168,6 +154,7 @@ RandomWalkMetropolisHastingsMCMC <- function(previous.sample) {
   }
 }
 
+# Get samples from x given y average using MCMC
 number.of.iterations <- 5000
 samples <- vector('list', number.of.iterations)
 sample.probabilities <- vector('list', number.of.iterations)
@@ -178,8 +165,6 @@ x.current <-
     mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length ^ 2, ncol = 1, byrow = T
   )
 for (i in 1:number.of.iterations) {
-  # print(i)
-  # print(MultivariateGaussian(x.current, mu.x, cov.mat.x, cov.mat.x.inv))
   x.new <- RandomWalkMetropolisHastingsMCMC(x.current)
   
   if (all(x.new == x.current)) {
@@ -195,22 +180,14 @@ for (i in 1:number.of.iterations) {
     MultivariateGaussian(x.current, mu.x, cov.mat.x, cov.mat.x.inv)
 }
 
-# sample.indices <- c(1:number.of.iterations)%%50 == 0
-keep.samples <- seq(from = 1, to = number.of.iterations, by = 50)
+# Keep 50 samples
+keep.samples <- seq(from = 1, to = number.of.iterations, by = 100)
 
 sub.samples <- vector('list', length(keep.samples))
 
 for (i in 1:length(keep.samples)) {
   sub.samples[[i]] <- samples[[keep.samples[i]]]
 }
-
-# samples.mean <- sapply(1:grid.length, function(x) {
-#   sapply(1:grid.length, function(y) {
-#     (1 / length(sub.samples)) * sum(sapply(sub.samples, function(sub.sample) {
-#       sub.sample[(x - 1) * grid.length + 1]
-#     }))
-#   })
-# })
 
 samples.mean <-
   (1 / length(sub.samples)) * sapply(1:grid.length ^ 2, function(x) {
@@ -222,32 +199,30 @@ samples.mean <-
 samples.mean.matrix <-
   matrix(samples.mean, nrow = grid.length, ncol = grid.length, byrow = T)
 
-
 filled.contour(1:grid.length, 1:grid.length, samples.mean.matrix, color = kColours)
 title("Mean of samples from x given y average")
 
 
 # ABC approach
-kTolerance <- 1
+kTolerance <- 2
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
-    (proposed.sample.statistic - observed.statistic) ^ 2
+    sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
   }
 
-number.of.abc.samples <- 100
+number.of.abc.samples <- 50
 abc.samples <- vector('list', number.of.abc.samples)
-abc.prior.avg <- mean(abc.prior)
 counter <- 1
 
 while (counter <= length(abc.samples)) {
   abc.prior <- mvrnorm(mu = mu.x, Sigma = cov.mat.x)
+  abc.prior.avg <- mean(abc.prior)
   if (StatisticDistanceFunction(abc.prior.avg, y.test.avg) < kTolerance) {
     print(paste("Got sample: ", counter))
     abc.samples[[counter]] <- abc.prior
     counter <- counter + 1
   }
 }
-
 
 abc.samples.mean <-
   (1 / length(abc.samples)) * sapply(1:grid.length ^ 2, function(x) {
@@ -263,22 +238,10 @@ filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kC
 title("Mean of samples from x given y average using ABC")
 
 
+# Sampling from the prior
+x.samples <- mvrnorm(n = 50, mu = mu.x, Sigma = cov.mat.x)
+x.samples.mean <- sapply(1:grid.length^2, function(x) {
+  mean(x.samples[ , x])
+})
+filled.contour(x.samples, color = kColours)
 
-
-
-
-
-
-# png ( " problem1b _ posterior _ expected _ value . png " )
-# posterior . expected . value <- sapply (1: length . seismic , function ( y )
-# { sapply (1: length . seismic , function ( x )
-# {(1 / number . of . samples ) * sum ( sapply (1: number . of . samples , function ( z )
-# { sample . images [[ z ]][ x , y ]}) ) }) })
-# filled . contour ( posterior . expected . value )
-# dev . off ()
-
-
-
-# cond.mean <- matrix(data = mu2, nrow = grid.length, ncol = grid.length)
-# filled.contour(1:grid.length, 1:grid.length, matrix(random.sample, nrow = grid.length, ncol = grid.length), color = heat.colors)
-# filled.contour(1:grid.length, 1:grid.length, cond.mean, color = heat.colors)
