@@ -41,14 +41,14 @@ filled.contour(1:grid.length^2, 1:grid.length^2, cov.mat.x)
 obs.coords = matrix(nrow = 3, ncol = 2)
 obs.coords[1, 1] <- 3
 obs.coords[1, 2] <- 5
-obs.coords[2, 1] <- 21
-obs.coords[2, 2] <- 21
-obs.coords[3, 1] <- 21
-obs.coords[3, 2] <- 37
+obs.coords[2, 1] <- 3
+obs.coords[2, 2] <- 7
+obs.coords[3, 1] <- 5
+obs.coords[3, 2] <- 7
 
 obs.length <- dim(obs.coords)[1]
 
-observations <- matrix(c(20, 1, 20), nrow = 3, ncol = 1)
+observations <- matrix(c(20, 17, 20), nrow = 3, ncol = 1)
 # observations <- matrix(c(25), nrow = 1, ncol = 1)
 
 # Set up mean and covariance matrix for y
@@ -120,6 +120,14 @@ mu.y.given.x <-
 cov.mat.y.given.x <-
   cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x
 
+
+
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               matrix(mu.x.given.y, nrow = 10, ncol = 10), color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+
+
 # Now the parameters for the distribution to y average given x
 mu.y.avg <- mean(mu.y.given.x)
 A <- matrix(1 / obs.length, nrow = 1, ncol = obs.length)
@@ -166,7 +174,8 @@ RandomWalkMetropolisHastingsMCMC <- function(previous.sample) {
 }
 
 # Get samples from x given y average using MCMC
-number.of.iterations <- 5000
+burn.in.period <- 2000
+number.of.iterations <- 50000
 samples <- vector('list', number.of.iterations)
 sample.probabilities <- vector('list', number.of.iterations)
 sample.acceptance <- vector('list', number.of.iterations)
@@ -177,6 +186,10 @@ x.current <-
   )
 for (i in 1:number.of.iterations) {
   x.new <- RandomWalkMetropolisHastingsMCMC(x.current)
+  
+  if(i %% 5000 == 0) {
+    print(i)
+  }
   
   if (all(x.new == x.current)) {
     sample.acceptance[[i]] <- 0
@@ -192,7 +205,7 @@ for (i in 1:number.of.iterations) {
 }
 
 # Keep 50 samples
-keep.samples <- seq(from = 1, to = number.of.iterations, by = 100)
+keep.samples <- seq(from = burn.in.period, to = number.of.iterations, by = 1000)
 
 sub.samples <- vector('list', length(keep.samples))
 
@@ -213,6 +226,10 @@ samples.mean.matrix <-
 samples.mcmc <- sapply(1:length(sub.samples), function(index) {
   sub.samples[[index]]
 })
+
+plot(1:length(sample.probabilities), sample.probabilities, type = 'l')
+title('Sample probabilities')
+
 # samples.matrix <- matrix(samples.mcmc, nrow = grid.length, ncol = grid.length, byrow = T)
 # samples.var.matrix <- var(samples.matrix)
 samples.var.matrix <- matrix(sapply(1:dim(samples.mcmc)[1], function(x) {
@@ -233,7 +250,8 @@ title("MCMC: Mean of samples from x given y average")
 
 
 # ABC approach
-kTolerance <- 2
+# kTolerance <- 2
+kTolerance <- 4
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
     sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
@@ -299,3 +317,31 @@ filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.betwe
                seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
                x.samples.var, color = kColours)
 title('Variance 50 samples from x')
+
+png('mean_comparisons.png')
+par(mfrow = c(2, 2))
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               mean.samples.x.given.y.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title('Mean of samples from x given y')
+
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               samples.mean.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title("MCMC: Mean of samples from x given y average")
+
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               abc.samples.mean.matrix, color = kColours, 
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title("Mean of samples from x given y average using ABC")
+
+filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+               x.samples.mean, color = kColours,
+               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+title('Mean of 50 samples from x')
+
+dev.off()
