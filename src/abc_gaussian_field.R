@@ -1,67 +1,3 @@
-library(MASS)
-
-# Parameters
-kPhi <- 5
-kVariance <- 4
-kMean <- 10
-grid.length <- 10
-
-kColours <- terrain.colors
-
-# Functions for calculating the covariance
-CovarianceFunction <- function(distance) {
-  kVariance * exp(-distance / kPhi)
-}
-
-CalculateCovariance <-
-  function(x1.coord, y1.coord, x2.coord, y2.coord)  {
-    CovarianceFunction(sqrt((x1.coord - y1.coord)^2 + (x2.coord - y2.coord)^2))
-  }
-
-# Set up matrices for x and y
-number.of.observations <- 3
-
-x.number.of.points <- grid.length^2 - number.of.observations
-
-
-# Choose some points where there are observations
-y.coords = matrix(nrow = 3, ncol = 2)
-
-y.coords[1, 1] <- 3
-y.coords[1, 2] <- 5
-y.coords[2, 1] <- 3
-y.coords[2, 2] <- 7
-y.coords[3, 1] <- 5
-y.coords[3, 2] <- 7
-
-observations <- matrix(c(20, 17, 20), nrow = 3, ncol = 1)
-
-IsPointObservation <- function(i, j) {
-  for(k in 1:number.of.observations) {
-    if(y.coords[k, 1] == i && y.coords[k, 2] == j) {
-      return(T)
-    }
-  }
-  return(F)
-}
-
-
-x.coords <- matrix(NA, nrow = x.number.of.points, ncol = 2)
-point.number <- 1
-for(i in 1:grid.length) {
-  for(j in 1:grid.length) {
-    if(!IsPointObservation(i, j)) {
-    x.coords[point.number, 1] <- i
-    x.coords[point.number, 2] <- j
-    point.number <- point.number + 1
-    }
-  }
-}
-
-
-
-
-
 samples.x.given.y <- mvrnorm(n = 50, mu = mu.x.given.y, Sigma = cov.mat.x.given.y)
 mean.samples.x.given.y <- sapply(1:x.number.of.points, function(x) {
   mean(samples.x.given.y[ , x])
@@ -75,32 +11,6 @@ mean.samples.x.given.y <- sapply(1:x.number.of.points, function(x) {
 #   var(samples.x.given.y[ , x])
 # }), nrow = x.number.of.points, ncol = x.number.of.points, byrow = T)
 
-
-result <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
-# CombinePredictionAndObservationMatrix <- function(my.x.values, my.y.values) {
-  x.counter <- 1
-  y.counter <- 1
-  for(i in 1:grid.length) {
-    for(j in 1:grid.length) {
-      if(IsPointObservation(i, j)) {
-        result[i, j] <- observations[y.counter]
-        y.counter <- y.counter + 1
-      }
-      else {
-        # print(my.x.values[x.counter])
-        result[i, j] <- mean.samples.x.given.y[x.counter]
-#         print(paste('i', i, 'j', j))
-#         print(result[i, j])
-        x.counter <- x.counter + 1
-      }
-    }
-  }
-# }
-
-
-# combined.matrix <- CombinePredictionAndObservationMatrix(mean.samples.x.given.y, observations)
-filled.contour(1:grid.length, 1:grid.length, result, color = kColours,
-               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 
 
 

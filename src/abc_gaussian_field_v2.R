@@ -11,12 +11,12 @@ cov.mat.x.prior <- matrix(sapply(1:grid.length, function(x1) {
     })
   })
 }), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
-image(cov.mat.x.prior)
-filled.contour(1:grid.length^2, 1:grid.length^2, cov.mat.x.prior)
+# image(cov.mat.x.prior)
+# filled.contour(1:grid.length^2, 1:grid.length^2, cov.mat.x.prior)
 
 
 # kTolerance <- 2
-kTolerance <- 4
+kTolerance <- 0.1
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
     sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
@@ -32,7 +32,7 @@ while (counter <= length(abc.samples)) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]
   }))
   
-  if (StatisticDistanceFunction(abc.prior.obs.points.mean, y.test.avg) < kTolerance) {
+  if (StatisticDistanceFunction(abc.prior.obs.points.mean, y.avg) < kTolerance) {
     print(paste("Got sample: ", counter))
     abc.samples[[counter]] <- abc.prior
     counter <- counter + 1
@@ -58,8 +58,8 @@ abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
   var(sapply(abc.samples, function(abc.sample) {
     abc.sample[[x]]
   }))}), nrow = grid.length, ncol = grid.length, byrow = T)
-filled.contour(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
-               seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), 
+filled.contour(1:grid.length, 
+               1:grid.length, 
                abc.samples.var.matrix, color = kColours, 
                plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
 title('ABC: Variance x given y average')

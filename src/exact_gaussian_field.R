@@ -20,13 +20,6 @@ title('Covariance matrix y')
 filled.contour(cov.mat.y)
 title('Covariance matrix y')
 
-# # Compute the covariances between x and y
-# pred.coords <- matrix(sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(x) {
-#   sapply(seq(1, kDistance.between.gridlines * grid.length, kDistance.between.gridlines), function(y) {
-#     c(x, y)
-#   })
-# }), ncol = 2, byrow = T)
-
 cov.mat.y.x <- sapply(1:obs.length, function(obs.index) {
   sapply(1:x.number.of.points, function(pred.index) {
     CalculateCovariance(obs.coords[obs.index, 1], x.coords[pred.index, 1], obs.coords[obs.index, 2], x.coords[pred.index, 2])
