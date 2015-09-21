@@ -13,6 +13,7 @@ number.of.observations <- 3
 
 x.number.of.points <- grid.length^2 - number.of.observations
 
+source('helper_functions.R')
 
 # Choose some points where there are observations
 y.coords = matrix(nrow = 3, ncol = 2)
@@ -25,6 +26,8 @@ y.coords[3, 1] <- 5
 y.coords[3, 2] <- 7
 
 observations <- matrix(c(11, 9, 11), nrow = 3, ncol = 1)
+
+y.avg <- mean(observations)
 
 IsPointObservation <- function(i, j) {
   for(k in 1:number.of.observations) {
@@ -47,3 +50,9 @@ for(i in 1:grid.length) {
     }
   }
 }
+
+
+source('x_given_y_avg.R')
+source('x_given_y_exact.R')
+source('abc_gaussian_field_v2.R')
+

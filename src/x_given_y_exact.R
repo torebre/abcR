@@ -14,6 +14,9 @@ for(i in 1:grid.length) {
   }
 }
 
+
+# levels <- seq(5, 15, 0.5)
 filled.contour(1:grid.length, 1:grid.length, result, color = kColours,
+               # levels = levels,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 
