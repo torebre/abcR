@@ -50,7 +50,7 @@ abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = g
 # filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
 filled.contour(1:grid.length, 1:grid.length,
                abc.samples.mean.matrix, color = kColours, 
-               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title("Mean of samples from x given y average using ABC")
 
 
@@ -61,6 +61,6 @@ abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
 filled.contour(1:grid.length, 
                1:grid.length, 
                abc.samples.var.matrix, color = kColours, 
-               plot.axes = points(obs.coords[ , 1], obs.coords[ , 2], pch = 19))
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title('ABC: Variance x given y average')
 
