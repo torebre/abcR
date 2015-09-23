@@ -40,6 +40,7 @@ mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
 cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x)
 
 A <- matrix(1/number.of.observations, nrow = 1, ncol = number.of.observations)
+# A <- matrix(1, nrow = 1, ncol = number.of.observations)
 
 cov.mat.x.y.avg <- cov.mat.y.x %*% t(A)
 
@@ -96,18 +97,18 @@ mu.x.given.y.avg <- mu.x + t(B1 %*% cov.mat.x) %*% C.inv %*% (y.avg - mu.y.avg)
 
 
 
-result <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
+mu.x.given.y.avg.matrix <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
 x.counter <- 1
 y.counter <- 1
 for(i in 1:grid.length) {
   for(j in 1:grid.length) {
     if(IsPointObservation(i, j)) {
-      result[i, j] <- y.coords[y.counter]
+      mu.x.given.y.avg.matrix[i, j] <- NA # y.coords[y.counter]
       y.counter <- y.counter + 1
     }
     else {
       # print(my.x.values[x.counter])
-      result[i, j] <- mu.x.given.y.avg[x.counter]
+      mu.x.given.y.avg.matrix[i, j] <- mu.x.given.y.avg[x.counter]
       #         print(paste('i', i, 'j', j))
       #         print(result[i, j])
       x.counter <- x.counter + 1
@@ -115,26 +116,29 @@ for(i in 1:grid.length) {
   }
 }
 
-filled.contour(1:grid.length, 1:grid.length, result, color = kColours,
+image(1:grid.length, 1:grid.length, mu.x.given.y.avg.matrix)
+title(main = 'Expected value x given y avg')
+
+filled.contour(1:grid.length, 1:grid.length, mu.x.given.y.avg.matrix, color = kColours,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
-title(main = 'x given y avg')
+title(main = 'Expected value x given y avg')
 
 
 # Set up the covariance matrix
 cov.mat.x.given.y.avg <- cov.mat.x - t(B1 %*% cov.mat.x) %*% C.inv %*% B1 %*% cov.mat.x
 
-var.result <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
+var.x.given.y.avg.matrix <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
 x.counter <- 1
 y.counter <- 1
 for(i in 1:grid.length) {
   for(j in 1:grid.length) {
     if(IsPointObservation(i, j)) {
-      result[i, j] <- y.coords[y.counter]
+      var.x.given.y.avg.matrix[i, j] <- 0
       y.counter <- y.counter + 1
     }
     else {
       # The entries on the diagonal are the variances
-      var.result[i, j] <- cov.mat.x.given.y.avg[x.counter, x.counter]
+      var.x.given.y.avg.matrix[i, j] <- cov.mat.x.given.y.avg[x.counter, x.counter]
       #         print(paste('i', i, 'j', j))
       #         print(result[i, j])
       x.counter <- x.counter + 1
@@ -142,6 +146,11 @@ for(i in 1:grid.length) {
   }
 }
 
-filled.contour(1:grid.length, 1:grid.length, var.result, color = kColours,
+image(cov.mat.x.given.y.avg)
+title(main = 'Cov matrix x given y avg')
+
+# image(1:grid.length, 1:grid.length, var.result, color = kColours)
+
+filled.contour(1:grid.length, 1:grid.length, var.x.given.y.avg.matrix, color = kColours,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title(main = 'Variance x given y avg')

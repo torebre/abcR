@@ -4,42 +4,65 @@ library(MASS)
 kPhi <- 4
 kVariance <- 4
 kMean <- 10
-grid.length <- 3
+grid.length <- 10
 
-kColours <- terrain.colors
+# kColours <- terrain.colors
+kColours <- heat.colors
+
+# Random observations
+
+# # Set up matrices for x and y
+# number.of.observations <- 15
+# 
+# sample.x <-
+#   sort(sample(1:grid.length, number.of.observations, replace = T))
+# sample.y <-
+#   sample(1:grid.length, number.of.observations, replace = T)
+# 
+# while (T) {
+#   duplicate <- F
+#   for (i in 2:number.of.observations) {
+#     if (sample.x[i - 1] == sample.y[i - 1] && sample.x[i] == sample.y[i]) {
+#       duplicate <- T
+#       break
+#     }
+#   }
+#   if (!duplicate) {
+#     break;
+#   }
+#   sample.x <-
+#     sort(sample(1:grid.length, number.of.observations, replace = T))
+#   sample.y <-
+#     sample(1:grid.length, number.of.observations, replace = T)
+# }
+# 
+# y.coords <- cbind(sample.x, sample.y)
+# observations <- matrix(rep(5, number.of.observations), nrow = number.of.observations, ncol = 1)
+# y.avg <- mean(observations)
+# 
+# x.number.of.points <- grid.length ^ 2 - number.of.observations
 
 
-# Set up matrices for x and y
-number.of.observations <- 2
+# Observations in a rectangle
+number.of.observations <- 4
+y.coords = matrix(nrow = number.of.observations, ncol = 2)
+y.coords[1, 1] <- 3
+y.coords[1, 2] <- 5
+y.coords[2, 1] <- 3
+y.coords[2, 2] <- 7
+y.coords[3, 1] <- 5
+y.coords[3, 2] <- 5
+y.coords[4, 1] <- 5
+y.coords[4, 2] <- 7
+observations <- matrix(c(5, 7, 15, 15), nrow = number.of.observations, ncol = 1)
+y.avg <- mean(observations)
 
-sample.x <-
-  sort(sample(1:grid.length, number.of.observations, replace = T))
-sample.y <-
-  sample(1:grid.length, number.of.observations, replace = T)
-
-while (T) {
-  duplicate <- F
-  for (i in 2:number.of.observations) {
-    if (sample.x[i - 1] == sample.y[i - 1] && sample.x[i] == sample.y[i]) {
-      duplicate <- T
-      break
-    }
-  }
-  if (!duplicate) {
-    break;
-  }
-  sample.x <-
-    sort(sample(1:grid.length, number.of.observations, replace = T))
-  sample.y <-
-    sample(1:grid.length, number.of.observations, replace = T)
-}
-
-y.coords <- cbind(sample.x, sample.y)
-observations <- matrix(rep(5, number.of.observations), nrow = number.of.observations, ncol = 1)
 
 x.number.of.points <- grid.length ^ 2 - number.of.observations
 
 source('helper_functions.R')
+
+
 
 # Choose some points where there are observations
 # y.coords = matrix(nrow = 3, ncol = 2)
@@ -82,7 +105,9 @@ for (i in 1:grid.length) {
   }
 }
 
+field.data <- list(x.coords = x.coords, y.coords = y.coords, number.of.observations = number.of.observations,
+                   y.avg = y.avg, observations = observations)
 
 source('x_given_y_avg_v2.R')
-source('x_given_y_exact.R')
+# source('x_given_y_exact.R')
 # source('abc_gaussian_field_v2.R')
