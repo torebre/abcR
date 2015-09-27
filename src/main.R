@@ -54,7 +54,7 @@ y.coords[3, 1] <- 5
 y.coords[3, 2] <- 5
 y.coords[4, 1] <- 5
 y.coords[4, 2] <- 7
-observations <- matrix(c(5, 7, 15, 15), nrow = number.of.observations, ncol = 1)
+observations <- matrix(c(9, 9, 9, 9), nrow = number.of.observations, ncol = 1)
 y.avg <- mean(observations)
 
 
@@ -105,8 +105,8 @@ for (i in 1:grid.length) {
   }
 }
 
-field.data <- list(x.coords = x.coords, y.coords = y.coords, number.of.observations = number.of.observations,
-                   y.avg = y.avg, observations = observations)
+# field.data <- list(x.coords = x.coords, y.coords = y.coords, number.of.observations = number.of.observations,
+#                    y.avg = y.avg, observations = observations)
 
 source('x_given_y_avg_v2.R')
 # source('x_given_y_exact.R')

@@ -39,6 +39,7 @@ cov.mat.y.inv <- solve(cov.mat.y)
 mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
 cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x)
 
+
 A <- matrix(1/number.of.observations, nrow = 1, ncol = number.of.observations)
 # A <- matrix(1, nrow = 1, ncol = number.of.observations)
 
