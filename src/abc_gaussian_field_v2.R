@@ -16,7 +16,8 @@ cov.mat.x.prior <- matrix(sapply(1:grid.length, function(x1) {
 
 
 # kTolerance <- 2
-kTolerance <- 2
+kMaxTolerance <- 2
+kTolerance <- 0.001
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
     sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
@@ -25,6 +26,7 @@ StatisticDistanceFunction <-
 number.of.abc.samples <- 50
 abc.samples <- vector('list', number.of.abc.samples)
 counter <- 1
+all.samples.list <- list()
 
 while (counter <= length(abc.samples)) {
   abc.prior <- matrix(mvrnorm(mu = mu.x.prior, Sigma = cov.mat.x.prior), nrow = grid.length, ncol = grid.length)
@@ -32,11 +34,19 @@ while (counter <= length(abc.samples)) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]
   }))
   
-  if (StatisticDistanceFunction(abc.prior.obs.points.mean, y.avg) < kTolerance) {
+  distance <- StatisticDistanceFunction(abc.prior.obs.points.mean, y.avg)
+  if (distance <= kTolerance) {
     print(paste("Got sample: ", counter))
     abc.samples[[counter]] <- abc.prior
     counter <- counter + 1
   }
+  
+  
+  if (distance <= kMaxTolerance) {
+    all.samples.list <- append(all.samples.list, list(list(distance, abc.prior)))
+  }
+  
+  
 }
 
 abc.samples.mean <-
@@ -63,4 +73,23 @@ filled.contour(1:grid.length,
                abc.samples.var.matrix, color = kColours, 
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title('ABC: Variance x given y average')
+
+
+
+kVariableThreshold <- 0.1
+filtered.samples.mean.matrix <- matrix(0, nrow = grid.length, ncol = grid.length)
+number.of.filtered.samples <- 0
+for(i in 1:length(all.samples.list)) {
+  if(all.samples.list[[i]][[1]] <= kVariableThreshold) {
+    filtered.samples.mean.matrix <- filtered.samples.mean.matrix + all.samples.list[[i]][[2]]
+    number.of.filtered.samples <- number.of.filtered.samples + 1
+  }
+}
+filtered.samples.mean.matrix <- filtered.samples.mean.matrix / number.of.filtered.samples
+
+filled.contour(1:grid.length, 1:grid.length,
+               filtered.samples.mean.matrix, color = kColours, 
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
+title(paste("ABC. Threshold: ", kVariableThreshold, "Samples: ", number.of.filtered.samples))
+
 

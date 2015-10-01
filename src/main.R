@@ -58,6 +58,21 @@ observations <- matrix(c(9, 9, 9, 9), nrow = number.of.observations, ncol = 1)
 y.avg <- mean(observations)
 
 
+# # Observations spread out
+# number.of.observations <- 4
+# y.coords = matrix(nrow = number.of.observations, ncol = 2)
+# y.coords[1, 1] <- 1
+# y.coords[1, 2] <- 1
+# y.coords[2, 1] <- 10
+# y.coords[2, 2] <- 10
+# y.coords[3, 1] <- 6
+# y.coords[3, 2] <- 2
+# y.coords[4, 1] <- 7
+# y.coords[4, 2] <- 2
+# observations <- matrix(c(7, 8, 12, 9), nrow = number.of.observations, ncol = 1)
+# y.avg <- mean(observations)
+
+
 x.number.of.points <- grid.length ^ 2 - number.of.observations
 
 source('helper_functions.R')
@@ -109,5 +124,5 @@ for (i in 1:grid.length) {
 #                    y.avg = y.avg, observations = observations)
 
 source('x_given_y_avg_v2.R')
-# source('x_given_y_exact.R')
-# source('abc_gaussian_field_v2.R')
+source('x_given_y_exact.R')
+source('abc_gaussian_field_v2.R')
