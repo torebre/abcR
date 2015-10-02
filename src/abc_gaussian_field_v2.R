@@ -17,7 +17,7 @@ cov.mat.x.prior <- matrix(sapply(1:grid.length, function(x1) {
 
 # kTolerance <- 2
 kMaxTolerance <- 2
-kTolerance <- 0.001
+kTolerance <- 0.1
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
     sqrt((proposed.sample.statistic - observed.statistic) ^ 2)

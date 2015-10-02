@@ -10,11 +10,25 @@ filled.contour(1:x.number.of.points, 1:x.number.of.points, cov.mat.x)
 
 # Set up mean and covariance matrix for y
 mu.y <- matrix(rep(kMean, number.of.observations), ncol = 1)
+# cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
+#   sapply(1:number.of.observations, function(y.index) {
+#     CalculateCovariance(y.coords[x.index, 1], y.coords[y.index, 1],  y.coords[x.index, 2],  y.coords[y.index, 2])
+#   })
+# }), nrow = number.of.observations, byrow = T)
+
 cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
   sapply(1:number.of.observations, function(y.index) {
-    CalculateCovariance(y.coords[x.index, 1], y.coords[y.index, 1],  y.coords[x.index, 2],  y.coords[y.index, 2])
+    # CalculateCovariance(y.coords[x.index, 1], y.coords[y.index, 1],  y.coords[x.index, 2],  y.coords[y.index, 2])
+    if(x.index == y.index) {
+      kObsNoiseVar
+    }
+    else {
+      0
+    }
   })
 }), nrow = number.of.observations, byrow = T)
+
+
 image(cov.mat.y)
 title('Covariance matrix y')
 filled.contour(cov.mat.y)

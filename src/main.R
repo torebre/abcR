@@ -4,6 +4,7 @@ library(MASS)
 kPhi <- 4
 kVariance <- 4
 kMean <- 10
+kObsNoiseVar <- 5
 grid.length <- 10
 
 # kColours <- terrain.colors
