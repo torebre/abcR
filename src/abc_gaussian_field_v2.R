@@ -1,3 +1,5 @@
+library(latex2exp)
+
 # ABC approach
 
 # Set up mean and covariance matrix for x
@@ -61,7 +63,10 @@ abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = g
 filled.contour(1:grid.length, 1:grid.length,
                abc.samples.mean.matrix, color = kColours, 
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
-title("Mean of samples from x given y average using ABC")
+text = parse(text = paste("hat(x,bar(y))"))
+title(latex2exp('ABC samples $\\hat{E(x|\\bar{y})}$'))
+
+# title("hat(E)")
 
 
 abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
