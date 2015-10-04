@@ -1,5 +1,14 @@
 # Set up mean and covariance matrix for x
+print('Setting up mu.x')
 mu.x <- matrix(rep(kMean, x.number.of.points), ncol = 1)
+
+# test.mat <- matrix(NA, nrow = x.number.of.points, ncol = x.number.of.points)
+# test <- sapply(1:x.number.of.points, function(i) {
+#   sapply(1:(x.number.of.points / 2), function(j) {
+#     #kVariance * exp(-sqrt((x.coords[i, 1] - x.coords[j, 1])^2 + (x.coords[i, 2] - x.coords[j, 2]) / kPhi))
+#     test.mat[i, j] <- CalculateCovariance(x.coords[i, 1], x.coords[j, 1], x.coords[i, 2], x.coords[j, 2])
+#   })})
+
 cov.mat.x <- matrix(sapply(1:x.number.of.points, function(i) {
   sapply(1:x.number.of.points, function(j) {
     CalculateCovariance(x.coords[i, 1], x.coords[j, 1], x.coords[i, 2], x.coords[j, 2])
@@ -8,6 +17,7 @@ cov.mat.x <- matrix(sapply(1:x.number.of.points, function(i) {
 
 
 # Set up mean and covariance matrix for y
+print('Setting up mu.y')
 mu.y <- matrix(rep(kMean, number.of.observations), ncol = 1)
 # cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
 #   sapply(1:number.of.observations, function(y.index) {
@@ -15,6 +25,7 @@ mu.y <- matrix(rep(kMean, number.of.observations), ncol = 1)
 #   })
 # }), nrow = number.of.observations, byrow = T)
 
+print('Setting up cov.mat.y')
 cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
   sapply(1:number.of.observations, function(y.index) {
     # CalculateCovariance(y.coords[x.index, 1], y.coords[y.index, 1],  y.coords[x.index, 2],  y.coords[y.index, 2])
@@ -27,6 +38,7 @@ cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
   })
 }), nrow = number.of.observations, byrow = T)
 
+print('Setting up cov.mat.y.x')
 cov.mat.y.x <- sapply(1:number.of.observations, function(obs.index) {
   sapply(1:x.number.of.points, function(pred.index) {
     CalculateCovariance(y.coords[obs.index, 1], x.coords[pred.index, 1], y.coords[obs.index, 2], x.coords[pred.index, 2])
@@ -35,10 +47,12 @@ cov.mat.y.x <- sapply(1:number.of.observations, function(obs.index) {
 
 
 # Compute inverses
+print('Computing inverses')
 cov.mat.x.inv <- solve(cov.mat.x)
 cov.mat.y.inv <- solve(cov.mat.y)
 
 # Expressions for x given y
+print('Expressions for x given y')
 mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
 cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x)
 
@@ -53,6 +67,7 @@ cov.mat.y.avg.inv <- matrix(1 / cov.mat.y.avg, nrow = 1, ncol = 1)
 mu.x.given.y.avg <- mu.x + cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% (y.avg - mu.y.avg)
 cov.mat.x.given.y.avg <- cov.mat.x - cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% t(cov.mat.x.y.avg)
 
+print('Setting up result matrix')
 result <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
 x.counter <- 1
 y.counter <- 1

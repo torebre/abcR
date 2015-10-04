@@ -1,76 +1,99 @@
+postfix <- "_exp1"
+fig.dir <- "exp1"
 
 
-
-png("../../abcR_doc/fig/cov_var_func.png")
+png(paste("../../abcR_doc/fig/", fig.dir, "/cov_var_func2", postfix, ".png", sep = ""))
 curve(CovarianceFunction, from = 0, to = 100, n = 100, col = 'red', ann = FALSE)
 title("Exponential cov. func.")
-text = as.vector(sapply(as.array(sequence),
-                        function(x) parse(text = paste("phi", "==", x))))
 legend("topright", legend = parse(text = paste("phi", "==", kPhi)), lty = c(1, 1), lwd = c(2.5, 2.5), col = 'red')
 dev.off()
 
 
-png("../../abcR_doc/fig/actual_structure.png")
+png(paste("../../abcR_doc/fig/", fig.dir, "/actual_structure_no_observations", postfix, ".png", sep = ""))
 filled.contour(1:grid.length, 1:grid.length,
-               actual.structure, color = kColours, 
-               plot.axes = points(y.coords[ , 1], y.coords[ , 2], col = 'black', pch = 19, cex = 0.3))
+               actual.structure, color = kColours)
+               # plot.axes = points(y.coords[ , 1], y.coords[ , 2], col = 'black', pch = 19, cex = 0.3))
 title(main = 'Actual structure')
-title(sub = '100 random observations superimposed as black dots')
+# title(sub = '100 random observations superimposed as black dots')
 dev.off()
 
-png("../../abcR_doc/fig/actual_cov_mat.png")
-filled.contour(actual.cov.mat)
+png(paste("../../abcR_doc/fig/", fig.dir, "/actual_cov_mat", postfix, ".png", sep = ""))
+filled.contour(cov.mat.x.prior)
 dev.off()
 
 
 
+# filled.contour(1:x.number.of.points, 1:x.number.of.points, cov.mat.x)
 
-filled.contour(1:x.number.of.points, 1:x.number.of.points, cov.mat.x)
-
-
+png(paste("../../abcR_doc/fig/", fig.dir, "/x_given_ya_avg", postfix, ".png", sep = ""))
 filled.contour(1:grid.length, 1:grid.length, result, color = kColours,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title(main = 'x given y avg')
+dev.off()
 
-
-image(cov.mat.y)
-title('Covariance matrix y')
+# image(cov.mat.y)
+# title('Covariance matrix y')
+png(paste("../../abcR_doc/fig/", fig.dir, "/cov_mat_y", postfix, ".png", sep = ""))
 filled.contour(cov.mat.y)
 title('Covariance matrix y')
+dev.off()
 
-image(1:x.number.of.points, 1:number.of.observations, cov.mat.y.x)
-title('Covariance between x and y')
+# image(1:x.number.of.points, 1:number.of.observations, cov.mat.y.x)
+# title('Covariance between x and y')
+png(paste("../../abcR_doc/fig/", fig.dir, "/cov_mat_x_y", postfix, ".png", sep = ""))
 filled.contour(cov.mat.y.x)
 title('Covariance between x and y')
+dev.off()
 
-image(1:grid.length, 1:grid.length, mu.x.given.y.avg.matrix)
-title(main = 'Expected value x given y avg')
+# image(1:grid.length, 1:grid.length, mu.x.given.y.avg.matrix)
+# title(main = 'Expected value x given y avg')
 
+png(paste("../../abcR_doc/fig/", fig.dir, "/exp_x_given_y_avg", postfix, ".png", sep = ""))
 filled.contour(1:grid.length, 1:grid.length, mu.x.given.y.avg.matrix, color = kColours,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title(main = 'Expected value x given y avg')
+dev.off()
 
 
+# image(cov.mat.x.given.y.avg)
+# title(main = 'Cov matrix x given y avg')
 
-
-
-image(cov.mat.x.given.y.avg)
-title(main = 'Cov matrix x given y avg')
-
-
+png(paste("../../abcR_doc/fig/", fig.dir, "/cov_x_given_y_avg", postfix, ".png", sep = ""))
 filled.contour(1:x.number.of.points, 1:x.number.of.points, cov.mat.x.given.y.avg)
 title('Cov x given y avg')
+dev.off()
 
 
 # image(1:grid.length, 1:grid.length, var.result, color = kColours)
 
+png(paste("../../abcR_doc/fig/", fig.dir, "/var_x_given_y_avg", postfix, ".png", sep = ""))
 filled.contour(1:grid.length, 1:grid.length, var.x.given.y.avg.matrix, color = kColours,
                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
 title(main = 'Variance x given y avg')
+dev.off()
 
 
 
+png(paste("../../abcR_doc/fig/", fig.dir, "/abc_samples_mean", postfix, ".png", sep = ""))
+filled.contour(1:grid.length, 1:grid.length,
+               abc.samples.mean.matrix, color = kColours, 
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
+text = parse(text = paste("hat(x,bar(y))"))
+title(latex2exp('ABC samples $\\hat{E(x|\\bar{y})}$'))
+dev.off()
 
+png(paste("../../abcR_doc/fig/", fig.dir, "/abc_var_x_given_y_avg", postfix, ".png", sep = ""))
+filled.contour(1:grid.length, 
+               1:grid.length, 
+               abc.samples.var.matrix, color = kColours, 
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
+title('ABC: Variance x given y average')
+dev.off()
 
-
+png(paste("../../abcR_doc/fig/", fig.dir, "/abc_mean_extra_samples", postfix, ".png", sep = ""))
+filled.contour(1:grid.length, 1:grid.length,
+               filtered.samples.mean.matrix, color = kColours, 
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
+title(paste("ABC. Threshold: ", kVariableThreshold, "Samples: ", number.of.filtered.samples))
+dev.off()
 
