@@ -39,11 +39,11 @@ cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
 }), nrow = number.of.observations, byrow = T)
 
 print('Setting up cov.mat.y.x')
-cov.mat.y.x <- sapply(1:number.of.observations, function(obs.index) {
+cov.mat.y.x <- t(sapply(1:number.of.observations, function(obs.index) {
   sapply(1:x.number.of.points, function(pred.index) {
     CalculateCovariance(y.coords[obs.index, 1], x.coords[pred.index, 1], y.coords[obs.index, 2], x.coords[pred.index, 2])
   })
-})
+}))
 
 
 # Compute inverses
@@ -53,19 +53,34 @@ cov.mat.y.inv <- solve(cov.mat.y)
 
 # Expressions for x given y
 print('Expressions for x given y')
-mu.x.given.y <- mu.x + cov.mat.y.x %*% cov.mat.y.inv %*% (observations - mu.y)
-cov.mat.x.given.y <- cov.mat.x - cov.mat.y.x %*% cov.mat.y.inv %*% t(cov.mat.y.x)
+mu.x.given.y <- mu.x + t(cov.mat.y.x) %*% cov.mat.y.inv %*% (observations - mu.y)
+cov.mat.x.given.y <- cov.mat.x - t(cov.mat.y.x) %*% cov.mat.y.inv %*% cov.mat.y.x
+
+cov.mat.y.given.x <- cov.mat.y - cov.mat.y.x %*% cov.mat.x.inv %*% t(cov.mat.y.x)
 
 A <- matrix(1/number.of.observations, nrow = 1, ncol = number.of.observations)
 
-cov.mat.x.y.avg <- cov.mat.y.x %*% t(A)
+cov.mat.y.avg.given.x <- A %*% cov.mat.y.given.x %*% t(A)
 
-mu.y.avg <- A %*% mu.y
-cov.mat.y.avg <- A %*% cov.mat.y %*% t(A)
+B1 <- A %*% cov.mat.y.x %*% cov.mat.x.inv
+B2 <- A %*% (cov.mat.y - cov.mat.y.x %*% cov.mat.x.inv %*% t(cov.mat.y.x)) %*% t(A)
 
-cov.mat.y.avg.inv <- matrix(1 / cov.mat.y.avg, nrow = 1, ncol = 1)
-mu.x.given.y.avg <- mu.x + cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% (y.avg - mu.y.avg)
+cov.mat.y.avg <- B2 + B1 %*% cov.mat.x %*% t(B1)
+cov.mat.x.y.avg <- t(B1 %*% cov.mat.x)
+
+cov.mat.y.avg.inv <- solve(cov.mat.y.avg)
+
+mu.x.given.y.avg <- mu.x + cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% (matrix(y.avg, nrow = 1, ncol = 1) - mu.y.avg)
 cov.mat.x.given.y.avg <- cov.mat.x - cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% t(cov.mat.x.y.avg)
+
+
+# cov.mat.x.y.avg <- A %*% cov.mat.y.x %*% t(A)
+# mu.y.avg <- A %*% mu.y
+# cov.mat.y.avg <- A %*% cov.mat.y %*% t(A)
+# 
+# cov.mat.y.avg.inv <- matrix(1 / cov.mat.y.avg, nrow = 1, ncol = 1)
+# mu.x.given.y.avg <- mu.x + cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% (y.avg - mu.y.avg)
+# cov.mat.x.given.y.avg <- cov.mat.x - cov.mat.x.y.avg %*% cov.mat.y.avg.inv %*% t(cov.mat.x.y.avg)
 
 print('Setting up result matrix')
 result <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
@@ -84,14 +99,14 @@ for(i in 1:grid.length) {
   }
 }
 
-cov.mat.y.avg <- A %*% cov.mat.y %*% t(A)
-cov.mat.x.y.avg <- t(A %*% t(cov.mat.y.x) %*% cov.mat.x.inv) %*% (A %*% cov.mat.y %*% t(A))
-B1 <- A %*% t(cov.mat.y.x) %*% cov.mat.x.inv
-
-B2 <- A %*% (cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x) %*% t(A)
-C <- B2 + B1 %*% cov.mat.x %*% t(B1)
-C.inv <- solve(C)
-mu.x.given.y.avg <- mu.x + t(B1 %*% cov.mat.x) %*% C.inv %*% (y.avg - mu.y.avg)
+# cov.mat.y.avg <- A %*% cov.mat.y %*% t(A)
+# cov.mat.x.y.avg <- t(A %*% t(cov.mat.y.x) %*% cov.mat.x.inv) %*% (A %*% cov.mat.y %*% t(A))
+# B1 <- A %*% t(cov.mat.y.x) %*% cov.mat.x.inv
+# 
+# B2 <- A %*% (cov.mat.y - t(cov.mat.y.x) %*% cov.mat.x.inv %*% cov.mat.y.x) %*% t(A)
+# C <- B2 + B1 %*% cov.mat.x %*% t(B1)
+# C.inv <- solve(C)
+# mu.x.given.y.avg <- mu.x + t(B1 %*% cov.mat.x) %*% C.inv %*% (y.avg - mu.y.avg)
 
 
 mu.x.given.y.avg.matrix <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
@@ -112,7 +127,7 @@ for(i in 1:grid.length) {
 
 
 # Set up the covariance matrix
-cov.mat.x.given.y.avg <- cov.mat.x - t(B1 %*% cov.mat.x) %*% C.inv %*% B1 %*% cov.mat.x
+# cov.mat.x.given.y.avg <- cov.mat.x - t(B1 %*% cov.mat.x) %*% C.inv %*% B1 %*% cov.mat.x
 
 var.x.given.y.avg.matrix <- matrix(NA, nrow = grid.length, ncol = grid.length, byrow = T)
 x.counter <- 1

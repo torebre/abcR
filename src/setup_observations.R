@@ -107,9 +107,9 @@ actual.structure <- matrix(mvrnorm(mu = rep(kMean, grid.length^2), Sigma = actua
 
 # observations <- matrix(rnorm(number.of.observations, mean = kMean, sd = sqrt(kObsNoiseVar)), nrow = number.of.observations, ncol = 1)
 
-observations <- sapply(1:number.of.observations, function(x) {
+observations <- matrix(sapply(1:number.of.observations, function(x) {
   actual.structure[y.coords[x, 1], y.coords[x, 2]]
-})
+}),  nrow = number.of.observations, ncol = 1)
 y.avg <- mean(observations)
 x.number.of.points <- grid.length ^ 2 - number.of.observations
 

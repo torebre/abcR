@@ -6,7 +6,7 @@ library(latex2exp)
 kPhi <- 25
 kVariance <- 4
 kMean <- 10
-kObsNoiseVar <- 5
+kObsNoiseVar <- 2
 grid.length <- 10
 number.of.observations <- 4
 
