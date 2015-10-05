@@ -19,6 +19,7 @@ dev.off()
 
 png(paste("../../abcR_doc/fig/", fig.dir, "/actual_cov_mat", postfix, ".png", sep = ""))
 filled.contour(cov.mat.x.prior)
+title("Covariance matrix")
 dev.off()
 
 
