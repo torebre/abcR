@@ -3,20 +3,130 @@ title: "Work in progress..."
 output: html_document
 ---
 
-$\mu=10$, the mean of Gaussian field
 
-$\phi=25$, parameter to exponential correlation function
+## Derviation of $\boldsymbol{X}|\bar{\boldsymbol{Y}}$
 
-$\sigma^{2}=4$, the variance of the Gaussian field
+Let $\boldsymbol{Z}$ denote the points in a discretized Gaussian
+random field. Divide the set of points into two sets:
 
-$\nu=5$, observation noise
+Let $\boldsymbol{Y}$ denote a set of observations
 
-The grid is 100 times 100. An exponential correlation function is
-used, $\sigma\exp(-\frac{d}{\phi})$, where $d$ is the Euclidean
-distance between the points.
+\[
+\boldsymbol{Y}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}},\boldsymbol{\Sigma}_{\boldsymbol{y}})
+\]
 
-![Correlation function](fig/cov_var_func.png)
 
-![Actual structure](fig/actual_structure.png)
+Let $\boldsymbol{X}$ denote a set of prediction points
+
+\[
+\boldsymbol{X}\sim N(\boldsymbol{\mu}_{\boldsymbol{x}},\boldsymbol{\Sigma}_{\boldsymbol{x}})
+\]
+
+
+The points in $\boldsymbol{X}$ and $\boldsymbol{Y}$ do not overlap.
+
+Construct the joint distribution by making use of the covariance function.
+Using an exponential covariance function in the example: $\sigma^{2}\exp(-\frac{d}{\phi})$,
+where $d$ is the Euclidean distance between the points, $\sigma^{2}$
+the variance and $\phi$ a constant.
+
+\[
+\left[\begin{array}{c}
+\boldsymbol{Y}\\
+\boldsymbol{X}
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\boldsymbol{\mu}_{\boldsymbol{y}}\\
+\boldsymbol{\mu}_{\boldsymbol{x}}
+\end{array}\right],\left[\begin{array}{cc}
+\boldsymbol{\Sigma}_{\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\\
+\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{x}}
+\end{array}\right])
+\]
+
+
+Now create the expression for $\boldsymbol{Y}|\boldsymbol{X}$
+
+\[
+\boldsymbol{Y}|\boldsymbol{X}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})
+\]
+
+
+Then do a linear transformation to get $\bar{\boldsymbol{Y}}|\boldsymbol{X}$
+
+\[
+\boldsymbol{A}=\left[\begin{array}{cccc}
+\frac{1}{n} & \frac{1}{n} & ... & \frac{1}{n}\end{array}\right]
+\]
+
+
+\[
+\bar{Y}|\boldsymbol{X}=\boldsymbol{A}\boldsymbol{Y}|\boldsymbol{X}
+\]
+
+
+\[
+\bar{Y}|\boldsymbol{X}\sim N(\boldsymbol{A}(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{A}(\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})\boldsymbol{A}^{T})
+\]
+
+
+Reconstruct the full distribution $(\bar{Y},\boldsymbol{X})$. First
+define some helper-matrices:
+
+\[
+\boldsymbol{B}_{1}=\boldsymbol{A}\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma_{x}}^{-1}
+\]
+
+
+\[
+\boldsymbol{B}_{2}=\boldsymbol{A}(\boldsymbol{\Sigma_{y}}-\boldsymbol{\Sigma_{yx}}\boldsymbol{\Sigma_{x}}^{-1}\boldsymbol{\Sigma_{xy}})\boldsymbol{A}^{T}
+\]
+
+
+Full joint distribution:
+
+\[
+\left(\begin{array}{c}
+\bar{Y}\\
+\boldsymbol{X}
+\end{array}\right)\sim N(\left(\begin{array}{c}
+\mu_{\bar{Y}}\\
+\mu_{\boldsymbol{X}}
+\end{array}\right),\left(\begin{array}{cc}
+\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T} & \boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\\
+\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T} & \boldsymbol{\Sigma_{x}}
+\end{array}\right)
+\]
+
+
+Get the conditional distribution $(\boldsymbol{X}|\bar{Y})$:
+
+\[
+(\boldsymbol{X}|\bar{Y})\sim N(\boldsymbol{\mu}_{x}+\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}(\bar{y}-\mu_{\bar{y}}),\boldsymbol{\Sigma_{x}}-\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}})
+\]
+
+
+## Simple experiment
+* $\mu=10$, the mean of Gaussian field
+* $\phi=25$, parameter to exponential correlation function
+* $\sigma^{2}=4$, the variance of the Gaussian field
+* $\nu=2$, observation noise
+
+The grid is 10 times 10.
+
+
+![Actual cov mat](fig/exp1/actual_cov_mat_exp1.png)
+![Actual structure no observations](fig/exp1/actual_structure_no_observations_exp1.png)
+![Cov mat x y](fig/exp1/cov_mat_x_y_exp1.png)
+![Cov mat y](fig/exp1/cov_mat_y_exp1.png)
+![Cov var func](fig/exp1/cov_var_func2_exp1.png)
+![Cov x given y avg](fig/exp1/cov_x_given_y_avg_exp1.png)
+![Exp x given y avg](fig/exp1/exp_x_given_y_avg_exp1.png)
+![Var x given y avg](fig/exp1/var_x_given_y_avg_exp1.png)
+![x igven y avg](fig/exp1/x_given_ya_avg_exp1.png)
+![Mean ABC samples](fig/exp1/abc_samples_mean_exp1.png)
+![Var x given y avg](fig/exp1/abc_var_x_given_y_avg_exp1.png)
+![Mean extra samples](fig/exp1/abc_mean_extra_samples_exp1.png)
+
+
 
 
