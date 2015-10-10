@@ -1,5 +1,5 @@
-postfix <- "_exp1"
-fig.dir <- "exp1"
+postfix <- "_exp2"
+fig.dir <- "exp2"
 
 
 png(paste("../../abcR_doc/fig/", fig.dir, "/cov_var_func2", postfix, ".png", sep = ""))
@@ -14,8 +14,17 @@ filled.contour(1:grid.length, 1:grid.length,
                actual.structure, color = kColours)
                # plot.axes = points(y.coords[ , 1], y.coords[ , 2], col = 'black', pch = 19, cex = 0.3))
 title(main = 'Actual structure')
-# title(sub = '100 random observations superimposed as black dots')
 dev.off()
+
+png(paste("../../abcR_doc/fig/", fig.dir, "/actual_structure_with_observations", postfix, ".png", sep = ""))
+filled.contour(1:grid.length, 1:grid.length,
+               actual.structure, color = kColours,
+plot.axes = points(y.coords[ , 1], y.coords[ , 2], col = 'black', pch = 19, cex = 0.3))
+title(main = 'Actual structure')
+title(sub = 'Observations superimposed as black dots')
+dev.off()
+
+
 
 png(paste("../../abcR_doc/fig/", fig.dir, "/actual_cov_mat", postfix, ".png", sep = ""))
 filled.contour(cov.mat.x.prior)

@@ -45,6 +45,9 @@ cov.mat.x.prior <- matrix(sapply(1:grid.length, function(x1) {
 # filled.contour(1:grid.length^2, 1:grid.length^2, cov.mat.x.prior)
 
 
+
+
+
 # kTolerance <- 2
 kMaxTolerance <- 2
 kTolerance <- 0.1
@@ -58,7 +61,35 @@ abc.samples <- vector('list', number.of.abc.samples)
 counter <- 1
 all.samples.list <- list()
 
+
+SamplePriorPhi <- function() {
+  # 25
+  runif(20, 30)
+}
+
+SamplePriorVariance <- function() {
+  # 4
+  runif(2, 6)
+}
+
+SamplePriorMean <- function() {
+  # 10
+  runif(6, 14)
+}
+
+SamplePriorNoise <- function() {
+  # 2
+  runif(1, 5)
+}
+
 while (counter <= length(abc.samples)) {
+  
+  prior.phi <- SamplePriorPhi()
+  prior.variance <- SamplePriorVariance()
+  prior.mean <- SamplePriorMean()
+  prior.obs.noise <- SamplePriorNoise()
+  
+  
   abc.prior <- matrix(mvrnorm(mu = mu.x.prior, Sigma = cov.mat.x.prior), nrow = grid.length, ncol = grid.length)
   abc.prior.obs.points.mean <- mean(sapply(1:number.of.observations, function(obs.number) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]

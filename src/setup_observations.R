@@ -62,7 +62,6 @@
 # y.avg <- mean(observations)
 
 
-
 y.coords = matrix(nrow = number.of.observations, ncol = 2)
 
 # Assign random coordinates for observations
