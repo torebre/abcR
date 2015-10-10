@@ -1,0 +1,624 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Multivariate normal distribution: 
+\begin_inset Formula $(2\pi)^{\frac{k}{2}}|\Sigma|^{\frac{1}{2}}\mathrm{exp}(-\frac{1}{2}(\boldsymbol{x}-\boldsymbol{\mu})^{T}\Sigma^{-1}(\boldsymbol{x}-\boldsymbol{\mu}))$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mu=10$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sigma^{2}=9$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+f(\boldsymbol{x}|\bar{y})= & \frac{f(\bar{y},\boldsymbol{x})}{f(\bar{y})}\\
+ & =\frac{f(\bar{y}|\boldsymbol{x})f(\boldsymbol{x})}{f(\bar{y})}\\
+ & \propto f(\bar{y}|\boldsymbol{x})f(\boldsymbol{x})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{Y}=\frac{1}{n}\Sigma_{i=1}^{n}Y_{i}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{Y}\sim N(\mu,\frac{\sigma^{2}}{n})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(\bar{y})=\frac{\sqrt{n}}{\sqrt{2\pi}\sigma}\mathrm{exp}(\frac{n}{2\sigma^{2}}(\bar{y}-\mu)^{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f(\boldsymbol{x})\sim N(\boldsymbol{\mu},\boldsymbol{\Sigma}_{\boldsymbol{x}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\boldsymbol{y}\\
+\boldsymbol{x}
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\boldsymbol{\mu}_{\boldsymbol{y}}\\
+\boldsymbol{\mu}_{\boldsymbol{x}}
+\end{array}\right],\left[\begin{array}{cc}
+\boldsymbol{\Sigma}_{\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\\
+\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{x}}
+\end{array}\right])
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{y}|\boldsymbol{x}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{y}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}},\boldsymbol{\Sigma}_{\boldsymbol{y}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{x}\sim N(\boldsymbol{\mu}_{\boldsymbol{x}},\boldsymbol{\Sigma}_{\boldsymbol{x}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}=\boldsymbol{A}\boldsymbol{y}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{A}=\left[\begin{array}{cccc}
+\frac{1}{n} & \frac{1}{n} & ... & \frac{1}{n}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}|\boldsymbol{x}=\boldsymbol{A}\boldsymbol{y}|\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{z}=\left[\begin{array}{c}
+\boldsymbol{x}\\
+\boldsymbol{y}
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+z_{i}\sim N(\mu_{i},\boldsymbol{\Sigma}_{ii}')
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}|x\sim N(Ay|x,A\Sigma_{y|x}A')
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}|x\sim N(\mu_{\bar{y}}+B_{1}(x-\mu_{x}),B_{2})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+x\\
+\bar{y}
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\mu_{x}\\
+\mu_{\bar{y}}
+\end{array}\right],\left[\begin{array}{cc}
+\Sigma_{x} & \Sigma_{x,\bar{y}}\\
+\Sigma_{\bar{y},x} & \Sigma_{\bar{y}}
+\end{array}\right])
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+x|\bar{y}\sim N(\mu_{x}+\Sigma_{x,\bar{y}}\Sigma_{\bar{y}}^{-1}(\bar{y}-\mu_{\bar{y}}),\Sigma_{x}-\Sigma_{x,\bar{y}}\Sigma_{\bar{y}}^{-1}\Sigma_{\bar{y},x})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}=ADx
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{y}\sim N(AD\mu_{x},AD\Sigma_{x}D'A')
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Derviation of 
+\begin_inset Formula $\boldsymbol{X}|\bar{\boldsymbol{Y}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\boldsymbol{Z}$
+\end_inset
+
+ denote the points in a discretized Gaussian random field.
+ Divide the set of points into two sets:
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+ denote a set of observations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{Y}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}},\boldsymbol{\Sigma}_{\boldsymbol{y}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ denote a set of prediction points
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{X}\sim N(\boldsymbol{\mu}_{\boldsymbol{x}},\boldsymbol{\Sigma}_{\boldsymbol{x}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The points in 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+ do not overlap.
+\end_layout
+
+\begin_layout Standard
+Construct the joint distribution by making use of the covariance function.
+ Using an exponential covariance function for 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ in the example: 
+\begin_inset Formula $\sigma^{2}\exp(-\frac{d}{\phi})$
+\end_inset
+
+, where 
+\begin_inset Formula $d$
+\end_inset
+
+ is the Euclidean distance between the points, 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ the variance and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ a constant.
+ For 
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+ the observations are independent with variance 
+\begin_inset Formula $\nu$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+First find the full joint distribution:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\boldsymbol{Y}\\
+\boldsymbol{X}
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\boldsymbol{\mu}_{\boldsymbol{y}}\\
+\boldsymbol{\mu}_{\boldsymbol{x}}
+\end{array}\right],\left[\begin{array}{cc}
+\boldsymbol{\Sigma}_{\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\\
+\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{x}}
+\end{array}\right])
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(\boldsymbol{Y}|\boldsymbol{x})\sim N(\boldsymbol{x},\nu\boldsymbol{I})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\begin{array}{c}
+\boldsymbol{Y}\\
+\boldsymbol{X}
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\boldsymbol{\mu}_{y}\\
+\boldsymbol{\mu}_{x}
+\end{array}\right],\left[\begin{array}{cc}
+\boldsymbol{\Sigma_{y}} & \boldsymbol{\Sigma_{yx}}\\
+\boldsymbol{\Sigma_{xy}} & \boldsymbol{\Sigma_{x}}
+\end{array}\right])
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now create the expression for 
+\begin_inset Formula $\boldsymbol{Y}|\boldsymbol{X}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{Y}|\boldsymbol{X}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then do a linear transformation to get 
+\begin_inset Formula $\bar{Y}|\boldsymbol{X}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{A}=\left[\begin{array}{cccc}
+\frac{1}{n} & \frac{1}{n} & ... & \frac{1}{n}\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{Y}|\boldsymbol{X}=\boldsymbol{A}\boldsymbol{Y}|\boldsymbol{X}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\bar{Y}|\boldsymbol{X}\sim N(\boldsymbol{A}(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{A}(\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})\boldsymbol{A}^{T})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Reconstruct the full distribution 
+\begin_inset Formula $(\bar{Y},\boldsymbol{X})$
+\end_inset
+
+.
+ First define some helper-matrices:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{B}_{1}=\boldsymbol{A}\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma_{x}}^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{B}_{2}=\boldsymbol{A}(\boldsymbol{\Sigma_{y}}-\boldsymbol{\Sigma_{yx}}\boldsymbol{\Sigma_{x}}^{-1}\boldsymbol{\Sigma_{xy}})\boldsymbol{A}^{T}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Full joint distribution:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(\begin{array}{c}
+\bar{Y}\\
+\boldsymbol{X}
+\end{array}\right)\sim N(\left(\begin{array}{c}
+\mu_{\bar{Y}}\\
+\mu_{\boldsymbol{X}}
+\end{array}\right),\left(\begin{array}{cc}
+\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T} & \boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\\
+\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T} & \boldsymbol{\Sigma_{x}}
+\end{array}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Get the conditional distribution 
+\begin_inset Formula $(\boldsymbol{X}|\bar{Y})$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(\boldsymbol{X}|\bar{Y})\sim N(\boldsymbol{\mu}_{x}+\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}(\bar{y}-\mu_{\bar{y}}),\boldsymbol{\Sigma_{x}}-\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
