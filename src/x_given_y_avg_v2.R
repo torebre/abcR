@@ -2,28 +2,21 @@
 print('Setting up mu.x')
 mu.x <- matrix(rep(kMean, x.number.of.points), ncol = 1)
 
-# test.mat <- matrix(NA, nrow = x.number.of.points, ncol = x.number.of.points)
-# test <- sapply(1:x.number.of.points, function(i) {
-#   sapply(1:(x.number.of.points / 2), function(j) {
-#     #kVariance * exp(-sqrt((x.coords[i, 1] - x.coords[j, 1])^2 + (x.coords[i, 2] - x.coords[j, 2]) / kPhi))
-#     test.mat[i, j] <- CalculateCovariance(x.coords[i, 1], x.coords[j, 1], x.coords[i, 2], x.coords[j, 2])
-#   })})
-
 cov.mat.x <- matrix(sapply(1:x.number.of.points, function(i) {
   sapply(1:x.number.of.points, function(j) {
     CalculateCovariance(x.coords[i, 1], x.coords[j, 1], x.coords[i, 2], x.coords[j, 2])
   })
 }), nrow = x.number.of.points, ncol = x.number.of.points, byrow = T)
 
+A <- matrix(1/number.of.observations, nrow = 1, ncol = number.of.observations)
+
+
+
+
 
 # Set up mean and covariance matrix for y
 print('Setting up mu.y')
 mu.y <- matrix(rep(kMean, number.of.observations), ncol = 1)
-# cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
-#   sapply(1:number.of.observations, function(y.index) {
-#     CalculateCovariance(y.coords[x.index, 1], y.coords[y.index, 1],  y.coords[x.index, 2],  y.coords[y.index, 2])
-#   })
-# }), nrow = number.of.observations, byrow = T)
 
 print('Setting up cov.mat.y')
 cov.mat.y <- matrix(sapply(1:number.of.observations, function(x.index) {
@@ -57,8 +50,6 @@ mu.x.given.y <- mu.x + t(cov.mat.y.x) %*% cov.mat.y.inv %*% (observations - mu.y
 cov.mat.x.given.y <- cov.mat.x - t(cov.mat.y.x) %*% cov.mat.y.inv %*% cov.mat.y.x
 
 cov.mat.y.given.x <- cov.mat.y - cov.mat.y.x %*% cov.mat.x.inv %*% t(cov.mat.y.x)
-
-A <- matrix(1/number.of.observations, nrow = 1, ncol = number.of.observations)
 
 cov.mat.y.avg.given.x <- A %*% cov.mat.y.given.x %*% t(A)
 

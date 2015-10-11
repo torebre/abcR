@@ -335,38 +335,10 @@ Derviation of
 
 \begin_layout Standard
 Let 
-\begin_inset Formula $\boldsymbol{Z}$
-\end_inset
-
- denote the points in a discretized Gaussian random field.
- Divide the set of points into two sets:
-\end_layout
-
-\begin_layout Standard
-Let 
-\begin_inset Formula $\boldsymbol{Y}$
-\end_inset
-
- denote a set of observations
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\boldsymbol{Y}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}},\boldsymbol{\Sigma}_{\boldsymbol{y}})
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Let 
 \begin_inset Formula $\boldsymbol{X}$
 \end_inset
 
- denote a set of prediction points
+ denote the points in a discretized Gaussian random field:
 \end_layout
 
 \begin_layout Standard
@@ -381,20 +353,26 @@ Let
 \end_layout
 
 \begin_layout Standard
-The points in 
-\begin_inset Formula $\boldsymbol{X}$
-\end_inset
-
- and 
+Let 
 \begin_inset Formula $\boldsymbol{Y}$
 \end_inset
 
- do not overlap.
+ denote a set of observations:
 \end_layout
 
 \begin_layout Standard
-Construct the joint distribution by making use of the covariance function.
- Using an exponential covariance function for 
+\begin_inset Formula 
+\[
+(\boldsymbol{Y}|\boldsymbol{x})\sim N(\boldsymbol{D}\boldsymbol{x},\nu\boldsymbol{I})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here we use an exponential covariance function for 
 \begin_inset Formula $\boldsymbol{X}$
 \end_inset
 
@@ -424,101 +402,20 @@ Construct the joint distribution by making use of the covariance function.
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-First find the full joint distribution:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left[\begin{array}{c}
-\boldsymbol{Y}\\
-\boldsymbol{X}
-\end{array}\right]\sim N(\left[\begin{array}{c}
-\boldsymbol{\mu}_{\boldsymbol{y}}\\
-\boldsymbol{\mu}_{\boldsymbol{x}}
-\end{array}\right],\left[\begin{array}{cc}
-\boldsymbol{\Sigma}_{\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\\
-\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}} & \boldsymbol{\Sigma}_{\boldsymbol{x}}
-\end{array}\right])
-\]
-
+ The 
+\begin_inset Formula $\boldsymbol{D}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-We have:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-(\boldsymbol{Y}|\boldsymbol{x})\sim N(\boldsymbol{x},\nu\boldsymbol{I})
-\]
-
+ in the above is a matrix that select the points from 
+\begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left[\begin{array}{c}
-\boldsymbol{Y}\\
-\boldsymbol{X}
-\end{array}\right]\sim N(\left[\begin{array}{c}
-\boldsymbol{\mu}_{y}\\
-\boldsymbol{\mu}_{x}
-\end{array}\right],\left[\begin{array}{cc}
-\boldsymbol{\Sigma_{y}} & \boldsymbol{\Sigma_{yx}}\\
-\boldsymbol{\Sigma_{xy}} & \boldsymbol{\Sigma_{x}}
-\end{array}\right])
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now create the expression for 
-\begin_inset Formula $\boldsymbol{Y}|\boldsymbol{X}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\boldsymbol{Y}|\boldsymbol{X}\sim N(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})
-\]
-
-\end_inset
-
-
+ where the observations are taken.
 \end_layout
 
 \begin_layout Standard
 Then do a linear transformation to get 
 \begin_inset Formula $\bar{Y}|\boldsymbol{X}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\boldsymbol{A}=\left[\begin{array}{cccc}
-\frac{1}{n} & \frac{1}{n} & ... & \frac{1}{n}\end{array}\right]
-\]
-
 \end_inset
 
 
@@ -536,9 +433,18 @@ Then do a linear transformation to get
 \end_layout
 
 \begin_layout Standard
+Where 
+\begin_inset Formula $\boldsymbol{A}$
+\end_inset
+
+ calculates the average:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \[
-\bar{Y}|\boldsymbol{X}\sim N(\boldsymbol{A}(\boldsymbol{\mu}_{\boldsymbol{y}}+\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}(\boldsymbol{x}-\boldsymbol{\mu}_{\boldsymbol{x}}),\boldsymbol{A}(\boldsymbol{\Sigma}_{\boldsymbol{y}}-\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma}_{\boldsymbol{x}}^{-1}\boldsymbol{\Sigma}_{\boldsymbol{x}\boldsymbol{y}})\boldsymbol{A}^{T})
+\boldsymbol{A}=\left[\begin{array}{cccc}
+\frac{1}{n} & \frac{1}{n} & ... & \frac{1}{n}\end{array}\right]
 \]
 
 \end_inset
@@ -547,53 +453,37 @@ Then do a linear transformation to get
 \end_layout
 
 \begin_layout Standard
-Reconstruct the full distribution 
+\begin_inset Formula 
+\[
+(\bar{Y}|\boldsymbol{X})\sim N(\boldsymbol{ADx},\boldsymbol{A}\nu\boldsymbol{I}\boldsymbol{A}^{T})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+First find the full joint distribution of 
 \begin_inset Formula $(\bar{Y},\boldsymbol{X})$
 \end_inset
 
-.
- First define some helper-matrices:
+:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\boldsymbol{B}_{1}=\boldsymbol{A}\boldsymbol{\Sigma}_{\boldsymbol{y}\boldsymbol{x}}\boldsymbol{\Sigma_{x}}^{-1}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\boldsymbol{B}_{2}=\boldsymbol{A}(\boldsymbol{\Sigma_{y}}-\boldsymbol{\Sigma_{yx}}\boldsymbol{\Sigma_{x}}^{-1}\boldsymbol{\Sigma_{xy}})\boldsymbol{A}^{T}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Full joint distribution:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\left(\begin{array}{c}
+\left[\begin{array}{c}
 \bar{Y}\\
 \boldsymbol{X}
-\end{array}\right)\sim N(\left(\begin{array}{c}
-\mu_{\bar{Y}}\\
-\mu_{\boldsymbol{X}}
-\end{array}\right),\left(\begin{array}{cc}
-\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T} & \boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\\
-\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T} & \boldsymbol{\Sigma_{x}}
-\end{array}\right)
+\end{array}\right]\sim N(\left[\begin{array}{c}
+\mu_{\bar{y}}\\
+\boldsymbol{\mu}_{\boldsymbol{x}}
+\end{array}\right],\left[\begin{array}{cc}
+\boldsymbol{A}\nu\boldsymbol{I}\boldsymbol{A}^{T}+\boldsymbol{AD}\boldsymbol{\Sigma_{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T} & \boldsymbol{AD}\boldsymbol{\Sigma}_{\boldsymbol{x}}\\
+\boldsymbol{\Sigma}_{\boldsymbol{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T} & \boldsymbol{\Sigma}_{\boldsymbol{x}}
+\end{array}\right])
 \]
 
 \end_inset
@@ -612,7 +502,7 @@ Get the conditional distribution
 \begin_layout Standard
 \begin_inset Formula 
 \[
-(\boldsymbol{X}|\bar{Y})\sim N(\boldsymbol{\mu}_{x}+\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}(\bar{y}-\mu_{\bar{y}}),\boldsymbol{\Sigma_{x}}-\boldsymbol{\Sigma_{x}}^{T}\boldsymbol{B}_{1}^{T}(\boldsymbol{B}_{2}+\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}}\boldsymbol{B}_{1}^{T})^{-1}\boldsymbol{B}_{1}\boldsymbol{\Sigma_{x}})
+(\boldsymbol{X}|\bar{Y})\sim N(\boldsymbol{\mu_{x}}+\boldsymbol{\Sigma}_{\boldsymbol{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T}(\boldsymbol{A}\nu\boldsymbol{I}\boldsymbol{A}^{T}+\boldsymbol{AD}\boldsymbol{\Sigma_{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T})^{-1}(\bar{y}-\mu_{\bar{y}}),\boldsymbol{\Sigma_{x}}-\boldsymbol{\Sigma}_{\boldsymbol{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T}(\boldsymbol{A}\nu\boldsymbol{I}\boldsymbol{A}^{T}+\boldsymbol{AD}\boldsymbol{\Sigma_{x}}\boldsymbol{D}^{T}\boldsymbol{A}^{T})^{-1}\boldsymbol{AD}\boldsymbol{\Sigma}_{\boldsymbol{x}})
 \]
 
 \end_inset
