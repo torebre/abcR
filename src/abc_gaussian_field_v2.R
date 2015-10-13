@@ -54,8 +54,28 @@ while (counter <= number.of.abc.samples) {
   prior.mean <- SamplePriorMean()
   prior.obs.noise <- SamplePriorNoise()
   
+  abc.mu.y <- matrix(rep(prior.mean, dim(y.coords)[1]), ncol = 1)
+  abc.cov.mat.y.given.x <- prior.obs.noise * diag(dim(y.coords)[1])
   
-  abc.prior <- matrix(mvrnorm(mu = mu.x, Sigma = cov.mat.x), nrow = grid.length, ncol = grid.length)
+  abc.mu.x <- matrix(rep(prior.mean, grid.length^2), ncol = 1)
+  
+  abc.cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
+    sapply(1:grid.length, function(y1) {
+      sapply(1:grid.length, function(x2) {
+        sapply(1:grid.length, function(y2) {
+          CalculateCovariance(x1, x2, y1, y2)    
+        })
+      })
+    })
+  }), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
+  
+  
+  abc.C2 <- solve(abc.cov.mat.y.given.x + D %*% abc.cov.mat.x %*% t(D))
+  abc.mu.x.given.y <- abc.mu.x + abc.cov.mat.x %*% t(D) %*% abc.C2 %*% matrix(observations - abc.mu.y, nrow = length(abc.mu.y), ncol = 1)  
+  abc.cov.mat.x.given.y <- abc.cov.mat.x - abc.cov.mat.x %*% t(D) %*% abc.C2 %*% D %*% abc.cov.mat.x
+  
+  
+  abc.prior <- matrix(mvrnorm(mu = abc.mu.x, Sigma = abc.cov.mat.x), nrow = grid.length, ncol = grid.length)
   abc.prior.obs.points.mean <- mean(sapply(1:dim(y.coords)[1], function(obs.number) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]
   }))
@@ -64,7 +84,7 @@ while (counter <= number.of.abc.samples) {
   # if (distance <= kTolerance) {
     # print(paste("Got sample: ", counter))
   
-  if(counter %% 50 == 0) {
+  if(counter %% 1 == 0) {
     print(paste("Got sample: ", counter))  
   }
   

@@ -73,10 +73,12 @@ filled.contour(1:grid.length, 1:grid.length, var.x.given.y.avg.matrix, color = k
 title(main = 'Variance x given y avg')
 dev.off()
 
+
+
 png(paste("../../abcR_doc/fig/", fig.dir, "/abc_samples_mean", postfix, ".png", sep = ""))
 filled.contour(1:grid.length, 1:grid.length,
                abc.samples.mean.matrix, color = kColours, 
-               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
+               plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19, cex = 0.3))
 text = parse(text = paste("hat(x,bar(y))"))
 title(latex2exp('ABC samples $\\hat{E(x|\\bar{y})}$'))
 dev.off()
