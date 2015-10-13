@@ -80,7 +80,7 @@ while (counter <= number.of.abc.samples) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]
   }))
   
-  # distance <- StatisticDisatanceFunction(abc.prior.obs.points.mean, y.avg)
+  # distance <- StatisticDistanceFunction(abc.prior.obs.points.mean, y.avg)
   # if (distance <= kTolerance) {
     # print(paste("Got sample: ", counter))
   
@@ -108,25 +108,29 @@ abc.samples.mean <-
     }))})})
 
 abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length)
-# filled.contour(1:grid.length, 1:grid.length, abc.samples.mean.matrix, color = kColours)
-# filled.contour(1:grid.length, 1:grid.length,
-#                abc.samples.mean.matrix, color = kColours, 
-#                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
-# text = parse(text = paste("hat(x,bar(y))"))
-# title(latex2exp('ABC samples $\\hat{E(x|\\bar{y})}$'))
-
-# title("hat(E)")
-
 
 abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
   var(sapply(abc.samples, function(abc.sample) {
     abc.sample[[x]]
   }))}), nrow = grid.length, ncol = grid.length, byrow = T)
-# filled.contour(1:grid.length, 
-#                1:grid.length, 
-#                abc.samples.var.matrix, color = kColours, 
-#                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
-# title('ABC: Variance x given y average')
+
+
+
+GetMeanOfObservations <- function(abc.sample) {
+  mean(sapply(1:dim(y.coords)[1], function(obs.point) {
+    abc.sample[y.coords[obs.point, 1], y.coords[obs.point, 2]]
+  }))
+}
+
+
+abc.distance.parameters <- matrix(NA, nrow = length(abc.samples), ncol = 5)
+for(i in 1:length(abc.samples)) {
+  distance <- StatisticDistanceFunction(GetMeanOfObservations(abc.samples[[i]]$abc.prior), y.avg)
+  abc.distance.parameters[i , ] = c(distance, abc.samples[[i]]$prior.phi, abc.samples[[i]]$prior.mean, abc.samples[[i]]$prior.variance, abc.samples[[i]]$prior.obs.noise)
+}
+
+
+
 
 
 
