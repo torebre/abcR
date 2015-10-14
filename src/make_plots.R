@@ -1,5 +1,5 @@
-postfix <- "_exp3"
-fig.dir <- "exp3"
+postfix <- "_exp4"
+fig.dir <- "exp4"
 
 
 png(paste("../../abcR_doc/fig/", fig.dir, "/cov_var_func2", postfix, ".png", sep = ""))

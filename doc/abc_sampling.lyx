@@ -60,11 +60,11 @@
 \begin_body
 
 \begin_layout Section*
-Setup
+Status update week 42
 \end_layout
 
 \begin_layout Standard
-For our setup we assume 
+Just a recap: For our setup we assume 
 \begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
 \end_inset
 
@@ -225,11 +225,6 @@ p(\boldsymbol{\theta}|\boldsymbol{y})\approx p(\boldsymbol{\theta}|s(\boldsymbol
 Is it correct to use the approximation symbol that way in the above?
 \end_layout
 
-\begin_layout Standard
-But what is the goal? We do not believe the posterior has the form above
- with the uniform priors really?
-\end_layout
-
 \begin_layout Subsubsection*
 Setup with values
 \end_layout
@@ -275,7 +270,7 @@ We have some parameters, and the goal is to find estimates for these.
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\boldsymbol{\theta}=[\phi,\sigma^{2},\mu]
+\nu\sim uniform(1,5)
 \]
 
 \end_inset
@@ -284,25 +279,46 @@ We have some parameters, and the goal is to find estimates for these.
 \end_layout
 
 \begin_layout Standard
-There is also a parameter that is the observation noise, 
-\begin_inset Formula $\nu$
+\begin_inset Formula 
+\[
+\boldsymbol{\theta}=[\phi,\sigma^{2},\mu,\nu]
+\]
+
 \end_inset
 
-, but should that be included here (since I want to keep stuff simple here)?
- That is related to the observation, and then 
-\begin_inset Formula $s(\boldsymbol{y})$
-\end_inset
 
- becomes a random variable I would guess, and that makes 
-\begin_inset Formula $d(s(\boldsymbol{y}),s(\boldsymbol{x}))$
-\end_inset
-
- a random variable, and stuff gets more complicated.
 \end_layout
 
 \begin_layout Standard
-Should we use some setup where we actually know the exact expression for
- the posterior? What should the priors be then? We can evaluate 
+About the summary statistics: We have been looking at the average.
+ And I can draw from 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta},\bar{y}_{obs})$
+\end_inset
+
+.
+ I can also say that 
+\begin_inset Formula $s(\boldsymbol{y})=\boldsymbol{y}_{obs}$
+\end_inset
+
+.
+ In either case we do not pay much attention to the problem choosing statistics
+ in this example, which is a big part of ABC.
+ Is it cheating/incorrect drawing from say 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y}_{obs})$
+\end_inset
+
+, and not from 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+In the analytical calculations we are not treating the parameters as random
+ variables, so are we comparing the right things? Should we instead use
+ some setup where we actually know the exact expression for the posterior?
+ What should the priors be then? We can evaluate 
 \begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
 \end_inset
 
@@ -315,24 +331,37 @@ Should we use some setup where we actually know the exact expression for
 \end_inset
 
  is a Gaussian field, so we could always get at the posterior by MCMC-methods.
+ The output from the ABC experiment should approximate the posterior.
 \end_layout
 
 \begin_layout Standard
-So we have our priors, but the, and we have some analytical calculations
- elsewhere where we condition on the average of some points, but if are
- we going to use those, at least in this small particular experiment, then
- we are saying that we have already found the statistics we want to use,
- and what remains is to see how good the approximation is.
+So I am drawing a sample from 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y}_{obs})$
+\end_inset
+
+ for each sample I am drawing from 
+\begin_inset Formula $p(\boldsymbol{\theta})$
+\end_inset
+
+, setting 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ as shown above, and generating some samples, and I am here including some
+ plots showing the distance between the average at the observation points.
 \end_layout
 
 \begin_layout Standard
-Also in the analytical calculations we are not treating the parameters as
- random variables, so are we comparing the right things? Should we not be
- comparing the output from the ABC experiments with the posterior distribution?
+When looking at articles, it seems the biggest problem is finding good summary
+ statistics, but here we have so far not looked at that.
+ Regarding other articles, I am wondering if I should spend quite some more
+ time on this one:
 \end_layout
 
 \begin_layout Standard
-
+Constructing summary statistics for approximate Bayesian computation: semi-autom
+atic approximate Bayesian computation (Paul Fearnhead and Dennis Prangle).
+ They go into detail about one way to choose statistics.
 \end_layout
 
 \end_body

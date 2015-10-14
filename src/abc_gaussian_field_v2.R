@@ -28,25 +28,10 @@ SamplePriorNoise <- function() {
   runif(n = 1, min = 1, max = 5)
 }
 
-
-
-number.of.abc.samples <- 10000
-abc.samples <- list() #vector('list', number.of.abc.samples)
+number.of.abc.samples <- 1000
+abc.samples <- list()
 counter <- 1
 all.samples.list <- list()
-
-
-parameter.values <- matrix(sapply(seq(1, 5, 15), function(prior.phi) {
-  sapply(seq(2, 6, 1), function(prior.variance) {
-    sapply(seq(6, 14, 1), function(prior.mean) {
-      sapply(seq(1, 5, 1), function(prior.noise) {
-        list(prior.phi = prior.phi, prior.variance = prior.variance, prior.mean = prior.mean, prior.noise = prior.noise)    
-      })
-    })
-  })
-}), nrow = 4)
-
-
 
 while (counter <= number.of.abc.samples) {
   prior.phi <- SamplePriorPhi()
@@ -54,35 +39,29 @@ while (counter <= number.of.abc.samples) {
   prior.mean <- SamplePriorMean()
   prior.obs.noise <- SamplePriorNoise()
   
-  abc.mu.y <- matrix(rep(prior.mean, dim(y.coords)[1]), ncol = 1)
-  abc.cov.mat.y.given.x <- prior.obs.noise * diag(dim(y.coords)[1])
-  
-  abc.mu.x <- matrix(rep(prior.mean, grid.length^2), ncol = 1)
-  
   abc.cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
     sapply(1:grid.length, function(y1) {
       sapply(1:grid.length, function(x2) {
         sapply(1:grid.length, function(y2) {
-          CalculateCovariance(x1, x2, y1, y2)    
+          prior.variance * exp(-sqrt((x1 - x2)^2 + (y1 - y2)^2) / prior.phi)
         })
       })
     })
   }), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
   
-  
+  abc.mu.y <- matrix(rep(prior.mean, dim(y.coords)[1]), ncol = 1)
+  abc.mu.x <- matrix(rep(prior.mean, grid.length^2), ncol = 1)
+  abc.cov.mat.y.given.x <- prior.obs.noise * diag(dim(y.coords)[1])
   abc.C2 <- solve(abc.cov.mat.y.given.x + D %*% abc.cov.mat.x %*% t(D))
-  abc.mu.x.given.y <- abc.mu.x + abc.cov.mat.x %*% t(D) %*% abc.C2 %*% matrix(observations - abc.mu.y, nrow = length(abc.mu.y), ncol = 1)  
+  abc.mu.x.given.y <- abc.mu.x + abc.cov.mat.x %*% t(D) %*% abc.C2 %*% matrix(observations - abc.mu.y, nrow = length(abc.mu.y), ncol = 1)
   abc.cov.mat.x.given.y <- abc.cov.mat.x - abc.cov.mat.x %*% t(D) %*% abc.C2 %*% D %*% abc.cov.mat.x
+  abc.cov.mat.y <- abc.cov.mat.y.given.x + D %*% abc.cov.mat.x %*% t(D)
+  abc.cov.mat.y.x <- D %*% abc.cov.mat.x
   
-  
-  abc.prior <- matrix(mvrnorm(mu = abc.mu.x, Sigma = abc.cov.mat.x), nrow = grid.length, ncol = grid.length)
+  abc.prior <- matrix(mvrnorm(mu = abc.mu.x.given.y, Sigma = abc.cov.mat.x.given.y), nrow = grid.length, ncol = grid.length, byrow = T)
   abc.prior.obs.points.mean <- mean(sapply(1:dim(y.coords)[1], function(obs.number) {
     abc.prior[y.coords[obs.number, 1], y.coords[obs.number, 2]]
   }))
-  
-  # distance <- StatisticDistanceFunction(abc.prior.obs.points.mean, y.avg)
-  # if (distance <= kTolerance) {
-    # print(paste("Got sample: ", counter))
   
   if(counter %% 1 == 0) {
     print(paste("Got sample: ", counter))  
@@ -90,14 +69,6 @@ while (counter <= number.of.abc.samples) {
   
     abc.samples[[counter]] <- list(abc.prior = abc.prior, prior.phi = prior.phi, prior.variance = prior.variance, prior.mean = prior.mean, prior.obs.noise = prior.obs.noise)
     counter <- counter + 1
-  # }
-  
-  
-#   if (distance <= kMaxTolerance) {
-#     all.samples.list <- append(all.samples.list, list(list(distance, abc.prior)))
-#   }
-  
-  
 }
 
 abc.samples.mean <-
@@ -107,20 +78,30 @@ abc.samples.mean <-
       abc.sample$abc.prior[x, y]
     }))})})
 
-abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length)
+abc.samples.mean.matrix <- matrix(abc.samples.mean, nrow = grid.length, ncol = grid.length, byrow = T)
 
-abc.samples.var.matrix <- matrix(sapply(1:grid.length^2, function(x) {
-  var(sapply(abc.samples, function(abc.sample) {
-    abc.sample[[x]]
-  }))}), nrow = grid.length, ncol = grid.length, byrow = T)
+# abc.samples.var <- sapply(1:grid.length, function(x) {
+#     sapply(1:grid.length, function(y) {
+#       var(sapply(abc.samples, function(abc.sample) {
+#         abc.sample$prior[x, y]
+#     }))})})
+
+abc.samples.var <-
+  sapply(1:grid.length, function(x) {
+    sapply(1:grid.length, function(y) {
+      var(sapply(abc.samples, function(abc.sample) {
+        abc.sample$abc.prior[x, y]
+      }))})})
 
 
+abc.samples.var.matrix <- matrix(abc.samples.var, nrow = grid.length, ncol = grid.length)
 
 GetMeanOfObservations <- function(abc.sample) {
   mean(sapply(1:dim(y.coords)[1], function(obs.point) {
     abc.sample[y.coords[obs.point, 1], y.coords[obs.point, 2]]
   }))
 }
+
 
 
 abc.distance.parameters <- matrix(NA, nrow = length(abc.samples), ncol = 5)
@@ -130,6 +111,23 @@ for(i in 1:length(abc.samples)) {
 }
 
 
+# Phi
+plot(abc.distance.parameters[ , 2], abc.distance.parameters[ , 1], type = "p", pch = 19, cex = 0.5,
+     xlab = latex2exp('$\\phi$'), ylab = latex2exp('$d(s(x),s(y))$'))
+
+# Mean
+plot(abc.distance.parameters[ , 3], abc.distance.parameters[ , 1], type = "p", pch = 19, cex = 0.5,
+     xlab = latex2exp('$\\mu$'), ylab = latex2exp('$d(s(x),s(y))$'))
+
+
+# Variance
+plot(abc.distance.parameters[ , 4], abc.distance.parameters[ , 1], type = "p", pch = 19, cex = 0.5,
+     xlab = latex2exp('$\\sigma^{2}$'), ylab = latex2exp('$d(s(x),s(y))$'))
+
+
+# Observation noise
+plot(abc.distance.parameters[ , 5], abc.distance.parameters[ , 1], type = "p", pch = 19, cex = 0.5,
+     xlab = latex2exp('$\\nu$'), ylab = latex2exp('$d(s(x),s(y))$'))
 
 
 
