@@ -1,9 +1,10 @@
 # ABC approach
 kMaxTolerance <- 2
 kTolerance <- 0.1
+
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
-    sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
+    (proposed.sample.statistic - observed.statistic) ^ 2
   }
 
 SamplePriorPhi <- function() {

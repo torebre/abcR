@@ -3,9 +3,10 @@
 # kTolerance <- 2
 kMaxTolerance <- 2
 kTolerance <- 0.1
+
 StatisticDistanceFunction <-
   function(proposed.sample.statistic, observed.statistic) {
-    sqrt((proposed.sample.statistic - observed.statistic) ^ 2)
+    (proposed.sample.statistic - observed.statistic) ^ 2
   }
 
 SamplePriorPhi <- function() {
@@ -18,15 +19,15 @@ SamplePriorVariance <- function() {
   runif(n = 1, min = 2, max = 6)
 }
 
-SamplePriorMean <- function() {
-  # 10
-  runif(n = 1, min = 6, max = 14)
-}
-
-SamplePriorNoise <- function() {
-  # 2
-  runif(n = 1, min = 1, max = 5)
-}
+# SamplePriorMean <- function() {
+#   # 10
+#   runif(n = 1, min = 6, max = 14)
+# }
+# 
+# SamplePriorNoise <- function() {
+#   # 2
+#   runif(n = 1, min = 1, max = 5)
+# }
 
 number.of.abc.samples <- 1000
 abc.samples <- list()
@@ -36,8 +37,8 @@ all.samples.list <- list()
 while (counter <= number.of.abc.samples) {
   prior.phi <- SamplePriorPhi()
   prior.variance <- SamplePriorVariance()
-  prior.mean <- SamplePriorMean()
-  prior.obs.noise <- SamplePriorNoise()
+  prior.mean <- 10 #SamplePriorMean()
+  prior.obs.noise <- 0 #SamplePriorNoise()
   
   abc.cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
     sapply(1:grid.length, function(y1) {
