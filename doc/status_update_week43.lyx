@@ -1,0 +1,449 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{algorithm,algpseudocode}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Status update
+\end_layout
+
+\begin_layout Standard
+I have been looking a bit at a couple of articles which I wonder if I should
+ spend more time on.
+ One is called 
+\begin_inset Quotes eld
+\end_inset
+
+New Insights Into Approximate Bayesian Computation
+\begin_inset Quotes erd
+\end_inset
+
+, by Biau, Cérou and Guyader.
+ They look at ABC from the perspective of a knn-method, something which
+ sounded interesting based on our last meeting.
+ However, I haven't really understood the paper yet.
+\end_layout
+
+\begin_layout Standard
+The other one is called 
+\begin_inset Quotes eld
+\end_inset
+
+Pre-processing for approximate Bayesian computation in image analysis
+\begin_inset Quotes erd
+\end_inset
+
+, by Moores, Drovandi, Mengersen and Robert.
+ I was looking for articles on ABC applied to some areas I might know more
+ about then genetics when I found that one.
+ Let 
+\begin_inset Formula $s(\boldsymbol{x})$
+\end_inset
+
+ denote the summary statistics, and 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ the parameters we want to estimate.
+ They look at 
+\begin_inset Formula $(s(\boldsymbol{x})|\boldsymbol{\theta})$
+\end_inset
+
+, or rather 
+\begin_inset Formula $(s(\boldsymbol{x})|\phi(\boldsymbol{\theta}))$
+\end_inset
+
+, where 
+\begin_inset Formula $\phi(\boldsymbol{\theta})$
+\end_inset
+
+ is a function that causes 
+\begin_inset Formula $(s(\boldsymbol{x})|\phi(\boldsymbol{\theta}))$
+\end_inset
+
+ to have a tractable likelihood, something which 
+\begin_inset Formula $(s(\boldsymbol{x})|\boldsymbol{\theta})$
+\end_inset
+
+ does not have in their case.
+ It is the fact that they are looking at how the summary statistics relate
+ to the that parameters they want to estimate that I found interesting.
+ The paper mentions a number of references that do something similar, which
+ I have not had time look at, and they also mention the concept of adaptive
+ ABC, and again listing a number of references, where various techniques
+ are applied to guide the sampling in the posterior space.
+ I have not gotten so far as to really understanding the paper, for instance
+ I don't understand how they are using their samples from 
+\begin_inset Formula $(s(\boldsymbol{x})|\phi(\boldsymbol{\theta}))$
+\end_inset
+
+ yet.
+\end_layout
+
+\begin_layout Standard
+To get to know a bit more about multidimensional scaling, I glanced at one
+ article, Multidimensional Scaling in R: SMACOF, where the authors have
+ created an R-package containing tools and examples.
+\end_layout
+
+\begin_layout Subsection*
+Continuing with the Gaussian field experiments
+\end_layout
+
+\begin_layout Standard
+The problem setting is still that we are given some statistics from a discretize
+d random field.
+ We decide that the field under question is Gaussian random field and has
+ a exponential correlation function, taking parameters 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+.
+ Last time I was sampling from 
+\begin_inset Formula $p(s(\boldsymbol{x})|\boldsymbol{\theta},\boldsymbol{y}_{obs})$
+\end_inset
+
+, but I forgot that that my summary statistic, the average over the observations
+, does not really make sense in this setting, since it is only the observation
+ noise that is stopping every sample from matching the observed sample completly.
+ And since I have now introduced the simplification the there is no observation
+ noise, all the samples matched the observed sample perfectly.
+ So keeping the with the average as a summary statistic, I am now sampling
+ from 
+\begin_inset Formula $p(s(\boldsymbol{x})|\boldsymbol{\theta})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It turns out that the using the average as a summary statistic does not
+ work well, which is as expected I would guess.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The likelihood function with the 100 samples (of 1000) measuring the distance
+ between the average of the values at the observations points in the 
+\begin_inset Quotes eld
+\end_inset
+
+ACB-generated
+\begin_inset Quotes erd
+\end_inset
+
+ sample and the true observed sample.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/avg_distance_measure_example_100_closest__abcexp4.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I then tried an experiment where I calculated the empirical variogram for
+ each sample, and got an estimate for 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ in the exponential model, I then took the distance from the estimates to
+ the ones obtained from the empirical variogram for the observed sample.
+ This again gave bad results when comparing it to the truth.
+ I guess the point is that with so few observations, we don't get a good
+ picture of the truth from the observation points on the actual sample either.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The red line is the fitted correlation function based on 16 observations
+ from the sample.
+ The blue line is the true function that was used to generate the sample,
+ 
+\begin_inset Formula $\sigma^{2}=4$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=10$
+\end_inset
+
+.
+ Everything is done using an exponential correlation function.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/variogram_example_and_true_function_abcexp4.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The likelihood function with all the 1000 samples showing.
+ They should be randomly distibuted across the plot, and appear to be.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/distance_example_1000_samples__exp5.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Showing the distances between the different samples and the variogram estimates.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/distance_plot_1000_samples__exp5.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The 100 samples with the lowest distance to the empirical variogram estimates
+ (
+\begin_inset Formula $\sigma^{2}=2.972276$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi=4.104248$
+\end_inset
+
+, which are quite far from the truth)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/distance_example_100_closest__exp5.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+This is just a test setup where the prior values for 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ used to generate an ABC-sample, were compared with the true parameter values
+ (cheating in other words).
+ This is kind of what we would want our experimental result to look like:
+ The accepted values for 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi$
+\end_inset
+
+ lying in the vicinity of the true values.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /home/student/Documents/Approximate Bayesian Reasoning/abcR_doc/fig/exp5/distance_example_100_closest_comparing_prior_and_true_parameters_exp5.png
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
