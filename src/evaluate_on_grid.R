@@ -3,13 +3,6 @@ fig.dir <- "exp5"
 
 actual.structure.as.vector <- as.vector(actual.structure)
 
-# temp2 <- mvrnorm(mu = rep(kMean, grid.length^2), Sigma = actual.cov.mat)
-# actual.structure2 <- matrix(temp2, nrow = grid.length, ncol = grid.length)
-# temp2.as.vector <- as.vector(temp2)
-
-# tempProb <- CalculatePostProbTheta(8, 2)
-
-
 CalculatePostProbTheta <- function(myPhi, myVariance) {
   
   print(paste("myPhi: ", myPhi, "myVariance: ", myVariance))
@@ -27,24 +20,8 @@ CalculatePostProbTheta <- function(myPhi, myVariance) {
     }), nrow = grid.length ^ 2, ncol = grid.length ^ 2, byrow = T
   )
   
-  
-  
-  # det.actual.cov.mat <- det(my.cov.mat)
   inv.actual.cov.mat <- solve(my.cov.mat)
-  
-#   print(paste("det.actual.cov.mat: ", det.actual.cov.mat))
-#   filled.contour(1:grid.length^2, 1:grid.length^2, my.cov.mat)
-#   filled.contour(1:grid.length^2, 1:grid.length^2, inv.actual.cov.mat)
-  
-#   print(paste("det(my.cov.mat)", determinant(my.cov.mat)))
-#   print(paste("log(det.actual.cov.mat)", log(det.actual.cov.mat)))
-#   print(paste("Test: " , (1 / 2) %*% t(actual.structure.as.vector - mu.x) %*% inv.actual.cov.mat %*% (actual.structure.as.vector - mu.x)))
-  
   det.actual.cov.mat <- determinant(my.cov.mat)
-  
-  
-  # log.prob <- -(1 / 2) * log(det.actual.cov.mat) - (1 / 2) %*% t(actual.structure.as.vector - mu.x) %*% inv.actual.cov.mat %*% (actual.structure.as.vector - mu.x)
-  
   log.prob <- -(1 / 2) * c(det.actual.cov.mat$sign * det.actual.cov.mat$modulus) - (1 / 2) %*% t(actual.structure.as.vector - mu.x) %*% inv.actual.cov.mat %*% (actual.structure.as.vector - mu.x)
   
   exp(log.prob)
@@ -69,4 +46,39 @@ filled.contour(phi.points, variance.points, post.prob.eval.points.matrix)
 # image(phi.points, variance.points, post.prob.eval.points.matrix)
 title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
 dev.off()
+
+
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = points(variogram.distance.ordered.parameter.matrix[ , 2], variogram.distance.ordered.parameter.matrix[ , 4], col = 'black', pch = 19, cex = 0.3))
+title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+
+
+png(paste("../../abcR_doc/fig/", fig.dir, "/distance_example_100_closest_", postfix, ".png", sep = ""))
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = points(variogram.distance.ordered.parameter.matrix[1:100, 2], 
+                                  variogram.distance.ordered.parameter.matrix[1:100, 4], col = 'black', pch = 19, cex = 0.3))
+title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+dev.off()
+
+
+png(paste("../../abcR_doc/fig/", fig.dir, "/distance_example_1000_samples_", postfix, ".png", sep = ""))
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = points(variogram.distance.ordered.parameter.matrix[, 2], 
+                                  variogram.distance.ordered.parameter.matrix[, 4], col = 'black', pch = 19, cex = 0.3))
+title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+dev.off()
+
+png(paste("../../abcR_doc/fig/", fig.dir, "/distance_plot_1000_samples_", postfix, ".png", sep = ""))
+plot(variogram.distance.ordered.parameter.matrix[ , 1], type = "p", cex = 0.3, ann = F)
+title(main = 'Sorted distance plot', xlab = 'Index', ylab = 'Distance')
+dev.off()
+
+# variogram.distance.ordered.parameter.matrix
+
+points(abc.variogram.fit.estimates[ , 2], abc.variogram.fit.estimates[ , 1])
+plot(abc.variogram.fit.estimates[ , 2], abc.variogram.fit.estimates[ , 1])
+
+
+
+
 
