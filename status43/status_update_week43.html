@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<meta name="generator" content="http://www.nongnu.org/elyxer/"/>
+<meta name="create-date" content="2015-10-27"/>
+<link rel="stylesheet" href="http://elyxer.nongnu.org/lyx.css" type="text/css" media="all"/>
+<title>Converted document</title>
+</head>
+<body>
+<div id="globalWrapper">
+<h1 class="Section-">
+<a class="toc" name="toc-Section--1"></a>Status update
+</h1>
+<div class="Unindented">
+I have been looking a bit at a couple of articles. One is called &ldquo;New Insights Into Approximate Bayesian Computation&rdquo;, by Biau, Cérou and Guyader. They look at ABC from the perspective of a knn-method. The other one is called &ldquo;Pre-processing for approximate Bayesian computation in image analysis&rdquo;, by Moores, Drovandi, Mengersen and Robert. I was looking for articles on ABC applied to some areas I might know more about then genetics. 
+</div>
+<div class="Indented">
+Let <span class="formula"><i>s</i>(<b>x</b>)</span> denote the summary statistics, and <span class="formula"><b>θ</b></span> the parameters we want to estimate. They look at <span class="formula">(<i>s</i>(<b>x</b>)|<b>θ</b>)</span>, or rather <span class="formula">(<i>s</i>(<b>x</b>)|<i>φ</i>(<b>θ</b>))</span>, where <span class="formula"><i>φ</i>(<b>θ</b>)</span> is a function that causes <span class="formula">(<i>s</i>(<b>x</b>)|<i>φ</i>(<b>θ</b>))</span> to have a tractable likelihood, something which <span class="formula">(<i>s</i>(<b>x</b>)|<b>θ</b>)</span> does not have in their case. It is the fact that they are looking at how the summary statistics relate to the that parameters they want to estimate that I find interesting. The paper mentions a number of references that do something similar, which I have not had time look at, and they also mention the concept of adaptive ABC, and again listing a number of references, where various techniques are tried to guide the search in the posterior space.
+</div>
+<h2 class="Subsection-">
+<a class="toc" name="toc-Subsection--1"></a>Experiment
+</h2>
+<div class="Unindented">
+The problem setting is still that we are given some statistics from a discretized random field. We decide that the field under question is Gaussian random field and has a exponential correlation function, taking parameters <span class="formula"><i>σ</i><sup>2</sup></span> and <span class="formula"><i>φ</i></span>. Last time I was sampling from <span class="formula"><i>p</i>(<i>s</i>(<b>x</b>)|<b>θ</b>, <b>y</b><sub><i>obs</i></sub>)</span>, but I forgot that that my summary statistic, the average over the observations, does not really make sense in this setting, since it is only the observation noise that is stopping every sample from matching the observed sample completly. And since I have now introduced the simplification the there is no observation noise, all the samples matched the observed sample perfectly. So keeping the with the average as a summary statistic, I am now sampling from <span class="formula"><i>p</i>(<i>s</i>(<b>x</b>)|<b>θ</b>)</span>.
+</div>
+<div class="Indented">
+It turns out that the using the average as a summary statistic does not work well, which is as expected I would guess. 
+</div>
+<div class="Indented">
+<div class="float">
+<a class="Label" name="Figure-1"> </a><div class="figure">
+<div class="caption">
+Figure 1 The likelihood function with the 100 samples (of 1000) measuring the distance between the average of the values at the observations points in the &ldquo;ACB-generated&rdquo; sample and the true observed sample.
+</div>
+<img class="embedded" src="avg_distance_measure_example_100_closest__abcexp4.png" alt="figure avg_distance_measure_example_100_closest__abcexp4.png" style="max-width: 480px; max-height: 480px;"/>
+
+</div>
+
+</div>
+
+</div>
+<div class="Indented">
+I then tried an experiment where I calculated the empirical variogram for each sample, and got an estimate for <span class="formula"><i>σ</i><sup>2</sup></span> and <span class="formula"><i>φ</i></span> in the exponential model, I then took the distance from the estimates to the ones obtained from the empirical variogram for the observed sample. This again gave bad results when comparing it to the truth. 
+</div>
+<div class="Indented">
+I guess the point is that with so few observations, we don’t get a good picture of the truth from the observation points on the actual sample either.
+</div>
+<div class="Indented">
+<div class="float">
+<a class="Label" name="Figure-2"> </a><div class="figure">
+<div class="caption">
+Figure 2 The red line is the fitted correlation function based on 16 observations from the sample. The blue line is the true function that was used to generate the sample, <span class="formula"><i>σ</i><sup>2</sup> = 4</span> and <span class="formula"><i>φ</i> = 10</span>. Everything is done using an exponential correlation function.
+</div>
+<img class="embedded" src="variogram_example_and_true_function_abcexp4.png" alt="figure variogram_example_and_true_function_abcexp4.png" style="max-width: 480px; max-height: 480px;"/>
+
+</div>
+
+</div>
+
+</div>
+<div class="Indented">
+<div class="float">
+<a class="Label" name="Figure-3"> </a><div class="figure">
+<div class="caption">
+Figure 3 This is just a test setup where the prior values for <span class="formula"><i>σ</i><sup>2</sup></span> and <span class="formula"><i>φ</i></span> used to generate an ABC-sample, were compared with the true parameter values. This is kind of what we would want our experimental result to look like: The accepted values for <span class="formula"><i>σ</i><sup>2</sup></span> and <span class="formula"><i>φ</i></span> lying in the vicinity of the true values.
+</div>
+<img class="embedded" src="distance_example_100_closest_comparing_prior_and_true_parameters_exp5.png" alt="figure distance_example_100_closest_comparing_prior_and_true_parameters_exp5.png" style="max-width: 480px; max-height: 480px;"/>
+
+</div>
+
+</div>
+
+</div>
+<h2 class="Subsection-">
+<a class="toc" name="toc-Subsection--2"></a>ABC from the perspective of knn
+</h2>
+<h2 class="Subsection-">
+<a class="toc" name="toc-Subsection--3"></a>Preprocessing for approximate Bayesian computation in image analysis
+</h2>
+<div class="Unindented">
+Using an MCMC approach to the generate the samples for each set of parameter values.
+</div>
+<h2 class="Subsection-">
+<a class="toc" name="toc-Subsection--4"></a>Multidimension scaling
+</h2>
+<div class="Unindented">
+I looked at one article, Multidimensional Scaling in R: SMACOF, where the authors have created an R-package containing tools and examples.
+</div>
+
+<hr class="footer"/>
+<div class="footer" id="generated-by">
+Document generated by <a href="http://elyxer.nongnu.org/">eLyXer 1.2.5 (2013-03-10)</a> on <span class="create-date">2015-10-27T18:15:10.788612</span>
+</div>
+</div>
+</body>
+</html>
