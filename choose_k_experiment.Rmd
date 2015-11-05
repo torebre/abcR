@@ -1,0 +1,61 @@
+---
+title: "Choose k experiment"
+output: html_document
+---
+
+Just using the 16 observations as a basis yet again. 
+
+```{r, echo = FALSE}
+load("/home/student/Documents/Approximate Bayesian Reasoning/R_project/dataset_week43.RData")
+```
+
+Initializing data:
+```{r}
+indices.ordered.by.distance <- order(abc.distance.parameters[, 1])
+ordered.parameter.matrix <- abc.distance.parameters[indices.ordered.by.distance, ]
+cumulative.mean.estimates <- matrix(0, length(abc.samples), length(observations))
+mspe.k <- rep(NA, length(abc.samples))
+```
+
+A repetition of how the sample distances are:
+```{r, echo=FALSE}
+plot(abc.distance.parameters[indices.ordered.by.distance, 1], type = "l")
+```
+
+
+Loop through the generated samples, and calculate an estimate, $\hat{y}_{k}$, including the k best samples as we go along. Here we leave nothing out, so we do not predict anything. Just take the value at $y$ and include it.
+```{r}
+for(i in 1:length(abc.samples)) {
+  kth.sample <- abc.samples[[indices.ordered.by.distance[i]]]$abc.prior
+
+  if(i > 1) {
+    prev.sum <- (i - 1) * cumulative.mean.estimates[i - 1]
+  }
+  else {
+    prev.sum <- 0
+  }
+  cumulative.mean.estimates[i, ] <- (prev.sum + kth.sample[y.coords]) / i
+  mspe.k[i] <- sum((observations - cumulative.mean.estimates[i , ])^2)
+}
+```
+
+Plotting all the the distances versus the MSPE.
+```{r, echo=FALSE}
+plot(mspe.k, type = "l", xlab = "k", ylab = "MSPE")
+```
+
+Zooming in on the first 50 points:
+```{r, echo=FALSE}
+plot(mspe.k[1:50], type = "l")
+```
+
+Index of minimum:
+```{r, echo=FALSE}
+which.min(mspe.k)
+```
+
+
+
+
+
+
