@@ -24,34 +24,6 @@ observations <- matrix(sapply(1:dim(y.coords)[1], function(x) {
 }),  nrow = dim(y.coords)[1], ncol = 1)
 y.avg <- mean(observations)
 
-# IsPointObservation <- function(i, j) {
-#   for (k in 1:number.of.observations) {
-#     if (y.coords[k, 1] == i && y.coords[k, 2] == j) {
-#       return(T)
-#     }
-#   }
-#   return(F)
-# }
-
-
-# x.coords <- matrix(NA, nrow = x.number.of.points, ncol = 2)
-# point.number <- 1
-# for (i in 1:grid.length) {
-#   for (j in 1:grid.length) {
-#     if (!IsPointObservation(i, j)) {
-#       x.coords[point.number, 1] <- i
-#       x.coords[point.number, 2] <- j
-#       point.number <- point.number + 1
-#     }
-# 
-#   }
-# }
-
-
-# x.coords <- matrix(NA, nrow = grid.length^2, ncol = 2)
-
-# x.coord <- actual.cov.mat
-
 
 
 D <- matrix(0, nrow = dim(y.coords)[1], ncol = grid.length^2)
