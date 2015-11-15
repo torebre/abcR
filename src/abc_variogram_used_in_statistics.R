@@ -44,8 +44,8 @@ GetDifferenceInVariogramEstimates <- function(my.phi, my.variance) {
 
 abc.distance.variogram.parameters <- matrix(NA, nrow = length(abc.samples), ncol = 5)
 for(i in 1:length(abc.samples)) {
-  # distance <- GetDifferenceInVariogramEstimates(abc.variogram.fit.estimates[i, 2], abc.variogram.fit.estimates[i, 1])
-  distance <- GetDifferenceInVariogramEstimates(abc.samples[[i]]$prior.phi, abc.samples[[i]]$prior.variance)
+  distance <- GetDifferenceInVariogramEstimates(abc.variogram.fit.estimates[i, 2], abc.variogram.fit.estimates[i, 1])
+  # distance <- GetDifferenceInVariogramEstimates(abc.samples[[i]]$prior.phi, abc.samples[[i]]$prior.variance)
   abc.distance.variogram.parameters[i , ] = c(distance, abc.samples[[i]]$prior.phi, abc.samples[[i]]$prior.mean, abc.samples[[i]]$prior.variance, abc.samples[[i]]$prior.obs.noise)
 }
 
