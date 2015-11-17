@@ -1,17 +1,27 @@
 library(geoR)
 
+kFigFolder <- "exp6"
 
 # Transforms a sample realisation to a list containing the coordinates 
 # and the values at the points given by the coordinates. This is done 
 # to provide input to the function that computes the variogram
 TransformSampleToFormatForVariogramFunction <- function(my.sample) {
-  my.sample.dims <- dim(my.sample)
+  # my.sample.dims <- dim(my.sample)
+  
+  my.sample.dims <- c(16, 16)
+  
+  # Note the reduced number of points included
+  
   my.sample.coords <- matrix(NA, my.sample.dims[1] * my.sample.dims[2], 2)
   my.sample.all.observations <- rep(NA, my.sample.dims[1] * my.sample.dims[2])
   
-  for(i in 1:my.sample.dims[1]) {
-    for(j in 1:my.sample.dims[2]) {
-      current.row <- (i - 1) * my.sample.dims[1] + j
+  counter <- 1
+  
+  for(i in 5:20) {
+    for(j in 5:20) {
+      # current.row <- (i - 1) * my.sample.dims[1] + j
+      current.row <- counter
+      counter <- counter + 1
       my.sample.coords[current.row, 1] <- i
       my.sample.coords[current.row, 2] <- j
       my.sample.all.observations[current.row] <- my.sample[i, j]
@@ -20,6 +30,17 @@ TransformSampleToFormatForVariogramFunction <- function(my.sample) {
   list(sample.coords = my.sample.coords, sample.all.observations = my.sample.all.observations)
 }
 
+
+points.used.for.variogram <- matrix(0, grid.length, grid.length)
+for(i in 5:20) {
+  for(j in 5:20) {
+    points.used.for.variogram[i, j] <- 1
+  }
+}
+png(paste("../../abcR_doc/fig/", kFigFolder, "/sample_dimensions.png", sep =""))
+image(1:25, 1:25, points.used.for.variogram) #, xlim = c(1, 25), ylim = c(1, 25))
+title("Sample dimensions", sub = "White area used for calculating variogram")
+dev.off()
 
 # Compute variogram for the sample representing the truth
 
@@ -65,15 +86,28 @@ for(i in 1:length(abc.samples)) {
 indices.ordered.by.variogram.distance <- order(abc.distance.variogram.parameters.all.points[, 1])
 variogram.distance.ordered.parameter.matrix <- abc.distance.variogram.parameters.all.points[indices.ordered.by.variogram.distance, ]
 
+png(paste("../../abcR_doc/fig/", kFigFolder, "/k_distance_all_samples.png", sep =""))
 plot(variogram.distance.ordered.parameter.matrix[, 1], type = "l")
+title(latex2exp("Distance to $\\hat{\\theta}$ for all samples"), sub = latex2exp("Distance measure: $(\\hat{\\sigma}^{2} - \\sigma_{k}^{2})^2 + (\\hat{\\phi} - \\phi_{k})^2$"))
+dev.off()
+
 # Remove some of the points with very large distances from the plot
-plot(variogram.distance.ordered.parameter.matrix[1:(length(abc.samples) - 200), 1], type = "l")
+png(paste("../../abcR_doc/fig/", kFigFolder, "/k_distance_100_best_samples.png", sep =""))
+plot(variogram.distance.ordered.parameter.matrix[1:100, 1], type = "l")
+title(latex2exp("Distance to $\\hat{\\theta}$ for 100 best samples"))
+dev.off()
 
-
-
+png(paste("../../abcR_doc/fig/", kFigFolder, "/contour_all_points_superimposed.png", sep =""))
 filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
-               plot.axes = points(variogram.distance.ordered.parameter.matrix[ , 2], variogram.distance.ordered.parameter.matrix[ , 4], col = 'black', pch = 19, cex = 0.3))
-title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+               plot.axes = {axis(1); axis(2); points(variogram.distance.ordered.parameter.matrix[ , 2], variogram.distance.ordered.parameter.matrix[ , 4], col = 'black', pch = 19, cex = 0.3)})
+title(latex2exp('Likelihood $p(\\theta | x)$ with all samples superimposed'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+dev.off()
+
+png(paste("../../abcR_doc/fig/", kFigFolder, "/contour_all_points_variogram_estimates_superimposed.png", sep =""))
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = {axis(1); axis(2); points(abc.distance.variogram.parameters.all.points[ ,2], abc.distance.variogram.parameters.all.points[, 1], col = 'black', pch = 19, cex = 0.3)})
+title(latex2exp('Likelihood $p(\\theta | x)$, variogram estimates superimposed'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'), sub = "Note that many samples have values outside the range showing in the diagram")
+dev.off()
 
 
 actual.structure.dims <- dim(actual.structure)
@@ -94,26 +128,59 @@ for(i in 1:length(abc.samples)) {
 }
 
 
+png(paste("../../abcR_doc/fig/", kFigFolder, "/mspe_all_points.png", sep =""))
 plot(mspe.k, type = "l", xlab = "k", ylab = "MSPE")
+title("MSPE all samples")
+dev.off()
 
+png(paste("../../abcR_doc/fig/", kFigFolder, "/mspe_50_closest_points.png", sep =""))
 plot(mspe.k[1:50], type = "l")
+title("MSPE 50 closest points")
+dev.off()
 
 
 optimal.k <- which.min(mspe.k)
 
+png(paste("../../abcR_doc/fig/", kFigFolder, "/contour_optimal_k.png", sep =""))
 filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
-               plot.axes = points(variogram.distance.ordered.parameter.matrix[1:optimal.k , 2], variogram.distance.ordered.parameter.matrix[1:optimal.k , 4], col = 'black', pch = 19, cex = 0.3))
-title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+               plot.axes = {axis(1); 
+                 axis(2); 
+                 points(variogram.distance.ordered.parameter.matrix[1:optimal.k , 2], variogram.distance.ordered.parameter.matrix[1:optimal.k , 4], col = 'black', pch = 19, cex = 0.3);
+                 points(actual.data.empirical.variomodel.all.points$cov.pars[2], actual.data.empirical.variomodel.all.points$cov.pars[1], col = 'red', pch = 19, cex = 1);
+                 points(kPhi, kVariance, col = 'green', pch = 19, cex = 1);})
+title(paste("Optimal number of points", optimal.k), sub ="Red dot is variogram estimate based on truth. Green dot is true values")
+dev.off()
 
 
+# title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
 
+
+levelplot(phi.points, variance.points, post.prob.eval.points.matrix)
 filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
                plot.axes = points(actual.data.empirical.variomodel.all.points$cov.pars[2], actual.data.empirical.variomodel.all.points$cov.pars[1], col = 'red', pch = 19, cex = 0.3))
 
-title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
+points(actual.data.empirical.variomodel.all.points$cov.pars[2], actual.data.empirical.variomodel.all.points$cov.pars[1], col = 'green', pch = 19, cex = 2)
 
+contourplot(x = post.prob.eval.points.matrix)
+
+points(kPhi, kVariance, col = 'yellow', pch = 19, cex = 2)
+
+
+title(latex2exp('Likelihood $p(\\theta | x)$'), xlab = latex2exp('$\\phi$'), ylab = latex2exp('$\\sigma^{2}$'))
 
 
 plot(variogram.distance.ordered.parameter.matrix[ , 1], type = "p", cex = 0.3)
 
 
+# input.for.density.estimate <- cbind(variogram.distance.ordered.parameter.matrix[1:optimal.k , 2], variogram.distance.ordered.parameter.matrix[1:optimal.k , 1])
+# density.data <- density(input.for.density.estimate)
+# plot(density.data)
+
+# density.data <- kde2d(variogram.distance.ordered.parameter.matrix[1:optimal.k , 2], variogram.distance.ordered.parameter.matrix[1:optimal.k , 1])
+# plot(density.data)
+# image(density.data)
+
+png(paste("../../abcR_doc/fig/", kFigFolder, "/density_plot_theta.png", sep =""))
+filled.contour(density.data)
+title(latex2exp("Density plot for $\\hat{\\theta}$ given optimal k"))
+dev.off()

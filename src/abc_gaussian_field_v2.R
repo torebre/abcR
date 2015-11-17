@@ -11,12 +11,12 @@ StatisticDistanceFunction <-
 
 SamplePriorPhi <- function() {
   # 10
-  runif(n = 1, min = 5, max = 15)
+  runif(n = 1, min = 8, max = 12)
 }
 
 SamplePriorVariance <- function() {
   # 4
-  runif(n = 1, min = 2, max = 6)
+  runif(n = 1, min = 3, max = 5)
 }
 
 # SamplePriorMean <- function() {

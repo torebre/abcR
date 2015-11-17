@@ -17,15 +17,15 @@ obs.y.start <- 5
 obs.y.space <- 5
 obs.y.stop <-20
 
-# kColours <- terrain.colors
 kColours <- heat.colors
 
 source('helper_functions.R')
 
 # source('setup_observations.R')
+
 source('setup_evenly_spaced_observations.R')
 
-source('x_given_y_avg_v3.R')
+# source('x_given_y_avg_v3.R')
 
 # source('x_given_y_exact.R')
 

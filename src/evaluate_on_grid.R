@@ -3,6 +3,7 @@ fig.dir <- "exp5"
 
 actual.structure.as.vector <- as.vector(actual.structure)
 
+
 CalculatePostProbTheta <- function(myPhi, myVariance) {
   
   print(paste("myPhi: ", myPhi, "myVariance: ", myVariance))
@@ -19,6 +20,7 @@ CalculatePostProbTheta <- function(myPhi, myVariance) {
       })
     }), nrow = grid.length ^ 2, ncol = grid.length ^ 2, byrow = T
   )
+  mu.x <- rep(kMean, grid.length^2)
   
   inv.actual.cov.mat <- solve(my.cov.mat)
   det.actual.cov.mat <- determinant(my.cov.mat)
