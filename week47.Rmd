@@ -1,0 +1,26 @@
+---
+title: "Status week 47"
+output: html_document
+---
+
+Some plots for discussion:
+
+![Sample dimensions](fig/exp6/sample_dimensions.png)
+
+![ABC samples superimposed on likelihood](fig/exp6/contour_all_points_superimposed.png)
+
+This is strange.
+![Likelihood variogram estimates superimposed](fig/exp6/contour_all_points_variogram_estimates_superimposed.png)
+
+There are some outliers messing things up. I have not investigated how they arise.
+
+![Distance all 1000 samples](fig/exp6/k_distance_all_samples.png)
+![Distance 100 best samples](fig/exp6/k_distance_100_best_samples.png)
+
+![MSPE all samples](fig/exp6/mspe_all_points.png)
+![MSPE 50 closest points](fig/exp6/mspe_50_closest_points.png)
+
+This is also strange I think. Why do the best samples actually lie in a good place (around the green dot). It would make more sense if they were spread around the red dot.
+![Likelihood with optimal k](fig/exp6/contour_optimal_k.png)
+
+![Density plot](fig/exp6/density_plot_theta.png)
