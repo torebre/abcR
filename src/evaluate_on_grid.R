@@ -1,5 +1,5 @@
-postfix <- "_exp5"
-fig.dir <- "exp5"
+postfix <- "_exp7"
+fig.dir <- "exp7"
 
 actual.structure.as.vector <- as.vector(actual.structure)
 
@@ -30,8 +30,8 @@ CalculatePostProbTheta <- function(myPhi, myVariance) {
 }
 
 
-phi.points <- seq(5, 15, 0.5)
-variance.points <- seq(2, 6, 0.5)
+phi.points <- seq(5, 35, 1)
+variance.points <- seq(2, 15, 1)
 
 
 post.prob.eval.points <- sapply(phi.points, function(myPhi) {
