@@ -1,3 +1,4 @@
+library(MASS)
 library(geoR)
 
 kFigFolder <- "variogram_bins"
@@ -40,9 +41,9 @@ actual.data.empirical.variogram.all.points <- variog(coord = actual.data.input.t
 # Distances
 # actual.data.empirical.variogram.all.points$u
 # Estimated variogram values
-# actual.data.empirical.variogram.all.points$v
+actual.data.empirical.variogram.all.points$v
 # Points in each bin
-# actual.data.empirical.variogram.all.points$n
+actual.data.empirical.variogram.all.points$n
 
 # Use the same bin ranges when computing the variograms for the samples
 bins.limits <- actual.data.empirical.variogram.all.points$bins.lim
@@ -81,6 +82,7 @@ indices.ordered.by.variogram.distance <- order(abc.distance.variogram.parameters
 variogram.distance.ordered.parameter.matrix <- abc.distance.variogram.parameters.all.points[indices.ordered.by.variogram.distance, ]
 
 
+# Plot variogram bin values for 50 best samples
 png(paste("../../abcR_doc/fig/", kFigFolder, "/variogram_bin_values_plotted_50_samples.png", sep =""))
 plot(actual.data.empirical.variogram.all.points$v, type = "l", col = "red", ylim = c(0, 4), ann = F)
 for(i in 1:50) {
@@ -90,14 +92,33 @@ points(actual.data.empirical.variogram.all.points$v, type = "l", col = "red", yl
 # title("Variogram bins interpolated")
 dev.off()
 
+
+truehist(variogram.distance.ordered.parameter.matrix[1:50 , 2])
+truehist(variogram.distance.ordered.parameter.matrix[1:50 , 4])
+plot(abc.variogram.fit.estimates.all.points[indices.ordered.by.variogram.distance[1:50], 2], abc.variogram.fit.estimates.all.points[indices.ordered.by.variogram.distance[1:50], 4])
+
+plot(variogram.distance.ordered.parameter.matrix[1:50 , 2], variogram.distance.ordered.parameter.matrix[1:50 , 4])
+
+
+# Plot variogram bin values for all samples
+plot(actual.data.empirical.variogram.all.points$v, type = "l", col = "red", ylim = c(0, 4), ann = F)
+for(i in 1:length(abc.samples)) {
+  points(abc.variogram.fit.estimates.all.points[indices.ordered.by.variogram.distance[i], ], type = "l", col = "blue")
+}
+points(actual.data.empirical.variogram.all.points$v, type = "l", col = "red", ylim = c(0, 5), lwd = 2)
+
+
+
+
+
 png(paste("../../abcR_doc/fig/", kFigFolder, "/k_distance_all_samples.png", sep =""))
 plot(variogram.distance.ordered.parameter.matrix[, 1], type = "l", ann = F)
-title(latex2exp("Distance to $\\hat{\\theta}$ for all samples"), sub = latex2exp("Distance measure: $(\\hat{\\sigma}^{2} - \\sigma_{k}^{2})^2 + (\\hat{\\phi} - \\phi_{k})^2$"))
+# title(latex2exp("Distance to $\\hat{\\theta}$ for all samples"), sub = latex2exp("Distance measure: $(\\hat{\\sigma}^{2} - \\sigma_{k}^{2})^2 + (\\hat{\\phi} - \\phi_{k})^2$"))
 dev.off()
 
 # Remove some of the points with very large distances from the plot
 png(paste("../../abcR_doc/fig/", kFigFolder, "/k_distance_100_best_samples.png", sep =""))
-plot(variogram.distance.ordered.parameter.matrix[1:100, 1], type = "l")
+plot(variogram.distance.ordered.parameter.matrix[1:900, 1], type = "l")
 title(latex2exp("Distance to $\\hat{\\theta}$ for 100 best samples"))
 dev.off()
 
@@ -170,6 +191,26 @@ filled.contour(phi.points.cut.out, variance.points.cut.out, likelihood.cut.out,
                  points(kPhi, kVariance, col = 'green', pch = 19, cex = 1)})
 dev.off()
 
+test <- 50
+
+# Show optimal points on entire likelihood area
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = {axis(1); 
+                 axis(2); 
+                 points(variogram.distance.ordered.parameter.matrix[1:test , 2], variogram.distance.ordered.parameter.matrix[1:test , 4], col = 'black', pch = 19, cex = 0.3);
+                 points(actual.data.empirical.variomodel.all.points$cov.pars[2], actual.data.empirical.variomodel.all.points$cov.pars[1], col = 'red', pch = 19, cex = 1);
+                 points(kPhi, kVariance, col = 'green', pch = 19, cex = 1)})
+
+
+
+filled.contour(phi.points, variance.points, post.prob.eval.points.matrix, 
+               plot.axes = {axis(1); 
+                 axis(2); 
+                 points(variogram.distance.ordered.parameter.matrix[1:50 , 2], variogram.distance.ordered.parameter.matrix[1:50 , 4], col = 'black', pch = 19, cex = 0.3);
+                 points(actual.data.empirical.variomodel.all.points$cov.pars[2], actual.data.empirical.variomodel.all.points$cov.pars[1], col = 'red', pch = 19, cex = 1);
+                 points(kPhi, kVariance, col = 'green', pch = 19, cex = 1)})
+
+
 
 # best.indices <- indices.ordered.by.variogram.distance[1:optimal.k]
 optimal.sample <- matrix(0, grid.length, grid.length)
@@ -178,8 +219,13 @@ for(i in 1:optimal.k) {
 }
 optimal.sample <- optimal.sample / optimal.k
 
-filled.contour(optimal.sample)
-filled.contour(actual.structure)
+optimal.sample.range <- range(optimal.sample)
+actual.structure.range <- range(actual.structure)
+
+range.to.use <- c(min(optimal.sample.range[1], actual.structure.range[1]), max(optimal.sample.range[2], actual.structure.range[2]))
+
+filled.contour(optimal.sample, zlim = range.to.use)
+filled.contour(actual.structure, zlim = range.to.use)
 
 filled.contour(abs(optimal.sample - actual.structure))
 

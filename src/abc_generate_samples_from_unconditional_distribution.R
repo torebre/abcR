@@ -1,22 +1,13 @@
 # ABC approach
 
-# kTolerance <- 2
-kMaxTolerance <- 2
-kTolerance <- 0.1
-
-StatisticDistanceFunctionAvg <-
-  function(proposed.sample.statistic, observed.statistic) {
-    (proposed.sample.statistic - observed.statistic) ^ 2
-  }
-
 SamplePriorPhi <- function() {
   # 10
-  runif(n = 1, min = 5, max = 15)
+  runif(n = 1, min = 5, max = 25)
 }
 
 SamplePriorVariance <- function() {
   # 4
-  runif(n = 1, min = 2, max = 6)
+  runif(n = 1, min = 2, max = 20)
 }
 
 
@@ -25,23 +16,25 @@ abc.samples <- list()
 counter <- 1
 all.samples.list <- list()
 
+
+all.sample.points <- matrix(NA, nrow = grid.length^2, ncol = 2)
+for(i in 1:grid.length) {
+  for(j in 1:grid.length) {
+    all.sample.points[(i - 1) * grid.length + j, ] <- c(i, j)
+  }
+}
+
+
 while (counter <= number.of.abc.samples) {
   prior.phi <- SamplePriorPhi()
   prior.variance <- SamplePriorVariance()
   prior.mean <- 10
   prior.obs.noise <- 0
   
-  abc.cov.mat.x <- matrix(sapply(1:grid.length, function(x1) {
-    sapply(1:grid.length, function(y1) {
-      sapply(1:grid.length, function(x2) {
-        sapply(1:grid.length, function(y2) {
-          prior.variance * exp(-sqrt((x1 - x2)^2 + (y1 - y2)^2) / prior.phi)
-        })
-      })
-    })
-  }), nrow = grid.length^2, ncol = grid.length^2, byrow = T)
+  temp <- grf(grid.length^2, all.sample.points, cov.model = "exp", cov.pars = c(prior.variance, prior.phi), mean = kMean)
+  abc.prior <- matrix(temp$data, nrow = grid.length, ncol = grid.length, byrow = T)
   
-  abc.prior <- matrix(mvrnorm(mu = abc.mu.x, Sigma = abc.cov.mat.x), nrow = grid.length, ncol = grid.length, byrow = T)
+  # abc.prior <- matrix(mvrnorm(mu = abc.mu.x, Sigma = abc.cov.mat.x), nrow = grid.length, ncol = grid.length, byrow = T)
   
   if(counter %% 1 == 0) {
     print(paste("Got sample: ", counter))  
@@ -104,25 +97,3 @@ plot(abc.distance.parameters[ , 4], abc.distance.parameters[ , 1], type = "p", p
 # Observation noise
 plot(abc.distance.parameters[ , 5], abc.distance.parameters[ , 1], type = "p", pch = 19, cex = 0.5,
      xlab = latex2exp('$\\nu$'), ylab = latex2exp('$d(s(x),s(y))$'))
-
-
-
-
-# kVariableThreshold <- 0.1
-# filtered.samples.mean.matrix <- matrix(0, nrow = grid.length, ncol = grid.length)
-# number.of.filtered.samples <- 0
-# for(i in 1:length(all.samples.list)) {
-#   if(all.samples.list[[i]][[1]] <= kVariableThreshold) {
-#     filtered.samples.mean.matrix <- filtered.samples.mean.matrix + all.samples.list[[i]][[2]]
-#     number.of.filtered.samples <- number.of.filtered.samples + 1
-#   }
-# }
-# filtered.samples.mean.matrix <- filtered.samples.mean.matrix / number.of.filtered.samples
-
-
-# filled.contour(1:grid.length, 1:grid.length,
-#                filtered.samples.mean.matrix, color = kColours, 
-#                plot.axes = points(y.coords[ , 1], y.coords[ , 2], pch = 19))
-# title(paste("ABC. Threshold: ", kVariableThreshold, "Samples: ", number.of.filtered.samples))
-
-
