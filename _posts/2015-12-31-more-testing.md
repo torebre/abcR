@@ -26,4 +26,4 @@ $$
 $$
 
 
-![Distance mean ]({{ site.url }}/fig/abcexp4/x_given_y_dist_mean_abcexp4.png)
+![Distance mean ]({{ site.baseurl }}/fig/abcexp4/x_given_y_dist_mean_abcexp4.png)
