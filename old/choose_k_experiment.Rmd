@@ -3,7 +3,7 @@ title: "Choose k experiment"
 output: html_document
 ---
 
-Just using the 16 observations as a basis yet again. 
+Just using the 16 observations as a basis yet again.
 
 ```{r, echo = FALSE}
 load("/home/student/Documents/Approximate Bayesian Reasoning/R_project/dataset_week43.RData")
@@ -53,9 +53,3 @@ Index of minimum:
 ```{r, echo=FALSE}
 which.min(mspe.k)
 ```
-
-
-
-
-
-

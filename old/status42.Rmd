@@ -7,7 +7,7 @@ output: html_document
 
 Just a recap: For our setup we assume $p(\boldsymbol{x}|\boldsymbol{\theta})$
 is a Gaussian field, and the goal is to find estimates for the parameters
-controlling the field, which are gathered in $\boldsymbol{\theta}$. 
+controlling the field, which are gathered in $\boldsymbol{\theta}$.
 
 We go the Bayesian route and say $\boldsymbol{\theta}$ is a random
 variable, and the goal then becomes finding the posterior distribution:
