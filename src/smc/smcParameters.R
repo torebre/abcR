@@ -1,5 +1,5 @@
 # Number of particles
-kN <- 1000
+kN <- 10
 
 # Number of replicates
-kM <- 1000
+kM <- 2

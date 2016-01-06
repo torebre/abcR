@@ -1,5 +1,7 @@
 # ABC approach
 
+# Contains code for generating ABC samples
+
 SamplePriorPhi <- function() {
   # 10
   runif(n = 1, min = 5, max = 25)

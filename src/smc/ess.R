@@ -1,5 +1,5 @@
 
 
 ComputeEffectiveSampleSize <- function(weights) {
-  1 / sum(weigths^2)
+  1 / sum(weights^2)
 }

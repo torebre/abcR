@@ -379,84 +379,6 @@ reference "likelihoo-free_alg1"
 \end_layout
 
 \begin_layout Standard
-To make the algorithm more practically useful a couple of relaxations are
- made.
- The requirement that 
-\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
-\end_inset
-
- is relaxed, and instead samples that lie within some defined distance of
- 
-\begin_inset Formula $\boldsymbol{y}$
-\end_inset
-
- are accepeted as well: 
-\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\rho$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-If the dimension of 
-\begin_inset Formula $Y$
-\end_inset
-
- is large, it may be difficult to deal with 
-\begin_inset Formula $\boldsymbol{x}$
-\end_inset
-
- and 
-\begin_inset Formula $\boldsymbol{y}$
-\end_inset
-
- directly, in which case an alternative may be to look at some statistics,
- 
-\begin_inset Formula $S(\cdot)$
-\end_inset
-
-, of the data instead.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Two concessions: Drawing datasets.
- Acceptance range
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-https://xianblog.wordpress.com/tag/likelihood-free-methods/
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Looking at an example from 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "approx_bayes_comp"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -466,7 +388,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Likelihood-free
+Likelihood free sampling
 \end_layout
 
 \end_inset
@@ -602,6 +524,128 @@ end{algorithmic}
 
 
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To make the algorithm more practically useful a couple of changes can be
+ made.
+ The requirement that 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+ can relaxed, and instead samples that lie within some defined distance
+ of 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ are accepeted as well: 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\rho$
+\end_inset
+
+.
+ This begs the question what 
+\begin_inset Formula $\rho$
+\end_inset
+
+ should be, and how it affects the approximation.
+ Intuitively smaller values yields better approximations, but increases
+ computation time, since more samples are discarded.
+ We will examine strategies to determine 
+\begin_inset Formula $\rho$
+\end_inset
+
+ later.
+\end_layout
+
+\begin_layout Standard
+In the above we did not say anything about what 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+ should look like, other then it should be a distance function.
+ If 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ are vectors consisting of numbers, the Euclidean distance could be used,
+ which may or may not be a good choice.
+ In other cases the Euclidean distance measure cannot be used directly on
+ the samples, if the sample for instance represents a DNA sequence, which
+ does not have a clear numerical representation.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add some examples of what a sample can be (DNA sequence, result from a stochasti
+c process)
+\end_layout
+
+\end_inset
+
+ Attention also has to be paid to the cost of evaluating 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+.
+ The samples can contain large amount of data, again think of a DNA sequence
+ as an example.
+\end_layout
+
+\begin_layout Standard
+There are thus two problems in finding 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+: Finding a distance measure, and the evalution of it should be computationally
+ efficient.
+ In our discussion this boils down to the problem of finding suitable statistics
+ 
+\begin_inset Formula $\mathrm{S}(\cdot)$
+\end_inset
+
+ for the sample.
+\end_layout
+
+\begin_layout Standard
+If the statistic 
+\begin_inset Formula $\mathrm{S}(\cdot)$
+\end_inset
+
+ is sufficient for the parameter we want to estimate, we are guaranteed
+ that the approximation will converge to the true distribution as 
+\begin_inset Formula $\rho\to0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+https://xianblog.wordpress.com/tag/likelihood-free-methods/
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Looking at an example from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "approx_bayes_comp"
 
 \end_inset
 
