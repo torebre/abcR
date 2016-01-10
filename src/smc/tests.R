@@ -8,4 +8,3 @@ kNumberOfReplicates <- 2
 
 particles <- GenerateParticlesSpatial(kNumberOfParticles, kNumberOfReplicates)
 
-

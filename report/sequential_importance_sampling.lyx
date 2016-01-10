@@ -64,52 +64,22 @@ Sequential Importance Sampling
 \end_layout
 
 \begin_layout Standard
-We assume that is time consuming to generate samples from the likelihood,
+We assume that it is time consuming to generate samples from the likelihood,
+ 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+, and want to limit the number of samples we need to generate to estimate
  
 \begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
 \end_inset
 
 .
- To keep the number of samples generated down, we look at sequential importance
- sampling.
+ To achieve this we look at the method of sequential importance sampling.
 \end_layout
 
 \begin_layout Standard
-What we will do is the following: We start with a number, say 
-\begin_inset Formula $N$
-\end_inset
-
-, samples, that all lie below a distance 
-\begin_inset Formula $\epsilon_{0}$
-\end_inset
-
- from the observed statistic.
- 
-\begin_inset Formula $\epsilon_{0}$
-\end_inset
-
- is allowed to be be relatively large, so that it will not take an inordinate
- amount of time to generate the 
-\begin_inset Formula $N$
-\end_inset
-
- samples.
- The downside is that the approximation to 
-\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
-\end_inset
-
- will not be accurate.
- To remedy this a schedule for decreasing 
-\begin_inset Formula $\epsilon$
-\end_inset
-
--values is set up: 
-\begin_inset Formula $\epsilon_{0}>\epsilon_{1}>...>\epsilon_{n}$
-\end_inset
-
-.
- Where at each step the samples are reweighted.
- Details follow.
+Before doing that however, we review the concept behind importance sampling.
 \end_layout
 
 \begin_layout Standard
@@ -205,7 +175,7 @@ There is a problem in that we need the marginal distributions,
 \begin_layout Standard
 \begin_inset Formula 
 \[
-p(x_{1},x_{2})=\int p(x_{1},x_{2},...,x_{n})\mathrm{d}x_{3}...\mathrm{d}x_{n}
+p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{n})\mathrm{d}x_{3}...\mathrm{d}x_{n}
 \]
 
 \end_inset
@@ -239,6 +209,64 @@ To get around this we look for a sequence of marginal distributions that
 
 .
  So we can view the approximations as converging to the true distribution.
+\end_layout
+
+\begin_layout Standard
+The problem is now find a sequence of distributions 
+\begin_inset Formula $g(x_{t})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Transition to how this is implemented in the code example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What we will do is the following: We start with a number, say 
+\begin_inset Formula $N$
+\end_inset
+
+, samples, that all lie below a distance 
+\begin_inset Formula $\epsilon_{0}$
+\end_inset
+
+ from the observed statistic.
+ 
+\begin_inset Formula $\epsilon_{0}$
+\end_inset
+
+ is allowed to be be relatively large, so that it will not take an inordinate
+ amount of time to generate the 
+\begin_inset Formula $N$
+\end_inset
+
+ samples.
+ The downside is that the approximation to 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+ will not be accurate.
+ To remedy this a schedule for decreasing 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-values is set up: 
+\begin_inset Formula $\epsilon_{0}>\epsilon_{1}>...>\epsilon_{n}$
+\end_inset
+
+.
+ Where at each step the samples are reweighted.
 \end_layout
 
 \end_body

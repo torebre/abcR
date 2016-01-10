@@ -613,10 +613,7 @@ There are thus two problems in finding
 \end_inset
 
  for the sample.
-\end_layout
-
-\begin_layout Standard
-If the statistic 
+ Note that if the statistic 
 \begin_inset Formula $\mathrm{S}(\cdot)$
 \end_inset
 
@@ -633,7 +630,7 @@ If the statistic
 status open
 
 \begin_layout Plain Layout
-https://xianblog.wordpress.com/tag/likelihood-free-methods/
+Show calculations for sufficient statistic
 \end_layout
 
 \end_inset
@@ -642,10 +639,26 @@ https://xianblog.wordpress.com/tag/likelihood-free-methods/
 \end_layout
 
 \begin_layout Standard
-Looking at an example from 
+Several strategies have been developed for dealing with the difficulties
+ in ABC: Finding suitable statistics automatically and improving the efficiency
+ being two areas where work has been done.
+ See 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
+
+\end_inset
+
+ for an overview of areas of research.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+https://xianblog.wordpress.com/tag/likelihood-free-methods/
+\end_layout
 
 \end_inset
 
