@@ -4,13 +4,57 @@
 \begin_header
 \textclass article
 \begin_preamble
+% Først spesifiserer vi hvilken dokumentklasse vi vil ha og noen 
+% globale opsjoner. Bytt ut 'article' med 'book' hvis du vil ha 
+% med kapitler.
+%\documentclass[a4paper, twoside, titlepage, 11pt]{article}
+
+% Så sier vi fra om hvilke tilleggspakker vi trenger
+% til dokumentet vårt. De som du ikke trenger (se kommentaren) 
+% kan det være en fordel å kommentere ut (sett prosenttegn foran),
+% da vil kompilering gå raskere.
+
+%\usepackage[norsk]{babel}	% norske navn rundt omkring
+\usepackage[T1]{fontenc}		% norsk tegnsett (æøå)
+%\usepackage[utf8]{inputenc}	% norsk tegnsett
+\usepackage{geometry}		% anbefalt pakke for å styre marger.
+
+\usepackage{amsmath,amsfonts,amssymb} % matematikksymboler
+\usepackage{amsthm}                   % for å lage teoremer og lignende.
+\usepackage{graphicx}                 % inkludering av grafikk
+\usepackage{subfig}                   % hvis du vil kunne ha flere
+                                      % figurer inni en figur
+\usepackage{listings}                 % Fin for inkludering av kildekode
+
+%\usepackage{hyperref}                % Lager hyperlinker i evt. pdf-dokument
+                                      % men har noen bugs, så den er kommentert
+                                      % bort her.
+                                 
+% Indeksgenerering er kommentert ut her. Ta bort prosenttegnene
+% hvis du vil ha en indeks:
+%\usepackage{makeidx}     
+%\makeindex              
+
+
 \usepackage{algpseudocode}
+
+
+% \begin{document}
+
+\pagestyle{empty}
+\pagenumbering{roman}
+
+% Inkluder forsida:
+%\input{forside}
+
+% Romerske tall på alt før selve rapporten starter er pent.
+\pagenumbering{roman}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding auto
+\inputencoding utf8-plain
 \fontencoding global
 \font_roman default
 \font_sans default
@@ -30,7 +74,7 @@
 \paperfontsize default
 \spacing single
 \use_hyperref false
-\papersize default
+\papersize a4paper
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
@@ -62,6 +106,48 @@
 \end_header
 
 \begin_body
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand include
+filename "forside.tex"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagestyle{headings}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagenumbering{arabic} 
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Section*
 Introduction
