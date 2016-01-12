@@ -11,6 +11,10 @@ CalculateInclusionSum <-
 #       temp <- sapply(my.samples[[i]], function(sample.replicate) {
 #         DistanceFunction(sample.replicate, my.observation)
 #       })
+      
+      
+      # print(paste("my.epsilon2: ", my.epsilon))
+      
       weights[i] <- sum(temp < my.epsilon)
     }
     return(weights)
