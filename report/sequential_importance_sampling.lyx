@@ -60,6 +60,75 @@
 \begin_body
 
 \begin_layout Section*
+Sampling importance resampling
+\end_layout
+
+\begin_layout Standard
+Suppose we have a random variable 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ coming from a distribution with probability density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, and that we are unable to generate samples it from because it is computational
+ly intractable.
+ Suppose further that we have another density defined on the same space
+ that we are able to generate samples from, and that this density has probabilit
+y density function 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ and the following holds:
+\begin_inset Formula 
+\[
+g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For all x in what? Define the distribution
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can use this relationship to give the samples we draw from 
+\begin_inset Formula $\Omega'_{x}$
+\end_inset
+
+ a weight based on how probable this sample is under 
+\begin_inset Formula $\Omega_{x}$
+\end_inset
+
+, and then use these samples and weights to estimate the distribution 
+\begin_inset Formula $\Omega_{x}$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Show calculations
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
 Sequential Importance Sampling
 \end_layout
 
@@ -76,10 +145,7 @@ We assume that it is time consuming to generate samples from the likelihood,
 
 .
  To achieve this we look at the method of sequential importance sampling.
-\end_layout
-
-\begin_layout Standard
-Before doing that however, we review the concept behind importance sampling.
+ Before doing that however, we review the concept behind importance sampling.
 \end_layout
 
 \begin_layout Standard
@@ -131,12 +197,22 @@ If we define
 \end_inset
 
 , the above can be written recursively as:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use n as index?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-w(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
+w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
 \]
 
 \end_inset
@@ -167,8 +243,7 @@ There is a problem in that we need the marginal distributions,
 \end_inset
 
 ,..., to get expressions for the conditional distributions.
- To get the marginal distributions there is a need to integrate out variables,
- and this can be difficult.
+ To get the marginal distributions there is a need to integrate out variables.
  For instance:
 \end_layout
 
@@ -184,8 +259,9 @@ p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{n})\mathrm{d}x_{3}...\mathrm{d}x
 \end_layout
 
 \begin_layout Standard
-To get around this we look for a sequence of marginal distributions that
- are approximations to 
+This may be difficult, or impossible, and to get around problem this we
+ look for a sequence of marginal distributions that are approximations to
+ 
 \begin_inset Formula $p(\boldsymbol{x}_{t})$
 \end_inset
 
@@ -247,11 +323,7 @@ What we will do is the following: We start with a number, say
 \end_inset
 
  is allowed to be be relatively large, so that it will not take an inordinate
- amount of time to generate the 
-\begin_inset Formula $N$
-\end_inset
-
- samples.
+ amount of time to generate the samples.
  The downside is that the approximation to 
 \begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
 \end_inset

@@ -648,11 +648,11 @@ To make the algorithm more practically useful a couple of changes can be
 \end_layout
 
 \begin_layout Standard
-In the above we did not say anything about what 
+In the above we did not say anything about choices for 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
 \end_inset
 
- should look like, other then it should be a distance function.
+, other than it should be a distance function.
  If 
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset

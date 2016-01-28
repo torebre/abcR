@@ -1,10 +1,10 @@
-# library(NLRoot)
 
 source("smcParameters.R")
 source("ess.R")
 source("generateParticles.R")
 source("calculateWeights.R")
 source("distanceFunction.R")
+source("forwardKernelSample.R")
 
 
 
@@ -52,10 +52,6 @@ while (T) {
   
   ess <- ComputeEffectiveSampleSize(weights)
   
-#   current.epsilon <- BFfzero(function(epsilon.candidate) {
-#     FindNextEpsilon(epsilon.candidate, particles, previous.ess, previous.inclusion.sum, previous.weights)
-#   }, 1, current.epsilon)
-  
   
   print(paste("current.epsilon: ", current.epsilon))
   print(paste("weights: ", weights))
@@ -70,12 +66,18 @@ while (T) {
   # Resampling
   
   
+  
   # Mutation
   
   previous.weights <- weights
   previous.inclusion.sum <- nominator
   
   counter <- counter + 1
+  
+  # Just here for testing
+  if(counter == 10) {
+    break;
+  }
   
 }
 
