@@ -9,4 +9,3 @@ DistFunc <- function(my.sample) {
 particles2 <- GenerateParticlesSpatial(10, 1)
 
 weights <- CalculateWeights(particles2, DistFunc, 2)
-
