@@ -1,8 +1,7 @@
-
-
 kObservation <- 0
 kFinalEpsilon <- 0.01
 kResampleRatio <- 0.5
+kStopEpsilon <- 0.01
 
 # Uniform [-10, 10]
 GenerateRandomSampleFromTheta <- function() {
@@ -22,53 +21,81 @@ GenerateSample <- function(my.theta) {
   0.5 * rnorm(1, mean = my.theta, sd = 1) + 0.5 * rnorm(1, mean = my.theta, sd = 1 / 10)
 }
 
-L1DistanceFromObservation <- function(my.sample) {
+DistanceFunction <- function(my.sample) {
+  
+  # print(paste("Sample: ", my.sample))
   abs(my.sample - kObservation)
 }
 
-EvaluateLikelihoodSum <- function(my.sample.vector, my.current.epsilon) {
-  sum(sapply(my.sample.vector, function(sample) {L1DistanceFromObservation(sample) < my.current.epsilon}))
-}
-
-
-ForwardKernelSample <- function(sample.old, theta.old, my.current.epsilon) {
-  temp <- sapply(sample.old, function(x) {x})
-  dim(temp) <- NULL
-  empirical.variance <- var(temp)
-  
-  theta.new <- rnorm(1, mean = theta.old, sqrt(2 * temp))
-  samples.new <- rep(NA, kNumberOfReplicates)
-  
-  for(i in 1:kNumberOfReplicates) {
-    samples.new[i] <- GenerateSample(theta.new)
+EvaluateLikelihoodSum <-
+  function(my.sample.vector, my.current.epsilon) {
+    sum(sapply(my.sample.vector, function(x) {
+#       print(paste("x: ", x))
+#       print(paste("Distance: ", DistanceFunction(x)))
+#       print(paste("my.current.epsilon: ", my.current.epsilon))
+      
+      DistanceFunction(x) < my.current.epsilon
+    }))
   }
-  
-#   prior.old <- EvaluateTheta(theta.old)
-#   prior.new <- EvaluateTheta(theta.new)
-  
-  # The prior is uniform and the random walk is coming from 
-  # a symmetric distribution so the only term left in the 
-  # Metropolis-Hastings ratio is the likelihood
-  
-  # New as nominator, old as denominator
-  metropolis.hastings.ratio <- EvaluateLikelihoodSum(samples.new, samples.old)
-  
-  if(runif(1) <= min(1, metropolis.hastings.ratio)) {
+
+
+ForwardKernelSample <-
+  function(samples.old, theta.old, my.current.epsilon, my.weights) {
+    temp <- sapply(samples.old, function(x) {
+      x
+    })
+    dim(temp) <- NULL
+    empirical.variance <- var(temp)
+    
+    samples.new <- rep(samples.old)
+    theta.new <- rep(theta.old)
+    
+    for (j in 1:kNumberOfParticles) {
+      if(my.weights[j] <= 0) {
+        next
+      }
+      
+      
+      theta.candidate <- rnorm(1, mean = theta.old[j], sqrt(2 * empirical.variance))
+      
+      replicates.new <- rep(NA, kNumberOfReplicates)
+      for (i in 1:kNumberOfReplicates) {
+        replicates.new[i] <- GenerateSample(theta.candidate)
+      }
+      
+      #   prior.old <- EvaluateTheta(theta.old)
+      #   prior.new <- EvaluateTheta(theta.new)
+      
+      # The prior is uniform and the random walk is coming from
+      # a symmetric distribution so the only term left in the
+      # Metropolis-Hastings ratio is the likelihood
+      
+      # New as nominator, old as denominator
+      metropolis.hastings.ratio <-
+        EvaluateLikelihoodSum(replicates.new, my.current.epsilon) / EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)
+      
+#       print(paste("New: ", EvaluateLikelihoodSum(replicates.new, my.current.epsilon)))
+#       print(paste("Old: " ,EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)))
+      
+      if (runif(1) <= min(1, metropolis.hastings.ratio)) {
+        theta.new[j] <- theta.candidate
+        samples.new[[j]] <- replicates.new
+      }
+    }
+    
     return(list(theta = theta.new, samples = samples.new))
   }
-  
-  return(list(theta = theta.old, samples = samples.old))
-}
 
 
 GenerateParticles <- function(my.thetas, my.number.of.replicates) {
   my.samples <- list()
-  for(i in 1:length(my.thetas)) {
+  for (i in 1:length(my.thetas)) {
     my.replicates <- rep(NA, my.number.of.replicates)
-    for(j in 1:my.number.of.replicates) {
-      my.replicates[j] <- GenerateSample(my.thetas[i])  
+    for (j in 1:my.number.of.replicates) {
+      my.replicates[j] <- GenerateSample(my.thetas[i])
     }
     my.samples[[i]] <- my.replicates
   }
   return(my.samples)
 }
+

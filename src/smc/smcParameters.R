@@ -19,3 +19,4 @@ NormalizeVector <- function(my.vector) {
 #     (x - my.vector.min) / my.vector.range
 #   })
 }
+
