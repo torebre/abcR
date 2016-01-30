@@ -22,7 +22,6 @@ GenerateSample <- function(my.theta) {
 }
 
 DistanceFunction <- function(my.sample) {
-  
   # print(paste("Sample: ", my.sample))
   abs(my.sample - kObservation)
 }
@@ -30,9 +29,9 @@ DistanceFunction <- function(my.sample) {
 EvaluateLikelihoodSum <-
   function(my.sample.vector, my.current.epsilon) {
     sum(sapply(my.sample.vector, function(x) {
-#       print(paste("x: ", x))
-#       print(paste("Distance: ", DistanceFunction(x)))
-#       print(paste("my.current.epsilon: ", my.current.epsilon))
+      #       print(paste("x: ", x))
+      #       print(paste("Distance: ", DistanceFunction(x)))
+      #       print(paste("my.current.epsilon: ", my.current.epsilon))
       
       DistanceFunction(x) < my.current.epsilon
     }))
@@ -51,36 +50,42 @@ ForwardKernelSample <-
     theta.new <- rep(theta.old)
     
     for (j in 1:kNumberOfParticles) {
-      if(my.weights[j] <= 0) {
+      if (my.weights[j] <= 0) {
         next
       }
       
-      
-      theta.candidate <- rnorm(1, mean = theta.old[j], sqrt(2 * empirical.variance))
-      
-      replicates.new <- rep(NA, kNumberOfReplicates)
-      for (i in 1:kNumberOfReplicates) {
-        replicates.new[i] <- GenerateSample(theta.candidate)
+      for (k in 1:1000) {
+        theta.candidate <-
+          rnorm(1, mean = theta.old[j], sqrt(2 * empirical.variance))
+        
+        replicates.new <- rep(NA, kNumberOfReplicates)
+        
+        for (i in 1:kNumberOfReplicates) {
+          replicates.new[i] <- GenerateSample(theta.candidate)
+        }
+        
+        
+        #   prior.old <- EvaluateTheta(theta.old)
+        #   prior.new <- EvaluateTheta(theta.new)
+        
+        # The prior is uniform and the random walk is coming from
+        # a symmetric distribution so the only term left in the
+        # Metropolis-Hastings ratio is the likelihood
+        
+        # New as nominator, old as denominator
+        metropolis.hastings.ratio <-
+          EvaluateLikelihoodSum(replicates.new, my.current.epsilon) / EvaluateLikelihoodSum(samples.new[j], my.current.epsilon)
+        
+        #       print(paste("New: ", EvaluateLikelihoodSum(replicates.new, my.current.epsilon)))
+        #       print(paste("Old: " ,EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)))
+        
+        if (runif(1) <= min(1, metropolis.hastings.ratio)) {
+          theta.new[j] <- theta.candidate
+          samples.new[[j]] <- replicates.new
+        }
+        
       }
       
-      #   prior.old <- EvaluateTheta(theta.old)
-      #   prior.new <- EvaluateTheta(theta.new)
-      
-      # The prior is uniform and the random walk is coming from
-      # a symmetric distribution so the only term left in the
-      # Metropolis-Hastings ratio is the likelihood
-      
-      # New as nominator, old as denominator
-      metropolis.hastings.ratio <-
-        EvaluateLikelihoodSum(replicates.new, my.current.epsilon) / EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)
-      
-#       print(paste("New: ", EvaluateLikelihoodSum(replicates.new, my.current.epsilon)))
-#       print(paste("Old: " ,EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)))
-      
-      if (runif(1) <= min(1, metropolis.hastings.ratio)) {
-        theta.new[j] <- theta.candidate
-        samples.new[[j]] <- replicates.new
-      }
     }
     
     return(list(theta = theta.new, samples = samples.new))
@@ -98,4 +103,3 @@ GenerateParticles <- function(my.thetas, my.number.of.replicates) {
   }
   return(my.samples)
 }
-

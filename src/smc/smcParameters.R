@@ -2,7 +2,7 @@
 kNumberOfParticles <- 10
 
 # Number of replicates
-kNumberOfReplicates <- 2
+kNumberOfReplicates <- 1
 
 
 NormalizeVector <- function(my.vector) {
