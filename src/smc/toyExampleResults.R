@@ -9,12 +9,13 @@ curve(VectorizedPosterior, from = -3, to = 3)
 
 
 particles.vector <- sapply(particles, function(x) {x[1]})
-
 particles.sample <- sample(particles.vector, kNumberOfParticles, replace = T, weights)
 
 
 
-truehist(particles.sample)
 
+
+truehist(thetas)
+curve(VectorizedPosterior, from = -10, to = 10, add = T)
 
 
