@@ -1,5 +1,5 @@
 # Number of particles
-kNumberOfParticles <- 10
+kNumberOfParticles <- 1000
 
 # Number of replicates
 kNumberOfReplicates <- 1
