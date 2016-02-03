@@ -12,7 +12,7 @@ source("toyExampleSetup.R")
 alpha <- 0.9
 
 # Create an initial set of particles
-thetas <- sapply(1:kNumberOfParticles, function(x) {GenerateRandomSampleFromTheta() })
+thetas <- sapply(1:kNumberOfParticles, function(x) { GenerateRandomSampleFromTheta() })
 particles <- GenerateParticles(thetas, kNumberOfReplicates)
 
 FindNextEpsilon <- function(epsilon.candidate, my.current.epsilon, my.particles, my.previous.weights) {
@@ -61,11 +61,23 @@ current.epsilon <- 1000000
 temp.function <- Vectorize(function(x) {FindNextEpsilon(x, current.epsilon, particles, weights)})
 curve(temp.function, from = 1, to = 15)
 
+effective.sample.sizes <- list()
+epsilons <- list()
+all.thetas <- list()
+all.weights <- list()
+
+all.particles <- list()
+
+counter <- 1
 
 while (T) {
   # Adaptation
-  
   print(paste("Current epsilon: ", current.epsilon))
+  epsilons[[counter]] <- current.epsilon
+  effective.sample.sizes[[counter]] <- effective.sample.size
+  all.thetas[[counter]] <- thetas
+  all.weights[[counter]] <- weights
+  all.particles[[counter]] <- unlist(particles)
   
   if(current.epsilon <= kStopEpsilon) {
     break
@@ -74,7 +86,7 @@ while (T) {
   # Find next epsilon
   epsilon.new <- uniroot(function(epsilon.candidate) {
     FindNextEpsilon(epsilon.candidate, current.epsilon, particles, weights)
-  }, extendInt = "no", c(kStopEpsilon, current.epsilon))$root
+  }, extendInt = "no", c(0, current.epsilon))$root
   
   # TODO Only compute the weights once, not here and in FindNextEpsilon
   weights <- NormalizeVector(weights * CalculateWeightUpdates(particles, current.epsilon, epsilon.new, DistanceFunction))
@@ -88,8 +100,9 @@ while (T) {
   if(effective.sample.size < kResampleRatio * kNumberOfParticles) {
     
     print("Resampling")
-    
-    particles <- sample(particles, kNumberOfParticles, replace = T, prob = weights)
+    resampling.indices <- sample(1:kNumberOfParticles, kNumberOfParticles, replace = T, prob = weights)
+    particles <- particles[resampling.indices]
+    thetas <- thetas[resampling.indices]
     weights <- rep(1 / kNumberOfParticles, kNumberOfParticles)
   }
   

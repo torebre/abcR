@@ -54,7 +54,7 @@ ForwardKernelSample <-
         next
       }
       
-      for (k in 1:100) {
+      # for (k in 1:100) {
         theta.candidate <-
           rnorm(1, mean = theta.old[j], sqrt(2 * empirical.variance))
         
@@ -84,7 +84,7 @@ ForwardKernelSample <-
           samples.new[[j]] <- replicates.new
         }
         
-      }
+      # }
       
     }
     

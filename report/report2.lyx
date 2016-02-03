@@ -589,6 +589,13 @@ theta}$
 
 
 \backslash
+State $counter=counter+1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 EndIf
 \end_layout
 
@@ -617,13 +624,13 @@ end{algorithmic}
 \end_layout
 
 \begin_layout Standard
-To make the algorithm more practically useful a couple of changes can be
- made.
+Keeping the core idea, we can make a couple of changes to make the algorithm
+ more practically useful.
  The requirement that 
 \begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
 \end_inset
 
- can relaxed, and instead samples that lie within some defined distance
+ can be relaxed, and instead samples that lie within some defined distance
  of 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
@@ -652,7 +659,7 @@ In the above we did not say anything about choices for
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
 \end_inset
 
-, other than it should be a distance function.
+, other than it is a distance function.
  If 
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
@@ -726,7 +733,7 @@ Show calculations for sufficient statistic
 
 \begin_layout Standard
 Several strategies have been developed for dealing with the difficulties
- in ABC: Finding suitable statistics automatically and improving the efficiency
+ in ABC: Finding suitable statistics automatically and improving the efficiency,
  being two areas where work has been done.
  See 
 \begin_inset CommandInset citation
@@ -736,40 +743,280 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview of areas of research.
+ In this report we will show some methods that have been suggested to improve
+ the efficiency of ABC.
+\end_layout
+
+\begin_layout Section*
+Sequential Monte Carlo in an ABC setting
 \end_layout
 
 \begin_layout Standard
+We will in the following show a method for improving the efficiency of ABC
+ which there are several variations on in the literature, see for example
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Beaumont12102009"
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-https://xianblog.wordpress.com/tag/likelihood-free-methods/
+Add more references
 \end_layout
+
+\end_inset
+
+.
+ A sequential Monte Carlo (SMC) setup will be used to guide the search for
+ a sample set from the desired distribution, but before showing how this
+ is used in the ABC setting, we explain what SMC is.
+ To understand SMC we need to understand the concept of a weighted sample,
+ which we illustrate by looking at the sampling importance resampling (SIR)
+ method for generating samples from a distribution.
+\end_layout
+
+\begin_layout Subsection*
+Sampling importance resampling
+\end_layout
+
+\begin_layout Standard
+Suppose we have a random variable 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ coming from a distribution with probability density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, and that we are unable to generate samples it from because it is computational
+ly intractable.
+ Suppose further that we have another density defined on the same space
+ that we are able to generate samples from, and that this density has probabilit
+y density function 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ and the following holds:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Show figure
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
+\]
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section*
-Examples
-\end_layout
-
 \begin_layout Standard
+We can use this relationship to give the samples we draw from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ a weight based on how probable this sample is under 
+\begin_inset Formula $p(\cdot)$
+\end_inset
+
+, and then use these samples and weights to generate samples that approximate
+ the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+.
+ To see how this is done we start by defining the weight as 
+\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+\end_inset
+
+, and 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ being draws from the distribution of 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Show some simple examples using different ABC methods
+Use better notation
 \end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Sample 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ from 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the weights, 
+\begin_inset Formula $w(\boldsymbol{Y}_{i})=\frac{p(\boldsymbol{Y}_{i})}{g(\boldsymbol{Y}_{i})}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Resample from the set 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ times with probabilities for drawing 
+\begin_inset Formula $\boldsymbol{Y}_{i}$
+\end_inset
+
+ being propotional to the weight 
+\begin_inset Formula $w(\boldsymbol{Y}_{i})$
+\end_inset
+
+.
+ Denote this resampled set as 
+\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We now claim that the sample set 
+\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\end_inset
+
+ converges to the distribution for 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use better notation
+\end_layout
+
+\end_inset
+
+as 
+\begin_inset Formula $m\to\infty$
+\end_inset
+
+.
+ Following a similar route as found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 293-295"
+key "ross2013simulation"
+
+\end_inset
+
+ we prove this by first noting that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}
+\end{align*}
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Section*
-Sequential Importance Sampling
+\begin_layout Standard
+By the strong law of large numbers we get:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check strong law of large numbers
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})=\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y}))\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y})|I(\boldsymbol{Y}\in A))P(I(\boldsymbol{Y}\in A)\\
+ & =E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also have:
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{Y}_{i}) & =E(w(\boldsymbol{Y}))\\
+ & =E(\frac{p(\boldsymbol{Y})}{g(\boldsymbol{Y})})\\
+ & =\int\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =\int p(\boldsymbol{y})d\boldsymbol{y}\\
+ & =C
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{alignat*}{1}
+\lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =C^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
+ & =C^{-1}\int_{\boldsymbol{y}\in A}\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =C^{-1}\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\end{alignat*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the other hand we have by Lebesgue's dominated convergence theorem:
+\begin_inset Formula 
+\[
+P(\boldsymbol{X}\in A)=E(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n})=\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

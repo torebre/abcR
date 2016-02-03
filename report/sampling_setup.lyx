@@ -1,0 +1,237 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+General importance sampling setup: 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ is a sample (particle), 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ is the target distribution, and 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ is the proposal distribution:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This can be rewritten as (basis for sequential importance sampling):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{n}|x_{1},...,x_{n-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{n}|x_{1},...,x_{n-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we define 
+\begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
+\end_inset
+
+, the above can be written recursively as:
+\begin_inset Formula 
+\begin{align*}
+w_{t}(\boldsymbol{x}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}\\
+ & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(\boldsymbol{x}_{t})}{p(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Weights can become zero for some samples as we iterate, in which case we
+ don't care about computing more iterations for the weights of the sample.
+ If too many samples become a resampling from the samples that still have
+ a positive weights.
+ Note that 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ does not need to be a fixed function, we can update it from iteration to
+ iteration, it only needs to cover the target distribution.
+ To make this clear we add an index to 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+: 
+\begin_inset Formula $g_{t}(\cdot)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+To avoid having to compute the marginals, 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
+\end_inset
+
+, the following trick is done: Define auxillary distributions that are approxima
+tions to 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
+\end_inset
+
+: 
+\begin_inset Formula $\hat{p}_{1}(x_{1})$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{p}_{2}(x_{1},x_{2})$
+\end_inset
+
+,...,
+\begin_inset Formula $p_{n}(\boldsymbol{x}_{t})$
+\end_inset
+
+, with the requirement that 
+\begin_inset Formula $\hat{p}_{n}(\boldsymbol{x}_{t})=p(\boldsymbol{x}_{t})$
+\end_inset
+
+.
+ Using these approximations:
+\begin_inset Formula 
+\[
+w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}_{t}(x_{t}|\boldsymbol{x}_{t-1})}{g_{t}(x_{t}|\boldsymbol{x}_{t-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Need to define and draw samples from 
+\begin_inset Formula $g_{t}(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $K(x_{t},x_{s})$
+\end_inset
+
+ denote a transition kernel, and define, with 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+known, 
+\begin_inset Formula $g_{1}(x_{1})K(x_{1},x_{t})=g_{t}(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+ This gives us a way to evolve the proposal distribution, but in practice
+ evaluting 
+\begin_inset Formula $g_{1}(x_{1})K(x_{1},x_{t})$
+\end_inset
+
+ may involve an intractable integral, so a pointwise approximation using
+ 
+\begin_inset Formula $N$
+\end_inset
+
+ samples is done instead:
+\begin_inset Formula 
+\[
+g_{t}(x_{t}|\boldsymbol{x}_{t-1})\approx g_{t}(x_{t}|x_{t-1})\approx\frac{1}{N}\sum_{i=1}^{N}K(x_{t-1}^{(i)},x_{t})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This apparently results in a complexity of 
+\begin_inset Formula $O(N^{2})$
+\end_inset
+
+, and it does not work in cases where 
+\begin_inset Formula $K(x_{t-1},x_{t})$
+\end_inset
+
+ cannot be evaluated pointwise.
+\end_layout
+
+\end_body
+\end_document
