@@ -365,7 +365,8 @@ To understand how likelihood-free methods work, let us look at the posterior
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
-:
+.
+ From Bayes rule we have:
 \end_layout
 
 \begin_layout Standard
@@ -715,7 +716,31 @@ There are thus two problems in finding
 \begin_inset Formula $\rho\to0$
 \end_inset
 
-.
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & =p(\boldsymbol{\theta}|S(\boldsymbol{y}))\\
+\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta}|S(\boldsymbol{y})) & \propto\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta})\int_{S(Y)}p_{\rho}(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})p_{\rho}(S(\boldsymbol{x})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
+ & =p(\boldsymbol{\theta})\int_{S(Y)}p_{\rho}(S(\boldsymbol{y})|S(\boldsymbol{y}),\boldsymbol{\theta})p_{\rho}(S(\boldsymbol{y})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
+ & =p(\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Not finished
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -752,9 +777,9 @@ Sequential Monte Carlo in an ABC setting
 \end_layout
 
 \begin_layout Standard
-We will in the following show a method for improving the efficiency of ABC
- which there are several variations on in the literature, see for example
- 
+We will in the following demonstrate a method for improving the efficiency
+ of ABC which there are several variations on in the literature, see for
+ example 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Beaumont12102009"
@@ -785,7 +810,11 @@ Sampling importance resampling
 \end_layout
 
 \begin_layout Standard
-Suppose we have a random variable 
+Suppose we have an 
+\begin_inset Formula $k$
+\end_inset
+
+-dimensional random variable 
 \begin_inset Formula $\boldsymbol{X}$
 \end_inset
 
@@ -837,7 +866,20 @@ We can use this relationship to give the samples we draw from
 \end_inset
 
 .
- To see how this is done we start by defining the weight as 
+ Since we are drawing samples from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ we call it the proposal distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+To see how this relationship lets us approximate the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+, we start by defining the quantity known as the weight as 
 \begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
 \end_inset
 
@@ -995,6 +1037,14 @@ We also have:
 \end_layout
 
 \begin_layout Standard
+Where 
+\begin_inset Formula $C$
+\end_inset
+
+ is an unknown constant.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{alignat*}{1}
 \lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =C^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
@@ -1011,12 +1061,241 @@ We also have:
 On the other hand we have by Lebesgue's dominated convergence theorem:
 \begin_inset Formula 
 \[
-P(\boldsymbol{X}\in A)=E(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n})=\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+P(\boldsymbol{X}\in A)=CE(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n})=\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The constant 
+\begin_inset Formula $C$
+\end_inset
+
+ does not affect the sampling distribution, and we see that for large 
+\begin_inset Formula $m$
+\end_inset
+
+ we get a good approximation to the distribution.
+ In the next next we will extend the weight calculation step by introducing
+ a recursive method.
+\end_layout
+
+\begin_layout Subsection*
+Sequential Importance Sampling
+\end_layout
+
+\begin_layout Standard
+The expression for the weight in the previous section, 
+\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+\end_inset
+
+, can be rewritten as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we define 
+\begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
+\end_inset
+
+, the above can be written recursively as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $1\leq t\leq k$
+\end_inset
+
+, we define 
+\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{t})$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that the expression is correct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Doing such a decomposition has some advantages when dealing with high-dimensiona
+l problems, where it is difficult to find a good proposal distribution
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 46-47"
+key "liu2001monte"
+
+\end_inset
+
+.
+ For one thing it lets us stop calculation of the weight early if we see
+ it becomes too close to 0.
+ We can also make use of 
+\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+ when setting up the proposal distribution 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There is a problem in that we need the marginal distributions, 
+\begin_inset Formula $p(x_{1})$
+\end_inset
+
+,
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+,..., to get expressions for the conditional distributions.
+ To get the marginal distributions there is a need to integrate out variables.
+ For instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x_{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This may be difficult, or impossible, and to get around this problem, we
+ introduce another layer of complexity and look for a sequence of marginal
+ distributions that are approximations to 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
+\end_inset
+
+: 
+\begin_inset Formula $\hat{p}(x_{1})$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{p}(x_{1},x_{2})$
+\end_inset
+
+,...,
+\begin_inset Formula $p(x_{1},x_{2},...,x_{k})$
+\end_inset
+
+.
+ The full joint distribution in the previous is not an approximation, but
+ the actual 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ So we can view the approximations as converging to the true distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+In summary we are faced with two challenges: Finding good proposal distributions
+, and approximations 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{p}(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection*
+SMC as part of an ABC setup
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Transition to how this is implemented in the code example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What we will do is the following: We start with a number, say 
+\begin_inset Formula $N$
+\end_inset
+
+, samples, that all lie below a distance 
+\begin_inset Formula $\epsilon_{0}$
+\end_inset
+
+ from the observed statistic.
+ 
+\begin_inset Formula $\epsilon_{0}$
+\end_inset
+
+ is allowed to be be relatively large, so that it will not take an inordinate
+ amount of time to generate the samples.
+ The downside is that the approximation to 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+ will not be accurate.
+ To remedy this a schedule for decreasing 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-values is set up: 
+\begin_inset Formula $\epsilon_{0}>\epsilon_{1}>...>\epsilon_{n}$
+\end_inset
+
+.
+ Where at each step the samples are reweighted.
 \end_layout
 
 \begin_layout Standard
