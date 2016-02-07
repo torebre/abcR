@@ -355,14 +355,19 @@ The likelihood function may be difficult to evaluate, for instance it may
 \end_layout
 
 \begin_layout Standard
-Approximate Bayesian Computation is one likelihood-free method.
- 
-\end_layout
-
-\begin_layout Standard
 To understand how likelihood-free methods work, let us look at the posterior
  again, and introduce an auxillary variable, 
 \begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to likelihood-free Markov chain Monte Carlo
+\end_layout
+
 \end_inset
 
 .
@@ -450,19 +455,18 @@ reference "likelihoo-free_alg1"
 \end_inset
 
 .
- For most continuous probability distributions, the probability that two
- samples are exactly the same.
- For discrete probability distributions the situation will also be bad in
- practice.
- So in practice the algorithm in 
+ For continuous probability distributions, the probability that two samples
+ are exactly the same is likely to be 0, and for discrete probability distributi
+ons the probability for the being the same is also likely to be close to
+ 0 in practical problems.
+ So the algorithm in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
 
 \end_inset
 
- is not useful, since most samples will be discarded, and it will take a
- very long time to generate samples.
+ is not practically useful, since most samples being generated will be discarded.
 \end_layout
 
 \begin_layout Standard
@@ -536,9 +540,7 @@ State Sample $
 \backslash
 boldsymbol{
 \backslash
-theta}$ from $
-\backslash
-pi(
+theta}$ from $p(
 \backslash
 boldsymbol{
 \backslash
@@ -551,9 +553,7 @@ theta})$
 \backslash
 State Sample $
 \backslash
-boldsymbol{x}$ from $
-\backslash
-pi(
+boldsymbol{x}$ from $p(
 \backslash
 boldsymbol{x}|
 \backslash
@@ -656,11 +656,11 @@ Keeping the core idea, we can make a couple of changes to make the algorithm
 \end_layout
 
 \begin_layout Standard
-In the above we did not say anything about choices for 
+We also need to make a choice for a distance function 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
 \end_inset
 
-, other than it is a distance function.
+.
  If 
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
@@ -669,8 +669,8 @@ In the above we did not say anything about choices for
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
- are vectors consisting of numbers, the Euclidean distance could be used,
- which may or may not be a good choice.
+ are vectors consisting of numbers, the Euclidean distance could for instance
+ be used, which may or may not be a good choice.
  In other cases the Euclidean distance measure cannot be used directly on
  the samples, if the sample for instance represents a DNA sequence, which
  does not have a clear numerical representation.
@@ -695,52 +695,80 @@ c process)
 \end_layout
 
 \begin_layout Standard
-There are thus two problems in finding 
-\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+If we cannot find a suitable distance measure that works directly on the
+ samples, or if it would be computationally intractable to evaluate such
+ a distance function, we can instead focus on summary statistics for the
+ sample.
+ Let 
+\begin_inset Formula $\mathrm{S}(\boldsymbol{x})$
 \end_inset
 
-: Finding a distance measure, and the evalution of it should be computationally
- efficient.
- In our discussion this boils down to the problem of finding suitable statistics
+ denote the possibly vector valued summary statistic we have chosen for
  
-\begin_inset Formula $\mathrm{S}(\cdot)$
+\begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
- for the sample.
- Note that if the statistic 
-\begin_inset Formula $\mathrm{S}(\cdot)$
+.
+ The main point is that we assume 
+\begin_inset Formula $dim(S(\boldsymbol{x}))<dim(\boldsymbol{x})$
 \end_inset
 
- is sufficient for the parameter we want to estimate, we are guaranteed
- that the approximation will converge to the true distribution as 
-\begin_inset Formula $\rho\to0$
+ holds, and so it should be computationally cheaper to evaluate 
+\begin_inset Formula $d(S(\boldsymbol{x}),S(\boldsymbol{y}))$
 \end_inset
 
-:
+.
+ Also note that the reduction in dimension in practice renders the probability
+ that 
+\begin_inset Formula $S(\boldsymbol{x})=S(\boldsymbol{y})$
+\end_inset
+
+ greater than that of 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}.$
+\end_inset
+
+ This improves the efficiency of algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "likelihoo-free_alg1"
+
+\end_inset
+
+, but again, probably not to such a degree to make it practically useful.
 \end_layout
 
 \begin_layout Standard
+Ideally we would want 
+\begin_inset Formula $\mathrm{S}(\cdot)$
+\end_inset
+
+ to be sufficient 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to statistical inference book
+\end_layout
+
+\end_inset
+
+for the parameters that are being estimated, since then we have the following
+ relation, again letting 
+\begin_inset Formula $p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})$
+\end_inset
+
+ be the Dirac-delta function:
 \begin_inset Formula 
 \begin{align*}
-\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & =p(\boldsymbol{\theta}|S(\boldsymbol{y}))\\
-\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta}|S(\boldsymbol{y})) & \propto\lim_{\rho\to0}p_{\rho}(\boldsymbol{\theta})\int_{S(Y)}p_{\rho}(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})p_{\rho}(S(\boldsymbol{x})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
- & =p(\boldsymbol{\theta})\int_{S(Y)}p_{\rho}(S(\boldsymbol{y})|S(\boldsymbol{y}),\boldsymbol{\theta})p_{\rho}(S(\boldsymbol{y})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
- & =p(\boldsymbol{\theta})
+p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymbol{\theta})\int_{S(Y)}p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})p(S(\boldsymbol{x})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
+ & =p(\boldsymbol{\theta})p(S(\boldsymbol{y})|\boldsymbol{\theta})\\
+ & \text{by suffiency}\\
+ & =p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})
 \end{align*}
 
 \end_inset
 
 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Not finished
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -748,7 +776,7 @@ Not finished
 status open
 
 \begin_layout Plain Layout
-Show calculations for sufficient statistic
+Add section about distance measures on statistics
 \end_layout
 
 \end_inset
@@ -777,18 +805,18 @@ Sequential Monte Carlo in an ABC setting
 \end_layout
 
 \begin_layout Standard
-We will in the following demonstrate a method for improving the efficiency
+We will in the following describe a method for improving the efficiency
  of ABC which there are several variations on in the literature, see for
  example 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "Beaumont12102009"
+key "Beaumont12102009,Peters2012,Toni187"
 
 \end_inset
 
 
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Add more references
@@ -1258,6 +1286,190 @@ status open
 
 \begin_layout Plain Layout
 Transition to how this is implemented in the code example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SMC in ABC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Require $
+\backslash
+epsilon_{stop}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow 0$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples 
+\backslash
+leftarrow 
+\backslash
+text{empty array}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+epsilon 
+\backslash
+leftarrow 
+\backslash
+infty$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{$
+\backslash
+epsilon 
+\backslash
+geq 
+\backslash
+epsilon_{stop}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $
+\backslash
+boldsymbol{
+\backslash
+theta}$ from $p(
+\backslash
+boldsymbol{
+\backslash
+theta})$ 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $
+\backslash
+boldsymbol{x}$ from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$
+\backslash
+boldsymbol{x}=
+\backslash
+boldsymbol{y}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples[counter] 
+\backslash
+leftarrow 
+\backslash
+boldsymbol{
+\backslash
+theta}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter=counter+1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
