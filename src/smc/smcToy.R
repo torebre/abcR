@@ -4,18 +4,19 @@ source("ess.R")
 source("calculateWeights.R")
 # source("distanceFunction.R")
 # source("forwardKernelSample.R")
+
+
 # source("toyExampleSetup.R")
 
 source("smcVariogram.R")
 
 
-max.iterations <- 40
 
 # Sequential Markov Chain Monte Carlo
 alpha <- 0.9
 
 # Create an initial set of particles
-thetas <- matrix(sapply(1:kNumberOfParticles, function(x) { GenerateRandomSampleFromTheta() }), nrow = kNumberOfParticles, ncol = 2)
+thetas <- sapply(1:kNumberOfParticles, function(x) { GenerateRandomSampleFromTheta() })
 particles <- GenerateParticles(thetas, kNumberOfReplicates)
 
 FindNextEpsilon <- function(epsilon.candidate, my.current.epsilon, my.particles, my.previous.weights) {
@@ -33,22 +34,24 @@ FindNextEpsilon <- function(epsilon.candidate, my.current.epsilon, my.particles,
   
   weights.new <- NormalizeVector(my.previous.weights * weight.updates)
   
-#   print(paste("Previous weights: ", my.previous.weights))
-#   print(paste("Weights new: ", weights.new))
+  #   print(paste("Previous weights: ", my.previous.weights))
+  #   print(paste("Weights new: ", weights.new))
   
   ess.new <- ComputeEffectiveSampleSize(weights.new)
   
-#   print(paste(ess.new, ", ", alpha, ", ", ess.old))
-#   print(paste("New epsilon: ", ess.new - alpha * ess.old))
+  #   print(paste(ess.new, ", ", alpha, ", ", ess.old))
+  #   print(paste("New epsilon: ", ess.new - alpha * ess.old))
   
   return(ess.new - alpha * ess.old)
-  }
+}
 
 
 counter <- 0
 resample.limit <- kNumberOfParticles * kResampleRatio
 
+
 # CalculateWeightUpdateForParticle <- function(my.samples, my.particle.number, my.old.epsilon, my.new.epsilon, DistanceFunction)
+
 # CalculateInclusionSum <- function(my.sample.replicates, DistanceFunction, my.epsilon) {
 
 
@@ -59,13 +62,14 @@ weights <- rep(1 / kNumberOfParticles, kNumberOfParticles)
 effective.sample.size <- kNumberOfParticles
 current.epsilon <- 1000000
 
-# temp.function <- Vectorize(function(x) {FindNextEpsilon(x, current.epsilon, particles, weights)})
-# curve(temp.function, from = 1, to = 15)
+temp.function <- Vectorize(function(x) {FindNextEpsilon(x, current.epsilon, particles, weights)})
+curve(temp.function, from = 1, to = 15)
 
 effective.sample.sizes <- list()
 epsilons <- list()
 all.thetas <- list()
 all.weights <- list()
+
 all.particles <- list()
 
 counter <- 1
@@ -102,33 +106,29 @@ while (T) {
     print("Resampling")
     resampling.indices <- sample(1:kNumberOfParticles, kNumberOfParticles, replace = T, prob = weights)
     particles <- particles[resampling.indices]
-    thetas <- thetas[resampling.indices, ]
+    thetas <- thetas[resampling.indices]
     weights <- rep(1 / kNumberOfParticles, kNumberOfParticles)
   }
   
   # Mutation
   
-#   print("Thetas:")
-#   print(thetas)
+  #   print("Thetas:")
+  #   print(thetas)
   
-  sink("/dev/null")
   iterated.samples <- ForwardKernelSample(particles, thetas, current.epsilon, weights)
-  sink()
-  
   particles <- iterated.samples$samples
   thetas <- iterated.samples$theta
   
-#   print("Thetas2:")
-#   print(thetas)
+  #   print("Thetas2:")
+  #   print(thetas)
   
   
   counter <- counter + 1
   
   print(paste("Counter: ", counter, " Effective sample size: ", effective.sample.size))
   
-  if(counter == max.iterations) {
-    break
-  }
-  
 }
+
+
+
 

@@ -1300,10 +1300,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -1332,27 +1328,9 @@ begin{algorithmic}
 \backslash
 Require $
 \backslash
-epsilon_{stop}$
-\end_layout
-
-\begin_layout Plain Layout
-
-
+epsilon_{stop},
 \backslash
-State $counter 
-\backslash
-leftarrow 0$
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-State $samples 
-\backslash
-leftarrow 
-\backslash
-text{empty array}$
+beta,N$
 \end_layout
 
 \begin_layout Plain Layout
@@ -1372,6 +1350,62 @@ infty$
 
 
 \backslash
+State $ess 
+\backslash
+leftarrow N$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{
+\backslash
+theta}_{n} 
+\backslash
+leftarrow$ $N$ samples from $p(
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $particles 
+\backslash
+leftarrow $ $N$ samples from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{W}_{n}
+\backslash
+leftarrow [
+\backslash
+frac{1}{N},...,
+\backslash
+frac{1}{N}]$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 While{$
 \backslash
 epsilon 
@@ -1385,61 +1419,39 @@ epsilon_{stop}$}
 
 
 \backslash
-State Sample $
+State $
 \backslash
-boldsymbol{
+epsilon 
 \backslash
-theta}$ from $p(
+leftarrow FindNextEpsilon(
 \backslash
-boldsymbol{
+epsilon,
 \backslash
-theta})$ 
+boldsymbol{W}_{n})$
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-State Sample $
+If{$ess < 
 \backslash
-boldsymbol{x}$ from $p(
+beta N$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
 \backslash
-boldsymbol{x}|
+State $(
 \backslash
 boldsymbol{
 \backslash
-theta})$
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-If{$
-\backslash
-boldsymbol{x}=
-\backslash
-boldsymbol{y}$}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-State $samples[counter] 
+theta}, particles) 
 \backslash
 leftarrow 
 \backslash
-boldsymbol{
-\backslash
-theta}$
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-State $counter=counter+1$
+mathrm{Resample}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -1453,7 +1465,300 @@ EndIf
 
 
 \backslash
+For{$i
+\backslash
+leftarrow[1,..,N]$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $(
+\backslash
+boldsymbol{
+\backslash
+theta}_{n}^{(i)}, particles_{n}^{(i)})
+\backslash
+leftarrow 
+\backslash
+mathrm{Mutate}(
+\backslash
+epsilon, particles^{(i)}, W_{n-1}^{(i)}, 
+\backslash
+boldsymbol{
+\backslash
+theta}^{(i)})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFor
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
 EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{ESS}{$
+\backslash
+boldsymbol{W_{n}}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+sum_{i=1}^{N}W_{n}^{(i)})^{-1}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{FindNextEpsilon}{$
+\backslash
+epsilon_{n-1},
+\backslash
+boldsymbol{W_{n-1}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Solve for $
+\backslash
+epsilon_{n}$ $ESS(
+\backslash
+frac{I_{
+\backslash
+epsilon_{n}}(
+\backslash
+boldsymbol{x}_{k})}{I_{
+\backslash
+epsilon_{n-1}}(
+\backslash
+boldsymbol{x}_{k})})=
+\backslash
+alpha ESS(
+\backslash
+boldsymbol{W_{n-1}})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $
+\backslash
+epsilon_{n}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{Mutate}{$
+\backslash
+epsilon,particle,
+\backslash
+boldsymbol{W},
+\backslash
+boldsymbol{
+\backslash
+theta}_{old}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{
+\backslash
+theta}_{new} 
+\backslash
+leftarrow$ Sample from $q(
+\backslash
+boldsymbol{
+\backslash
+theta}|
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $particle_{new} 
+\backslash
+leftarrow$ Sample from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta}_{new})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $r 
+\backslash
+leftarrow 
+\backslash
+min(1,
+\backslash
+frac{I_{
+\backslash
+epsilon_{n}}(particle_{new})}{I_{
+\backslash
+epsilon_{n}}(particle)})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$r < $ Sample from $Uniform(0, 1)$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+boldsymbol{
+\backslash
+theta},particle)$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Else
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+boldsymbol{
+\backslash
+theta}_{new},particle_{new})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{Resample}{$
+\backslash
+boldsymbol{
+\backslash
+theta}, particles, 
+\backslash
+boldsymbol{W}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Resample
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
 \end_layout
 
 \begin_layout Plain Layout
@@ -1468,6 +1773,47 @@ end{algorithmic}
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming that 
+\begin_inset Formula $d_{\epsilon}(\boldsymbol{x},\boldsymbol{y})=0$
+\end_inset
+
+ implies that 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make more clear
+\end_layout
+
+\end_inset
+
+, we can set up a sequence of approxmations to the target distribution (the
+ posterior distribution 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+):
+\begin_inset Formula 
+\[
+p_{\epsilon_{1}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y}),p_{\epsilon_{2}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y}),...,p_{\epsilon_{n}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
 \begin_layout Plain Layout
 
 \end_layout
@@ -1478,36 +1824,16 @@ end{algorithmic}
 \end_layout
 
 \begin_layout Standard
-What we will do is the following: We start with a number, say 
-\begin_inset Formula $N$
-\end_inset
-
-, samples, that all lie below a distance 
-\begin_inset Formula $\epsilon_{0}$
-\end_inset
-
- from the observed statistic.
- 
-\begin_inset Formula $\epsilon_{0}$
-\end_inset
-
- is allowed to be be relatively large, so that it will not take an inordinate
- amount of time to generate the samples.
- The downside is that the approximation to 
-\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
-\end_inset
-
- will not be accurate.
- To remedy this a schedule for decreasing 
-\begin_inset Formula $\epsilon$
-\end_inset
-
--values is set up: 
-\begin_inset Formula $\epsilon_{0}>\epsilon_{1}>...>\epsilon_{n}$
+Where 
+\begin_inset Formula $\epsilon_{1}>\epsilon_{2}>...>\epsilon_{n}$
 \end_inset
 
 .
- Where at each step the samples are reweighted.
+ If 
+\begin_inset Formula $\epsilon_{n}=0$
+\end_inset
+
+ the distribution is equal to the actual posterior.
 \end_layout
 
 \begin_layout Standard
