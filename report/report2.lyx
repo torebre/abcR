@@ -1571,6 +1571,62 @@ reference "sub:Sequential-Importance-Sampling"
  and provides asymptotically consistent estimates.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula $g_{t}(x_{t}|\boldsymbol{x}_{t-1})=\hat{p}(\boldsymbol{x}_{t-1})K_{t}(\boldsymbol{x}_{t-1},x_{t})=\hat{p}(\boldsymbol{x}_{t-2})K_{t-2}(\boldsymbol{x}_{t-2},\boldsymbol{x}_{t-1})K_{t-1}(\boldsymbol{x}_{t-1},x_{t})=\hat{p}(\boldsymbol{x}_{1})\prod_{i=1}^{t-1}K(\boldsymbol{x}_{i},\boldsymbol{x}_{i+1})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Mention that the start needs to come from the approximation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Likewise for the approximation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hat{p}_{t}(\boldsymbol{x}_{t})=p_{t}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}L_{i}(x_{i+1},x_{i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+w(x_{i}) & =\frac{\hat{p}_{i}(x_{i})}{g_{i}(x_{i})}\\
+\frac{\hat{p}_{i}(x_{i})}{g_{i}(x_{i})} & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(x_{t+1},x_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}L_{i}(x_{i+1},x_{i})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(x_{i},x_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Does the proposal always have to be bigger than the target here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we are able to generate the sequence of weight updates sequentially
+\end_layout
+
 \begin_layout Subsection*
 SMC sampler in an ABC setting
 \end_layout
