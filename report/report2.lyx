@@ -626,7 +626,7 @@ end{algorithmic}
 
 \begin_layout Standard
 Keeping the core idea, we can make a couple of changes to make the algorithm
- more practically useful.
+ more useful.
  The requirement that 
 \begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
 \end_inset
@@ -833,7 +833,25 @@ key "Peters2012,Toni187,adaptive_smc_for_abc"
  to the target distribution, termed particles, and then updating these by
  guiding them through the series of further approximations to the target
  distribution.
- The output in the end is a set of weighted samples, which in turn can be
+ We will in following look at the at the algorithm developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+, which in turn builds on what is termed an SMC sampler developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The output in the end is a set of weighted samples, which in turn can be
  used to approximate a sample set from the target distribution.
  The premise will be explained in detail, and we start with the concept
  of a weighted sample, which we illustrate by looking at the sampling importance
@@ -1120,6 +1138,13 @@ The constant
 
 \begin_layout Subsection*
 Sequential Importance Sampling
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1135,6 +1160,14 @@ The expression for the weight in the previous section,
 \[
 w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}
 \]
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}\label{eq:weight_decomposition}
+\end{equation}
 
 \end_inset
 
@@ -1193,9 +1226,8 @@ key "liu2001monte"
 
 \end_inset
 
-.
- For one thing it lets us stop calculation of the weight early if we see
- it becomes too close to 0.
+: It lets us stop calculation of the weights early if we see it comes close
+ to 0.
  We can also make use of 
 \begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
 \end_inset
@@ -1298,7 +1330,249 @@ Add section on problems: Weight degeneracy.
 \end_layout
 
 \begin_layout Subsection*
-SMC as part of an ABC setup
+Sequential Markov chain sampler
+\end_layout
+
+\begin_layout Standard
+Recalling the nominator and denominator from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+, we see that the weight update iterations in the SMC method we described
+ operate on an increasing probability space: 
+\begin_inset Formula $x_{1},(x_{2}|x_{1}),(x_{3}|x_{1},x_{2}),...$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear notation
+\end_layout
+
+\end_inset
+
+ The SMC sampler developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write why this is important
+\end_layout
+
+\end_inset
+
+instead operates on the same probability space through all the weight updates.
+ Note that this means we cannot use the decomposition shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+ right out of the box.
+\end_layout
+
+\begin_layout Standard
+Nevertheless, we still want to decompose the problem of drawing samples
+ from 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ somehow.
+ To do this we again start by defining a sequence of better and better approxima
+te distributions to 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+: 
+\begin_inset Formula $\{p_{i}(\boldsymbol{x})\}_{i\in1,...,n}$
+\end_inset
+
+, and the the corresponding proposal distributions are denoted similarly
+ 
+\begin_inset Formula $\{g_{i}(\boldsymbol{x})\}_{i\in1,...,n}$
+\end_inset
+
+.
+ The idea developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ uses a Markov kernel to establish the proposal distribution at step 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+g_{i}(\boldsymbol{x}|\boldsymbol{x}')=K(\boldsymbol{x}',\boldsymbol{x})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\boldsymbol{x}'$
+\end_inset
+
+ is distributed according to 
+\begin_inset Formula $g_{i-1}(\boldsymbol{x}')$
+\end_inset
+
+.
+ The marginal distribution 
+\begin_inset Formula $g_{i}(\boldsymbol{x})$
+\end_inset
+
+ is given as:
+\begin_inset Formula 
+\begin{equation}
+g_{i}(\boldsymbol{x})=\int K(\boldsymbol{x}',\boldsymbol{x})g_{i-1}(\boldsymbol{x}\text{'})d\boldsymbol{x}'\label{eq:kernel_update}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that we need this marginal distribution, since the decomposition in
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+ is unavailable to us.
+ The rationale behind the use of a kernel, is that as the target distribution
+ evolves from one step to the next, it should be possible for us to use
+ the particles at step 
+\begin_inset Formula $i-1$
+\end_inset
+
+ to make a good approximation to the target at step 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ However the integral in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:kernel_update"
+
+\end_inset
+
+ turns out to be impossible to compute in most cases.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One approach to get around this is to approximate 
+\begin_inset Formula $g_{i}(\boldsymbol{x})$
+\end_inset
+
+ pointwise:
+\begin_inset Formula 
+\begin{equation}
+g_{i}(\boldsymbol{x})\approx g_{i}^{n}(\boldsymbol{x})=\frac{1}{n}\sum_{j=1}^{n}K(\boldsymbol{X}_{i-1}^{(j)},\boldsymbol{x})\label{eq:update_approximation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming we use the 
+\begin_inset Formula $n$
+\end_inset
+
+ particles we are evolving in the equation, we need to perform 
+\begin_inset Formula $n$
+\end_inset
+
+ pointwise evaluations for each of the 
+\begin_inset Formula $n$
+\end_inset
+
+ particles, resulting in a complexity on the order of 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ for one weight update step.
+ This is prohibitive when 
+\begin_inset Formula $n$
+\end_inset
+
+ is large.
+\end_layout
+
+\begin_layout Subsubsection*
+Choice of kernel
+\end_layout
+
+\begin_layout Standard
+To avoid having to compute 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:update_approximation"
+
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ proposes to use what they call backward kernels, which will let us frame
+ the weight updates in the form we described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+.
+ The resulting algorithm has complexity 
+\begin_inset Formula $O(n)$
+\end_inset
+
+ and provides asymptotically consistent estimates.
+\end_layout
+
+\begin_layout Subsection*
+SMC sampler in an ABC setting
 \end_layout
 
 \begin_layout Standard
@@ -1350,6 +1624,8 @@ begin{algorithmic}
 Require $
 \backslash
 epsilon_{stop},
+\backslash
+alpha,
 \backslash
 beta,N$
 \end_layout
@@ -1473,6 +1749,8 @@ theta}, particles)
 leftarrow 
 \backslash
 mathrm{Resample}$
+\backslash
+Comment{Resampling}
 \end_layout
 
 \begin_layout Plain Layout
@@ -1499,7 +1777,7 @@ State $(
 \backslash
 boldsymbol{
 \backslash
-theta}_{n}^{(i)}, particles_{n}^{(i)})
+theta}_{n}^{(i)}, particles^{(i)})
 \backslash
 leftarrow 
 \backslash
@@ -1575,16 +1853,14 @@ Function{FindNextEpsilon}{$
 \backslash
 epsilon_{n-1},
 \backslash
-boldsymbol{W_{n-1}}$} 
+boldsymbol{w_{n-1}}$} 
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-State Solve for $
-\backslash
-epsilon_{n}$ $ESS(
+State Solve $ESS(
 \backslash
 frac{I_{
 \backslash
@@ -1598,7 +1874,9 @@ boldsymbol{x}_{k})})=
 \backslash
 alpha ESS(
 \backslash
-boldsymbol{W_{n-1}})$
+boldsymbol{w_{n-1}})$ for $
+\backslash
+epsilon_{n}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -1634,7 +1912,7 @@ Function{Mutate}{$
 \backslash
 epsilon,particle,
 \backslash
-boldsymbol{W},
+boldsymbol{w},
 \backslash
 boldsymbol{
 \backslash
@@ -1699,6 +1977,8 @@ epsilon_{n}}(particle)})$
 
 \backslash
 If{$r < $ Sample from $Uniform(0, 1)$}
+\backslash
+Comment{Metropolis-Hastings step}
 \end_layout
 
 \begin_layout Plain Layout
@@ -1765,14 +2045,32 @@ boldsymbol{
 \backslash
 theta}, particles, 
 \backslash
-boldsymbol{W}$}
+boldsymbol{w}$, N}
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-State Resample
+State Sample indices from a multinomial distribution $f(x_{1},...x_{N};N,w_{1},...,w_{
+N})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+theta_{1}^{(1)},...,
+\backslash
+theta_{1}^{(x_{1})},...,
+\backslash
+theta_{N}^{(1)},...,
+\backslash
+theta_{N}^{(x_{N})},particles_{1}^{(1)},...,particles_{N}^{(x_{N})})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -1800,12 +2098,61 @@ end{algorithmic}
 \end_layout
 
 \begin_layout Standard
-Assuming that 
-\begin_inset Formula $d_{\epsilon}(\boldsymbol{x},\boldsymbol{y})=0$
+The proposal distribution is decomposed as:
+\begin_inset Formula 
+\[
+g(x_{t}|\boldsymbol{x}_{t-1})=K(x_{t-1},x_{t})p_{t-1}(x_{t-1})
+\]
+
 \end_inset
 
- implies that 
-\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $K(x_{t-1},x_{t})$
+\end_inset
+
+ is a kernel that gives the probability of moving from 
+\begin_inset Formula $x_{t-1}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+.
+ When updating the weights we not only need to generate a sample from 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+, we also need to evaluate its probability.
+\end_layout
+
+\begin_layout Standard
+We can set up a sequence of approximations to the target distribution (which
+ is the posterior distribution 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+ in our case):
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Need to clarify that in the proposed method the variable space is the same
+ through the iterations, as opposed to standard SMC
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+p_{\epsilon_{1}}(\boldsymbol{\theta}_{\epsilon_{1}},\boldsymbol{x}_{\epsilon_{1}}|\boldsymbol{y}),p_{\epsilon_{2}}(\boldsymbol{\theta}_{\epsilon_{2}},\boldsymbol{x}_{\epsilon_{2}}|\boldsymbol{\theta}_{\epsilon_{1}},\boldsymbol{x}_{\epsilon_{1}},\boldsymbol{y}),...,p_{\epsilon_{n}}(\boldsymbol{\theta}_{\epsilon_{n}},\boldsymbol{x}_{\epsilon_{n}}|\boldsymbol{\theta}_{\epsilon_{n-1}},\boldsymbol{x}_{\epsilon_{n-1}},\boldsymbol{y})
+\]
+
 \end_inset
 
 
@@ -1813,21 +2160,8 @@ Assuming that
 status open
 
 \begin_layout Plain Layout
-Make more clear
+Wrong
 \end_layout
-
-\end_inset
-
-, we can set up a sequence of approxmations to the target distribution (which
- is the posterior distribution 
-\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
-\end_inset
-
- in our case):
-\begin_inset Formula 
-\[
-p_{\epsilon_{1}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y}),p_{\epsilon_{2}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y}),...,p_{\epsilon_{n}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})
-\]
 
 \end_inset
 
@@ -1855,10 +2189,38 @@ Where
 \end_inset
 
  the distribution is equal to the actual posterior.
+ To ease the notation we introduce 
+\begin_inset Formula $t$
+\end_inset
+
+ as a subscript instead of 
+\begin_inset Formula $\epsilon_{t}$
+\end_inset
+
+ and denote 
+\begin_inset Formula $p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
+\end_inset
+
+ as 
+\begin_inset Formula $p(x)$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear use of variables?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Using this series approximations to the posterior, we are left with the
+Using this series of approximations to the posterior, we are left with the
  task of defining proposal distributions.
  
 \begin_inset Note Note
@@ -1878,6 +2240,42 @@ key "adaptive_smc_for_abc"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+We remember that the SMC proposal distribution is written on the form 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+, so we may use the state up to time/step 
+\begin_inset Formula $t-1$
+\end_inset
+
+ when generating 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+.
+ We can do the following decomposition:
+\begin_inset Formula 
+\[
+g(x_{t}|\boldsymbol{x}_{t-1})=K(x_{t-1},x_{t})p_{t-1}(x_{t-1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{p_{t}(x_{t}|\boldsymbol{x}_{t-1})}{K(x_{t-1},x_{t})p_{t-1}(x_{t-1})}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
