@@ -372,13 +372,10 @@ Insert reference to likelihood-free Markov chain Monte Carlo
 
 .
  From Bayes rule we have:
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
-\[
-p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\propto p(\boldsymbol{\theta}|\boldsymbol{x},\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})
-\]
+\begin{equation}
+p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\propto p(\boldsymbol{\theta}|\boldsymbol{x},\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\label{eq:abc_sampling_distribution}
+\end{equation}
 
 \end_inset
 
@@ -1157,14 +1154,6 @@ The expression for the weight in the previous section,
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
 \begin{equation}
 w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}\label{eq:weight_decomposition}
 \end{equation}
@@ -1203,6 +1192,11 @@ Where
 \end_inset
 
 .
+ To ease the notation we define 
+\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}$
+\end_inset
+
+ and call it the weight update.
  
 \begin_inset Note Note
 status open
@@ -1227,8 +1221,7 @@ key "liu2001monte"
 \end_inset
 
 : It lets us stop calculation of the weights early if we see it comes close
- to 0.
- We can also make use of 
+ to 0, and we can also make use of 
 \begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
 \end_inset
 
@@ -1516,11 +1509,19 @@ Assuming we use the
 \begin_inset Formula $n$
 \end_inset
 
- particles we are evolving in the equation, we need to perform 
+ particles we are evolving in when doing the weight update above, we need
+ to perform 
 \begin_inset Formula $n$
 \end_inset
 
- pointwise evaluations for each of the 
+ pointwise evaluations of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:update_approximation"
+
+\end_inset
+
+ for each of the 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1529,7 +1530,7 @@ Assuming we use the
 \end_inset
 
  for one weight update step.
- This is prohibitive when 
+ This is computationally prohibitive when 
 \begin_inset Formula $n$
 \end_inset
 
@@ -1537,7 +1538,7 @@ Assuming we use the
 \end_layout
 
 \begin_layout Subsubsection*
-Choice of kernel
+Use of kernel in weight update
 \end_layout
 
 \begin_layout Standard
@@ -1548,15 +1549,16 @@ reference "eq:update_approximation"
 
 \end_inset
 
- 
+, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "citeulike:637817"
 
 \end_inset
 
- proposes to use what they call backward kernels, which will let us frame
- the weight updates in the form we described in 
+ proposes to use what they call backward kernels.
+ This idea also lets us frame the weight updates in the form we described
+ in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Sequential-Importance-Sampling"
@@ -1569,18 +1571,11 @@ reference "sub:Sequential-Importance-Sampling"
 \end_inset
 
  and provides asymptotically consistent estimates.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $g_{t}(x_{t}|\boldsymbol{x}_{t-1})=\hat{p}(\boldsymbol{x}_{t-1})K_{t}(\boldsymbol{x}_{t-1},x_{t})=\hat{p}(\boldsymbol{x}_{t-2})K_{t-2}(\boldsymbol{x}_{t-2},\boldsymbol{x}_{t-1})K_{t-1}(\boldsymbol{x}_{t-1},x_{t})=\hat{p}(\boldsymbol{x}_{1})\prod_{i=1}^{t-1}K(\boldsymbol{x}_{i},\boldsymbol{x}_{i+1})$
-\end_inset
-
- 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Mention that the start needs to come from the approximation
+Write more
 \end_layout
 
 \end_inset
@@ -1589,24 +1584,127 @@ Mention that the start needs to come from the approximation
 \end_layout
 
 \begin_layout Standard
-Likewise for the approximation
-\end_layout
+The backward kernel is introduced as a part of an approximation to the approxima
+tion 
+\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
+\end_inset
 
-\begin_layout Standard
-\begin_inset Formula $\hat{p}_{t}(\boldsymbol{x}_{t})=p_{t}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}L_{i}(x_{i+1},x_{i})$
+ as was described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+, and is defined as follows:
+\begin_inset Formula 
+\[
+\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=1}^{i-1}L_{i}(x_{t+1},x_{t})
+\]
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $L(x_{i+1},x_{i})$
+\end_inset
+
+ is a kernel that gives the probability going from 
+\begin_inset Formula $x_{i+1}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ We will return to what this kernel can look like later.
+ For the proposal distribution we set up a similar sequence of kernels,
+ but here with increasing indices: From 
+\begin_inset Formula $x_{i-1}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+g_{i}(x_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},x_{i})\\
+ & =\hat{p}_{i-2}(\boldsymbol{x}_{i-2})K_{i-2}(\boldsymbol{x}_{i-2},\boldsymbol{x}_{i-1})K_{i-1}(\boldsymbol{x}_{i-1},x_{i})\\
+ & =\hat{p}_{1}(\boldsymbol{x}_{1})\prod_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that these approximations and proposals are not defined in terms of
+ marginal distributions, 
+\begin_inset Formula $g_{i}(\boldsymbol{x}_{i})$
+\end_inset
+
+, but conditional ones, 
+\begin_inset Formula $g_{i}(x_{i}|\boldsymbol{x}_{i-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Looking at the weight update we get:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-w(x_{i}) & =\frac{\hat{p}_{i}(x_{i})}{g_{i}(x_{i})}\\
-\frac{\hat{p}_{i}(x_{i})}{g_{i}(x_{i})} & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(x_{t+1},x_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
- & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}L_{i}(x_{i+1},x_{i})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\boldsymbol{x}_{i-1})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(x_{t+1},x_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
  & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(x_{i},x_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}
 \end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check indices
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To anchor the recursion at the start we assume that we are able to sample
+ perfectly from the first approximation 
+\begin_inset Formula $p_{1}(\boldsymbol{x}_{1})$
+\end_inset
+
+, so that we can set 
+\begin_inset Formula $\hat{p}_{1}(\boldsymbol{x}_{1})=p_{1}(\boldsymbol{x}_{1})$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Marginal by construction
+\end_layout
 
 \end_inset
 
@@ -1624,11 +1722,180 @@ Does the proposal always have to be bigger than the target here?
 \end_layout
 
 \begin_layout Standard
-Now we are able to generate the sequence of weight updates sequentially
+\begin_inset Formula 
+\begin{align*}
+w_{2}(x_{2}) & =w_{1}(x_{1})u_{2}(x_{1})\\
+ & =\frac{p_{1}(x_{1})}{p_{1}(x_{1})}\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}\\
+ & =\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In general the weight at 
+\begin_inset Formula $i$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\[
+w_{i}(x_{i})=\frac{p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So at every step we have a weighted sample from the approximation to the
+ target distribution 
+\begin_inset Formula $\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})$
+\end_inset
+
+.
+ However, our goal is to have a weighted sample from 
+\begin_inset Formula $p_{i}(x_{i})$
+\end_inset
+
+, but viewing the expression for the weight on the equivalent form:
+\begin_inset Formula 
+\[
+w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We recognize 
+\begin_inset Formula $p_{i}(x_{i})$
+\end_inset
+
+ as the desired target distribution, and 
+\begin_inset Formula $\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}$
+\end_inset
+
+ as a proposal distribution.
+ We now see why the approximation to the target distribution had the form
+ it did, and a requirement for an approximation distribution to function
+ in this setup is that it has the target distribution as a marginal:
+\begin_inset Formula 
+\[
+\int\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(x_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With these kernels the problem of generating a weight sample can be written
+ in the recursive form we described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection*
 SMC sampler in an ABC setting
+\end_layout
+
+\begin_layout Standard
+We now follow the work done in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ and describe how the SMC sampler can be used in an ABC setting.
+ Remembering the expression in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:abc_sampling_distribution"
+
+\end_inset
+
+ for the distribution we are sampling from in ABC, a possible sequence of
+ approximations to the true posterior is given by decreasing the distance
+ between the observations and drawn samples, that is: Let 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ be sample and 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ an observation, and define a sequence of decreasing values 
+\begin_inset Formula $\epsilon_{1}>\epsilon_{2}>...>\epsilon_{n}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})$
+\end_inset
+
+ denote the distribution such that drawn samples from it lie within 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ from 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, that is: 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon_{i}$
+\end_inset
+
+.
+ As 
+\begin_inset Formula $\epsilon\to0$
+\end_inset
+
+ we expect 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})\to p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear what this means
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Using this sequence as approximations to the target distribution, we are
+ left with tasks of specifying forward and backward kernels, and a schedule
+ for updating the allowed distances 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Choice of kernel
+\end_layout
+
+\begin_layout Standard
+
 \end_layout
 
 \begin_layout Standard
@@ -2147,187 +2414,6 @@ end{algorithmic}
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The proposal distribution is decomposed as:
-\begin_inset Formula 
-\[
-g(x_{t}|\boldsymbol{x}_{t-1})=K(x_{t-1},x_{t})p_{t-1}(x_{t-1})
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $K(x_{t-1},x_{t})$
-\end_inset
-
- is a kernel that gives the probability of moving from 
-\begin_inset Formula $x_{t-1}$
-\end_inset
-
- to 
-\begin_inset Formula $x_{t}$
-\end_inset
-
-.
- When updating the weights we not only need to generate a sample from 
-\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
-\end_inset
-
-, we also need to evaluate its probability.
-\end_layout
-
-\begin_layout Standard
-We can set up a sequence of approximations to the target distribution (which
- is the posterior distribution 
-\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
-\end_inset
-
- in our case):
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Need to clarify that in the proposed method the variable space is the same
- through the iterations, as opposed to standard SMC
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-p_{\epsilon_{1}}(\boldsymbol{\theta}_{\epsilon_{1}},\boldsymbol{x}_{\epsilon_{1}}|\boldsymbol{y}),p_{\epsilon_{2}}(\boldsymbol{\theta}_{\epsilon_{2}},\boldsymbol{x}_{\epsilon_{2}}|\boldsymbol{\theta}_{\epsilon_{1}},\boldsymbol{x}_{\epsilon_{1}},\boldsymbol{y}),...,p_{\epsilon_{n}}(\boldsymbol{\theta}_{\epsilon_{n}},\boldsymbol{x}_{\epsilon_{n}}|\boldsymbol{\theta}_{\epsilon_{n-1}},\boldsymbol{x}_{\epsilon_{n-1}},\boldsymbol{y})
-\]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Wrong
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Setup definition
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $\epsilon_{1}>\epsilon_{2}>...>\epsilon_{n}$
-\end_inset
-
-.
- If 
-\begin_inset Formula $\epsilon_{n}=0$
-\end_inset
-
- the distribution is equal to the actual posterior.
- To ease the notation we introduce 
-\begin_inset Formula $t$
-\end_inset
-
- as a subscript instead of 
-\begin_inset Formula $\epsilon_{t}$
-\end_inset
-
- and denote 
-\begin_inset Formula $p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
-\end_inset
-
- as 
-\begin_inset Formula $p(x)$
-\end_inset
-
-.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Unclear use of variables?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Using this series of approximations to the posterior, we are left with the
- task of defining proposal distributions.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Focus on several methods?
-\end_layout
-
-\end_inset
-
-We will focus on a method described in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "adaptive_smc_for_abc"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-We remember that the SMC proposal distribution is written on the form 
-\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
-\end_inset
-
-, so we may use the state up to time/step 
-\begin_inset Formula $t-1$
-\end_inset
-
- when generating 
-\begin_inset Formula $x_{t}$
-\end_inset
-
-.
- We can do the following decomposition:
-\begin_inset Formula 
-\[
-g(x_{t}|\boldsymbol{x}_{t-1})=K(x_{t-1},x_{t})p_{t-1}(x_{t-1})
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{p_{t}(x_{t}|\boldsymbol{x}_{t-1})}{K(x_{t-1},x_{t})p_{t-1}(x_{t-1})}
-\]
 
 \end_inset
 
