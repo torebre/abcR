@@ -35,6 +35,7 @@
 %\usepackage{makeidx}     
 %\makeindex              
 
+\usepackage{placeins}
 
 \usepackage{algpseudocode}
 
@@ -154,17 +155,80 @@ Introduction
 \end_layout
 
 \begin_layout Standard
+Approximate Bayesian Computation (ABC) is a term used for methods that in
+ a Bayesian setting estimate the posterior without evaluating the likelihood
+ function.
+ The first such methods were developed in the field of population genetics
+ in the late 1990s
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Quickly about the problem and where ABC fits in.
- Overview of the report
+Check if this is a correct spelling
 \end_layout
 
 \end_inset
 
+, and has since found use in other areas, notably in those with a relation
+ to biology, see sections 3 and 7 in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "1ef20ace6466467899d76e9976c9b6fa"
 
+\end_inset
+
+ for a history and examples.
+ There are also examples of use in other fields, for instance image analysis
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Moores2014"
+
+\end_inset
+
+ and dynamical model selection 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Toni187"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There is research being done on several aspects of ABC, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "approx_bayes_comp"
+
+\end_inset
+
+ for an overview of research on the computational part.
+ Here we will focus on one computational strategy that there are several
+ variations on in the ABC literature: Use of what is called an sequential
+ Monte Carlo sampler (SMC) when obtaining samples from the approximation
+ to the posterior.
+ More specifically we will focus on the work done in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ and explain that in detail.
+\end_layout
+
+\begin_layout Standard
+We start with a quick look at the basics of Bayesian inference, and point
+ out that there can often be a problem in evaluating the posterior probability.
+ From here we look at some strategies for approximating the posterior, before
+ we move on to the situation where we cannot evaluate the likelihood function,
+ and it is here ABC becomes an alternative.
+ We then describe ABC in general, before looking at the mentioned SMC in
+ ABC approach for obtaining samples.
+ This approach will be illustrated by some examples, and comparisons to
+ other ABC methods.
 \end_layout
 
 \begin_layout Section*
@@ -172,11 +236,54 @@ Bayesian inference
 \end_layout
 
 \begin_layout Standard
+Our main goal is to summarize a dataset, 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, in a set of statistics, 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+.
+ We assume that 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ is a sample from a random vector, 
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ only was a single number, we would call it a sample from a random variable
+ 
+\begin_inset Formula $Y$
+\end_inset
+
+.
+ A random vector is a function from the sample space to 
+\begin_inset Formula $\mathrm{\boldsymbol{R}^{n}}$
+\end_inset
+
+, and a statistic is in turn defined to be a function on a random variable/vecto
+r .
+ For a more thorough look at the definitions see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "CaseBerg:01"
+
+\end_inset
+
+.
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Short introduction to Bayesian inference
+Check edition.
+ Insert references to chapters
 \end_layout
 
 \end_inset
@@ -185,23 +292,136 @@ Short introduction to Bayesian inference
 \end_layout
 
 \begin_layout Standard
-See 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "gelman2013bayesian"
-
+To make it more concrete, 
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
- for a full treatment on all aspects of Bayesian data analysis.
+ could be the heights of 50 people, and then the random variable 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ would be a function from the sample space, which here would the set of
+ all permutations of 50 people in the population, into 
+\begin_inset Formula $\mathrm{\boldsymbol{R}^{50}}$
+\end_inset
+
+.
+ A statistic of interest could be the average height of the population,
+ and to estimate it we could define 
+\begin_inset Formula $\hat{\theta}=\frac{1}{50}\sum_{i=1}^{50}Y_{i}$
+\end_inset
+
+, where 
+\begin_inset Formula $\hat{\theta}$
+\end_inset
+
+ is an estimate of the population average, 
+\begin_inset Formula $\theta$
+\end_inset
+
+, using the smaller sample set.
 \end_layout
 
 \begin_layout Standard
-In the following 
+There are two approaches to viewing 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- denotes a vector of model parameters, and 
-\begin_inset Formula $\boldsymbol{x}$
+.
+ One is called the frequentist approach, where 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is viewed as a vector of fixed numbers.
+ That is: For the height example, 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is the average of all members of the population, which is a fixed number,
+ but one that we can not compute without much effort: Gathering all the
+ individuals and measuring their heights.
+ So we instead make inferences using the smaller sample set, 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, and try to answer questions like: What is the probability that the interval
+ 
+\begin_inset Formula $[175,185]$
+\end_inset
+
+ centimeters cover the true value 
+\begin_inset Formula $\theta$
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+A different approach is to view 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ as a random vector.
+ Here we say that for the purposes of analysis 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is allowed to take on values from a set, but that some values may be more
+ likely than others.
+ This changes the form of the answer we give to our goal from that of the
+ frequentist approach.
+ We now answer questions of the type: How likely is 
+\begin_inset Formula $\boldsymbol{\theta}_{1}$
+\end_inset
+
+, say, as a value of 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ given the data 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+.
+ This question would not make sense in the frequentist setting, since there
+ 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is fixed, and either 
+\begin_inset Formula $\boldsymbol{\theta}_{1}=\boldsymbol{\theta}$
+\end_inset
+
+ or 
+\begin_inset Formula $\boldsymbol{\theta}_{1}\neq\boldsymbol{\theta}$
+\end_inset
+
+, resulting in probability 1 or 0 respectively
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make more clear
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Viewing 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ as a random vector gives us what is termed the Bayesian approach to inference.
+ We can reformulate our main goal a bit to better fit in this framework:
+ Let 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ denote a vector of model parameters, and 
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
  is a vector of observed data.
@@ -210,7 +430,15 @@ In the following
 \end_inset
 
  that are consistent with the observed data.
- The process of data analysis can be viewed as consisting of three steps:
+ In a data analysis setting we can view this inference process to consist
+ of three steps (see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gelman2013bayesian"
+
+\end_inset
+
+ for a full treatment on all aspects of Bayesian data analysis):
 \end_layout
 
 \begin_layout Enumerate
@@ -220,19 +448,28 @@ Setting up a full probability model.
 \end_inset
 
  and 
-\begin_inset Formula $\boldsymbol{x}$
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
 : 
-\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{x})$
+\begin_inset Formula $p(\boldsymbol{\theta},\boldsymbol{y})$
 \end_inset
 
 .
+ Note again that we can do this is because 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is a random vector, as opposed to the frequentist approach.
 \end_layout
 
 \begin_layout Enumerate
 Conditioning on the observed data.
- This entails looking at an posterior distribution, explained below.
+ This means evaluating 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -246,19 +483,19 @@ In step 2 above, we need to make inferences about
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
-, which are the variables we want to estimate, given the observed data 
-\begin_inset Formula $\boldsymbol{x}$
+ given the observed data 
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
 .
- If we just condition on the observed data, we can make use of Bayes' rule
- and write the conditional distribution as:
+ If we condition on the observed data, we can make use of Bayes' rule and
+ write the conditional distribution as:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-p(\boldsymbol{\theta}|\boldsymbol{x})=\frac{p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p(\boldsymbol{x})}
+p(\boldsymbol{\theta}|\boldsymbol{y})=\frac{p(\boldsymbol{\theta},\boldsymbol{y})}{p(\boldsymbol{y})}=\frac{p(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p(\boldsymbol{y})}
 \]
 
 \end_inset
@@ -268,7 +505,7 @@ p(\boldsymbol{\theta}|\boldsymbol{x})=\frac{p(\boldsymbol{x}|\boldsymbol{\theta}
 
 \begin_layout Standard
 The factor 
-\begin_inset Formula $p(\boldsymbol{x})$
+\begin_inset Formula $p(\boldsymbol{y})$
 \end_inset
 
  does not depend on 
@@ -276,26 +513,26 @@ The factor
 \end_inset
 
 , and since the data is given, that is; 
-\begin_inset Formula $\boldsymbol{x}$
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
  does not change, 
-\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{x})$
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
  is a function of 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- only, we can view 
-\begin_inset Formula $p(\boldsymbol{x})$
+ only, and we can view 
+\begin_inset Formula $p(\boldsymbol{y})$
 \end_inset
 
  as a constant.
  We can thus write:
 \begin_inset Formula 
 \[
-p(\boldsymbol{\theta}|\boldsymbol{x})\propto p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})
+p(\boldsymbol{\theta}|\boldsymbol{y})\propto p(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})
 \]
 
 \end_inset
@@ -304,33 +541,256 @@ p(\boldsymbol{\theta}|\boldsymbol{x})\propto p(\boldsymbol{x}|\boldsymbol{\theta
 \end_layout
 
 \begin_layout Standard
-There are expressions for the two terms on the right side.
- 
-\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+There are expressions for the two terms on the right side: 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})$
 \end_inset
 
  is termed the likelihood, and noting since 
-\begin_inset Formula $\boldsymbol{x}$
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
  is constant, it is a function of 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
-.
- 
+, and 
 \begin_inset Formula $p(\boldsymbol{\theta})$
 \end_inset
 
  is termed the prior distribution.
 \end_layout
 
+\begin_layout Subsubsection*
+Evaluating the posterior
+\end_layout
+
 \begin_layout Standard
+Concentrating on the 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})$
+\end_inset
+
+ form of the joint distribution, we need to think about how to set up the
+ likelihood and prior.
+ The prior represents our knowledge of 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ before we have seen any experimental data.
+ This knowledge may be vague, or non-existent, in which case it might make
+ sense to formulate 
+\begin_inset Formula $p(\boldsymbol{\theta})$
+\end_inset
+
+ as uniform distribution over all possible values 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ can take, 
+\begin_inset Formula $\boldsymbol{\theta}\sim\mathrm{Uniform}(\boldsymbol{\theta}_{min},\boldsymbol{\theta}_{max})$
+\end_inset
+
+, presuming we at least know what is the possible range.
+ Or it may be that we have some prior knowledge that allows us to be more
+ specific.
+\end_layout
+
+\begin_layout Standard
+The expression for the likelihood is also formulated as a probability distributi
+on.
+ Keeping with the height example we can propose: 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})\sim\mathrm{N}(\theta_{1},\theta_{2})$
+\end_inset
+
+, a normal distribution with mean 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ and variance 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+, so that 
+\begin_inset Formula $\boldsymbol{\theta}=[\theta_{1},\theta_{2}]$
+\end_inset
+
+.
+ To illustrate a point, we will simplify the setup, and say that 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+ is known so that what we are interested in evaluating is 
+\begin_inset Formula $p(\theta_{1}|\boldsymbol{y})$
+\end_inset
+
+, and that the prior is 
+\begin_inset Formula $\theta_{1}\sim\mathrm{N}(\mu,\sigma^{2})$
+\end_inset
+
+, with for instance 
+\begin_inset Formula $\mu=180$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma=10$
+\end_inset
+
+.
+ In addition we assume the observations, 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, are independent.
+ We can then write:
+\begin_inset Formula 
+\begin{align}
+p(\theta_{1}|\boldsymbol{y}) & \propto p(\boldsymbol{y}|\theta_{1})p(\theta_{1})\nonumber \\
+ & =\frac{1}{\sqrt{2\pi}\theta_{2}}\exp\left(-\frac{1}{2}\sum_{i=1}^{n}\frac{(y_{i}-\theta_{1})^{2}}{\theta_{2}}\right)\frac{1}{\sqrt{2\pi}\sigma}\exp\left(-\frac{1}{2}\frac{(\theta_{1}-\mu)^{2}}{\sigma^{2}}\right)\nonumber \\
+ & \propto\exp\left(-\frac{1}{2}\sum_{i=1}^{n}\frac{(y_{i}-\theta_{1})^{2}}{\theta_{2}}-\frac{1}{2}\frac{(\theta_{1}-\mu)^{2}}{\sigma^{2}}\right)\nonumber \\
+ & \propto\exp\left(\left(\frac{n}{\theta_{2}^{2}}+\frac{1}{\sigma^{2}}\right)^{-1}\left(\frac{n}{\theta_{2}^{2}}\overline{y}+\frac{\mu}{\sigma^{2}}\right)^{2}+\theta_{1}^{2}\right)^{2}\label{eq:conjugate_prior}
+\end{align}
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Add simple example?
+Check if the variance term needs to be included
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Going from the third to the fourth line above involves a bit of algebra,
+ specifially using the trick of completing the square and also using that
+ terms not involving 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ can treated as constants, and thus removed when working with equations
+ that only need to be proportional to each other.
+\end_layout
+
+\begin_layout Standard
+There are a couple of points of interest in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:conjugate_prior"
+
+\end_inset
+
+.
+ One is that the final expression does not involve the actual data points
+ in 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, only their average 
+\begin_inset Formula $\overline{y}$
+\end_inset
+
+.
+ This relationship between 
+\begin_inset Formula $\overline{y}$
+\end_inset
+
+, which is a statistic of 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, and 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+, which is the parameter we want to estimate, has a name: We say that the
+ statistic 
+\begin_inset Formula $\overline{y}$
+\end_inset
+
+ is 
+\shape italic
+sufficient
+\shape default
+ for the mean 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+.
+ Later we will touch upon this concept again, but see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "CaseBerg:01"
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to chapters
+\end_layout
+
+\end_inset
+
+ for a more in-depth look.
+\end_layout
+
+\begin_layout Standard
+The other point is that the final expression has the form of the probability
+ density function of a normal distribution (we only need to add an appropriate
+ constant in front).
+ So we have shown that the posterior is a normal distribution.
+ When the posterior distribution follows the same form as the prior distribution
+, we call that property conjugacy.
+ That it followed the same form depended on the fact that we chose the likelihoo
+d to be a normal distribution, so we say that the normal prior distribution
+ is a conjugate family for normal likelihood.
+ Several such couplings exist, for instance the beta prior distribution
+ is a conjugate family for the binomial likelihood.
+\end_layout
+
+\begin_layout Standard
+Using the conjugacy property makes the posterior have a closed form, which
+ makes it easy to work with.
+ The problem is that we cannot always use this property.
+ It may be that the chosen prior and/or likelihood has a form where the
+ posterior will be a non-standard distribution or not a closed expression.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add example?
+\end_layout
+
+\end_inset
+
+To evaluate the posterior in such cases we need to look at other techniques
+ where we instead compute an approximation to it.
+\end_layout
+
+\begin_layout Subsubsection*
+Approximating the posterior
+\end_layout
+
+\begin_layout Section*
+Markov Chain Monte Carlo
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FloatBarrier
 \end_layout
 
 \end_inset
@@ -374,7 +834,7 @@ Insert reference to likelihood-free Markov chain Monte Carlo
  From Bayes rule we have:
 \begin_inset Formula 
 \begin{equation}
-p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\propto p(\boldsymbol{\theta}|\boldsymbol{x},\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\label{eq:abc_sampling_distribution}
+p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\propto p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\label{eq:abc_sampling_distribution}
 \end{equation}
 
 \end_inset
@@ -438,7 +898,7 @@ If we were able to draw samples from the likelihood function such that
 \end_inset
 
 , we could estimate the posterior probability.
- A simple algorithm for this is shown in 
+ A simple algorithm for this is shown in algorithm  
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -453,10 +913,10 @@ reference "likelihoo-free_alg1"
 
 .
  For continuous probability distributions, the probability that two samples
- are exactly the same is likely to be 0, and for discrete probability distributi
-ons the probability for the being the same is also likely to be close to
- 0 in practical problems.
- So the algorithm in 
+ are exactly the same is 0, and for discrete probability distributions the
+ probability for the being the same is also likely to be close to 0 in practical
+ problems.
+ Agorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -633,7 +1093,7 @@ Keeping the core idea, we can make a couple of changes to make the algorithm
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
- are accepeted as well: 
+ are accepted: 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\rho$
 \end_inset
 
@@ -759,7 +1219,7 @@ for the parameters that are being estimated, since then we have the following
 \begin{align*}
 p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymbol{\theta})\int_{S(Y)}p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})p(S(\boldsymbol{x})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
  & =p(\boldsymbol{\theta})p(S(\boldsymbol{y})|\boldsymbol{\theta})\\
- & \text{by suffiency}\\
+ & \text{by sufficiency}\\
  & =p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})
 \end{align*}
 
@@ -830,7 +1290,7 @@ key "Peters2012,Toni187,adaptive_smc_for_abc"
  to the target distribution, termed particles, and then updating these by
  guiding them through the series of further approximations to the target
  distribution.
- We will in following look at the at the algorithm developed in 
+ We will in the following look at the algorithm developed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
@@ -1129,8 +1589,8 @@ The constant
 \end_inset
 
  we get a good approximation to the distribution.
- In the next next we will extend the weight calculation step by introducing
- a recursive method.
+ In the next next we will extend the weight calculation step by splitting
+ into several steps that can be computed recursively.
 \end_layout
 
 \begin_layout Subsection*
@@ -1306,6 +1766,10 @@ In summary we are faced with two challenges: Finding good proposal distributions
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsubsection*
+Weight degeneracy
 \end_layout
 
 \begin_layout Standard
@@ -1538,7 +2002,7 @@ reference "eq:update_approximation"
 \end_layout
 
 \begin_layout Subsubsection*
-Use of kernel in weight update
+Use of backward kernel in weight update
 \end_layout
 
 \begin_layout Standard
@@ -1703,16 +2167,6 @@ To anchor the recursion at the start we assume that we are able to sample
 status open
 
 \begin_layout Plain Layout
-Marginal by construction
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
 Does the proposal always have to be bigger than the target here?
 \end_layout
 
@@ -1764,7 +2218,7 @@ So at every step we have a weighted sample from the approximation to the
 , but viewing the expression for the weight on the equivalent form:
 \begin_inset Formula 
 \[
-w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}}
+w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(x_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},\boldsymbol{x}_{t-1})}}
 \]
 
 \end_inset
@@ -1805,6 +2259,10 @@ reference "sub:Sequential-Importance-Sampling"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsubsection*
+Choice of backward kernel
 \end_layout
 
 \begin_layout Subsection*
@@ -1864,10 +2322,15 @@ reference "eq:abc_sampling_distribution"
 \end_inset
 
  we expect 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})\to p(\boldsymbol{x}|\boldsymbol{\theta})$
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})\to p(\boldsymbol{y}|\boldsymbol{\theta})$
 \end_inset
 
+, with 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})$
+\end_inset
 
+ denoting the true likelihood function relating to the target posterior
+ distribution
 \begin_inset Note Note
 status open
 
@@ -1881,9 +2344,10 @@ Unclear what this means
 \end_layout
 
 \begin_layout Standard
-Using this sequence as approximations to the target distribution, we are
- left with tasks of specifying forward and backward kernels, and a schedule
- for updating the allowed distances 
+Using this sequence as approximations to the target distribution, and assuming
+ we already have statistics and we are left with tasks of specifying forward
+ and backward kernels, and a schedule for updating the cutoff distances
+ 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
 
@@ -1895,7 +2359,186 @@ Choice of kernel
 \end_layout
 
 \begin_layout Standard
+Del Moral et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
 
+\end_inset
+
+ use an MCMC kernel, 
+\begin_inset Formula $K_{i}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m},\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m})$
+\end_inset
+
+, with invariant density 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+ at each weight update step.
+ The kernel uses a Metropolis-Hastings (MH) step to achieve the desired
+ invariant density.
+ To show the form of the kernel we start by defining a proposal distribution:
+\begin_inset Formula 
+\[
+q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The MH-ratio term is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\alpha(i,i+1)=\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now propose that the Markov chain with update probability 
+\begin_inset Formula $P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)$
+\end_inset
+
+ has invariant density 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+ For this to be the case we must first show that (see for example chapter
+ 4.9 if Ross 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ross2006introduction"
+
+\end_inset
+
+ for a more in detail discussion of the requirements):
+\begin_inset Formula 
+\[
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Expanding 
+\begin_inset Formula $P(i,i+1)$
+\end_inset
+
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & \alpha(i,i+1)=\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\alpha(i+1,i)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\alpha(i,i+1)=1$
+\end_inset
+
+, then 
+\begin_inset Formula $\alpha(i+1,i)=\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}<1$
+\end_inset
+
+, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Also check when it is equal to 1
+\end_layout
+
+\end_inset
+
+ and we have:
+\begin_inset Formula 
+\begin{align*}
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})} & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similarly when 
+\begin_inset Formula $\alpha(i+1,i)=1$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more about conditions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The likelihood function, 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+, is used when determining the probability of the proposal above, but since
+ we cannot evaluate this function we look at a form that is equivalent in
+ this setting:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert formula
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Expression for variance of theta
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Algorithm
 \end_layout
 
 \begin_layout Standard
@@ -2427,6 +3070,22 @@ status open
 \begin_layout Plain Layout
 Section on kernels.
  Update schedules
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagebreak
 \end_layout
 
 \end_inset
