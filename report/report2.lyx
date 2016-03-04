@@ -48,6 +48,7 @@
 % Inkluder forsida:
 %\input{forside}
 
+
 % Romerske tall på alt før selve rapporten starter er pent.
 \pagenumbering{roman}
 \end_preamble
@@ -119,6 +120,22 @@ filename "forside.tex"
 \end_layout
 
 \begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -150,7 +167,7 @@ pagenumbering{arabic}
 
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Introduction
 \end_layout
 
@@ -206,9 +223,8 @@ key "approx_bayes_comp"
 
  for an overview of research on the computational part.
  Here we will focus on one computational strategy that there are several
- variations on in the ABC literature: Use of what is called an sequential
- Monte Carlo sampler (SMC) when obtaining samples from the approximation
- to the posterior.
+ variations on in the ABC literature: Use of what is called sequential Monte
+ Carlo (SMC) when obtaining samples from the approximation to the posterior.
  More specifically we will focus on the work done in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -231,7 +247,7 @@ We start with a quick look at the basics of Bayesian inference, and point
  other ABC methods.
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Bayesian inference
 \end_layout
 
@@ -560,7 +576,7 @@ There are expressions for the two terms on the right side:
  is termed the prior distribution.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsection
 Evaluating the posterior
 \end_layout
 
@@ -774,11 +790,11 @@ To evaluate the posterior in such cases we need to look at other techniques
  where we instead compute an approximation to it.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsection
 Approximating the posterior
 \end_layout
 
-\begin_layout Section*
+\begin_layout Subsection
 Markov Chain Monte Carlo
 \end_layout
 
@@ -798,7 +814,7 @@ FloatBarrier
 
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Approximate Bayesian Computation
 \end_layout
 
@@ -820,17 +836,14 @@ To understand how likelihood-free methods work, let us look at the posterior
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference to likelihood-free Markov chain Monte Carlo
-\end_layout
+ (see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "2010arXiv1001.2058S"
 
 \end_inset
 
-.
+ for more details).
  From Bayes rule we have:
 \begin_inset Formula 
 \begin{equation}
@@ -848,13 +861,11 @@ The posterior can be retrieved by integrating out
 \end_inset
 
 :
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
-\[
-p(\boldsymbol{\theta}|\boldsymbol{y})\propto p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}
-\]
+\begin{align*}
+p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}\\
+ & =p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y},\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}
+\end{align*}
 
 \end_inset
 
@@ -883,9 +894,10 @@ It is assumed that we have an expression for the prior,
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{align*}
-p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})
-\end{align*}
+\begin{align}
+p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})\int_{Y}I(\boldsymbol{x}=\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}\nonumber \\
+ & =p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})\label{eq:likelihood_dirac}
+\end{align}
 
 \end_inset
 
@@ -1268,7 +1280,7 @@ Show MCMC method, and how SMC can be an alternative?
 
 \end_layout
 
-\begin_layout Section*
+\begin_layout Section
 Sequential Monte Carlo in an ABC setting
 \end_layout
 
@@ -1315,7 +1327,7 @@ The output in the end is a set of weighted samples, which in turn can be
  resampling (SIR) method for generating samples from a distribution.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsection
 Sampling importance resampling algorithm
 \end_layout
 
@@ -1593,7 +1605,7 @@ The constant
  into several steps that can be computed recursively.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsection
 Sequential Importance Sampling
 \begin_inset CommandInset label
 LatexCommand label
@@ -1768,7 +1780,7 @@ In summary we are faced with two challenges: Finding good proposal distributions
 .
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Weight degeneracy
 \end_layout
 
@@ -1786,7 +1798,7 @@ Add section on problems: Weight degeneracy.
 
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Subsection
 Sequential Markov chain sampler
 \end_layout
 
@@ -2001,7 +2013,7 @@ reference "eq:update_approximation"
  is large.
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Use of backward kernel in weight update
 \end_layout
 
@@ -2261,12 +2273,12 @@ reference "sub:Sequential-Importance-Sampling"
 .
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsubsection
 Choice of backward kernel
 \end_layout
 
-\begin_layout Subsection*
-SMC sampler in an ABC setting
+\begin_layout Subsection
+SMC sampler in ABC
 \end_layout
 
 \begin_layout Standard
@@ -2301,7 +2313,7 @@ reference "eq:abc_sampling_distribution"
 
 .
  Let 
-\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})$
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
 \end_inset
 
  denote the distribution such that drawn samples from it lie within 
@@ -2322,40 +2334,77 @@ reference "eq:abc_sampling_distribution"
 \end_inset
 
  we expect 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})\to p(\boldsymbol{y}|\boldsymbol{\theta})$
+\begin_inset Formula $\boldsymbol{x}\to\boldsymbol{y}$
+\end_inset
+
+, and as a consequence 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\to p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
 , with 
-\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})$
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
- denoting the true likelihood function relating to the target posterior
- distribution
-\begin_inset Note Note
-status open
+ denoting the true posterior.
+ To make it more concrete, define the likelihood 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta},\boldsymbol{x})$
+\end_inset
 
-\begin_layout Plain Layout
-Unclear what this means
-\end_layout
+ to be an indicator function that is 1 if 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon$
+\end_inset
+
+, and 0 else.
+ We write this function as 
+\begin_inset Formula $I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x})$
+\end_inset
+
+, if 
+\begin_inset Formula $\epsilon=0$
+\end_inset
+
+ this turns into the Dirac function, and we get the result shown in equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:likelihood_dirac"
 
 \end_inset
 
 .
+ 
 \end_layout
 
 \begin_layout Standard
-Using this sequence as approximations to the target distribution, and assuming
- we already have statistics and we are left with tasks of specifying forward
- and backward kernels, and a schedule for updating the cutoff distances
- 
+Using this sequence, 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
+\end_inset
+
+, as approximations to the target distribution, and assuming we already
+ have statistics
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What does this mean?
+\end_layout
+
+\end_inset
+
+, we are left with the tasks of specifying forward and backward kernels,
+ and a schedule for updating the cutoff distances 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Subsubsection*
-Choice of kernel
+\begin_layout Subsubsection
+Use of multiple particles for each 
+\begin_inset Formula $\theta$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2368,17 +2417,104 @@ key "adaptive_smc_for_abc"
 
 \end_inset
 
- use an MCMC kernel, 
-\begin_inset Formula $K_{i}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m},\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m})$
+ use an MCMC kernel for 
+\begin_inset Formula $K(x_{t},\boldsymbol{x}_{t+1})$
 \end_inset
 
-, with invariant density 
-\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+, but before describing it we need introduce one change to the above.
+ Instead of having only one sample 
+\begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
- at each weight update step.
- The kernel uses a Metropolis-Hastings (MH) step to achieve the desired
- invariant density.
+, and parameter value 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+, drawn from 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
+\end_inset
+
+, a number of independent samples are drawn.
+ Let 
+\begin_inset Formula $\{\boldsymbol{x}\}_{1:m}$
+\end_inset
+
+ denote 
+\begin_inset Formula $m$
+\end_inset
+
+ samples that are independent given 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+.
+ This modified proposal distribution is written as:
+\begin_inset Formula 
+\[
+p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The reason for introducing this as a proposal distribution is to reduce
+ the variance of the Metropolis-Hastings ratio we will encounter in the
+ next section, which in turn increases its performance
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+How is the performance increased?
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Is 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+ a valid proposal distribution? Yes, as we will show it is.
+ We claim that the marginal distribution for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ is the same for any 
+\begin_inset Formula $m$
+\end_inset
+
+, and that this distribution is 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Choice of kernel
+\end_layout
+
+\begin_layout Standard
+The kernel uses a Metropolis-Hastings (MH) step to achieve the desired invariant
+ density.
  To show the form of the kernel we start by defining a proposal distribution:
 \begin_inset Formula 
 \[
@@ -2396,9 +2532,9 @@ The MH-ratio term is:
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\alpha(i,i+1)=\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}\right)
-\]
+\begin{equation}
+\alpha(i,i+1)=\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}\right)\label{eq:mh-ratio}
+\end{equation}
 
 \end_inset
 
@@ -2415,8 +2551,8 @@ We now propose that the Markov chain with update probability
 \end_inset
 
 .
- For this to be the case we must first show that (see for example chapter
- 4.9 if Ross 
+ For this to be the case we must first show that the balance equation is
+ fulfilled (see for example chapter 4.9 if Ross 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ross2006introduction"
@@ -2504,20 +2640,208 @@ Write more about conditions
 
 \end_layout
 
+\begin_layout Subsubsection
+Metropolis-Hastings ratio without likelihood
+\end_layout
+
 \begin_layout Standard
 The likelihood function, 
-\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\begin_inset Formula $p(\boldsymbol{\boldsymbol{x}}|\boldsymbol{\theta})$
 \end_inset
 
-, is used when determining the probability of the proposal above, but since
- we cannot evaluate this function we look at a form that is equivalent in
- this setting:
+, appears in the Metropolis-Hastings ratio above, but we cannot evaluate
+ it.
+ We will replace the ratio with one that has the same marginal distribution
+ in 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+.
+ Our claim is that the ratio in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mh-ratio"
+
+\end_inset
+
+ has the same marginal in 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ as the ratio:
+\begin_inset Formula 
+\[
+\min\left(1,\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+To prove the equality we start by extracting part of the nominator above:
+\begin_inset Formula 
+\begin{align*}
+\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(m)})p(\boldsymbol{\theta}_{i+1}) & =\\
+\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})\frac{1}{\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Now look at the marginal for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ in the expression 
+\begin_inset Formula $\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})$
+\end_inset
+
+ by integrating out all the 
+\begin_inset Formula $\boldsymbol{x}_{i+1}$
+\end_inset
+
+'s:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us extract 
+\begin_inset Formula $k=1$
+\end_inset
+
+ from the sum above and look at the expression for it:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
+ & p(\boldsymbol{\theta}_{i+1})\int...\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the part of the integral where 
+\begin_inset Formula $j=1$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)} & =\\
+p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})p(\boldsymbol{x}_{i+1}^{(1)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}) & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(1)}|\boldsymbol{y})\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Insert formula
+Last line is wrong
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $j\neq1$
+\end_inset
+
+ we get:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Does it integrate to 1 since it is a likelihood?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta}_{i+1})\int p(\boldsymbol{x}_{i+1}^{(2)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(2)} & =\\
+p(\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Putting it all together we are left with:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
+\sum_{k=1}^{m}p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{y})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming the 
+\begin_inset Formula $\boldsymbol{x}_{i+1}^{(k)}$
+\end_inset
+
+ are independent this distribution is the same as 
+\begin_inset Formula $mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Times m?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})} & =\\
+\frac{mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})} & =\\
+\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
+\end{align*}
 
 \end_inset
 
@@ -2537,7 +2861,7 @@ Expression for variance of theta
 
 \end_layout
 
-\begin_layout Subsubsection*
+\begin_layout Subsection
 Algorithm
 \end_layout
 
@@ -3075,6 +3399,10 @@ Section on kernels.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Examples
 \end_layout
 
 \begin_layout Standard

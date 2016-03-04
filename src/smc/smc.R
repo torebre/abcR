@@ -1,5 +1,6 @@
 source("smcParameters.R")
 source("ess.R")
+
 # source("generateParticles.R")
 source("calculateWeights.R")
 # source("distanceFunction.R")
@@ -117,6 +118,12 @@ while (T) {
   
   particles <- iterated.samples$samples
   thetas <- iterated.samples$theta
+  
+  
+  
+  # filled.contour(phi.points, variance.points, post.prob.eval.points.matrix,
+  #                plot.axes = points(iterated.samples$theta[, 1], iterated.samples$theta[, 2], col = 'red', pch = 19, cex = 0.3))
+  
   
 #   print("Thetas2:")
 #   print(thetas)
