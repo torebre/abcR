@@ -175,8 +175,14 @@ Introduction
 Approximate Bayesian Computation (ABC) is a term used for methods that in
  a Bayesian setting estimate the posterior without evaluating the likelihood
  function.
- The first such methods were developed in the field of population genetics
- in the late 1990s
+ Because the likelihood function is not evaluated, ABC methods are also
+ known as 
+\shape italic
+likelihood-free
+\shape default
+ methods.
+ The first such were developed in the field of population genetics in the
+ late 1990s
 \begin_inset Note Note
 status open
 
@@ -256,7 +262,7 @@ Our main goal is to summarize a dataset,
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
-, in a set of statistics, 
+, through a set of statistics, 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -910,7 +916,7 @@ If we were able to draw samples from the likelihood function such that
 \end_inset
 
 , we could estimate the posterior probability.
- A simple algorithm for this is shown in algorithm  
+ A simple algorithm for this is shown in algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -1265,6 +1271,330 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview of areas of research.
+\end_layout
+
+\begin_layout Subsection
+MCMC in ABC
+\end_layout
+
+\begin_layout Standard
+To motivate the development of the a sequential Monte Carlo later, we will
+ quickly show how MCMC can be used in an ABC setting, and point out a problem
+ that the sequential sampler addresses.
+ In algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Markov-Chain-Monte-in-ABC"
+
+\end_inset
+
+ a method described in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Marjoram23122003"
+
+\end_inset
+
+ is outlined.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Markov Chain Monte Carlo in an ABC setting
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Markov-Chain-Monte-in-ABC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Require $
+\backslash
+boldsymbol{
+\backslash
+theta}_{init}, N$
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow 1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples 
+\backslash
+leftarrow array[N]$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples[0] 
+\backslash
+leftarrow 
+\backslash
+boldsymbol{
+\backslash
+theta}_{init}$
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{$counter < N$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples[counter] 
+\backslash
+leftarrow 
+\backslash
+mathrm{DoMetropolisHastingsStep}(samples[counter - 1])$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow counter + 1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{DoMetropolisHastingsStep}{$
+\backslash
+boldsymbol{
+\backslash
+theta}_ {old}, 
+\backslash
+boldsymbol{y}, 
+\backslash
+epsilon$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{true}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $
+\backslash
+boldsymbol{
+\backslash
+theta}_{new}$ from $q(
+\backslash
+boldsymbol{
+\backslash
+theta}_ {old}, 
+\backslash
+boldsymbol{
+\backslash
+theta}_ {new})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$Distance(
+\backslash
+boldsymbol{x}, 
+\backslash
+boldsymbol{y}) < 
+\backslash
+epsilon$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $ratio 
+\backslash
+leftarrow 
+\backslash
+frac{q(
+\backslash
+boldsymbol{
+\backslash
+theta}_ {new}, 
+\backslash
+boldsymbol{
+\backslash
+theta}_ {old})p(
+\backslash
+boldsymbol{
+\backslash
+theta}_{new})}{q(
+\backslash
+boldsymbol{
+\backslash
+theta}_ {old}, 
+\backslash
+boldsymbol{
+\backslash
+theta}_ {new})p(
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $u$ from $
+\backslash
+mathrm{Uniform}(0,1)$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$ratio < u$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $
+\backslash
+boldsymbol{
+\backslash
+theta}_{new}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2337,42 +2667,41 @@ reference "eq:abc_sampling_distribution"
 \begin_inset Formula $\boldsymbol{x}\to\boldsymbol{y}$
 \end_inset
 
-, and as a consequence 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\to p(\boldsymbol{\theta}|\boldsymbol{y})$
+, and hopefully as a consequence 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
 \end_inset
 
-, with 
+ will converge to a distribution that is proportionalto 
 \begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
- denoting the true posterior.
- To make it more concrete, define the likelihood 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta},\boldsymbol{x})$
+.
+ If we let the likelihood function in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:abc_sampling_distribution"
+
 \end_inset
 
- to be an indicator function that is 1 if 
+ be an indiator function that is 1 if 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon$
 \end_inset
 
-, and 0 else.
- We write this function as 
+, and 0 else, written 
 \begin_inset Formula $I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x})$
 \end_inset
 
-, if 
-\begin_inset Formula $\epsilon=0$
-\end_inset
-
- this turns into the Dirac function, and we get the result shown in equation
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:likelihood_dirac"
+, these assumptions hold, that is: 
+\begin_inset Formula 
+\begin{align*}
+\lim_{\epsilon\to0}p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y}) & \propto\lim_{\epsilon\to0}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\\
+ & =p(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})\\
+ & \propto p(\boldsymbol{\theta}|\boldsymbol{y})
+\end{align*}
 
 \end_inset
 
-.
- 
+
 \end_layout
 
 \begin_layout Standard
@@ -2380,19 +2709,9 @@ Using this sequence,
 \begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
 \end_inset
 
-, as approximations to the target distribution, and assuming we already
- have statistics
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-What does this mean?
-\end_layout
-
-\end_inset
-
-, we are left with the tasks of specifying forward and backward kernels,
- and a schedule for updating the cutoff distances 
+, as approximations to the target distribution, we are left with the tasks
+ of specifying forward and backward kernels, and a schedule for updating
+ the cutoff distances 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
 
@@ -2400,7 +2719,7 @@ What does this mean?
 \end_layout
 
 \begin_layout Subsubsection
-Use of multiple particles for each 
+Use of multiple particles for each sample of 
 \begin_inset Formula $\theta$
 \end_inset
 
@@ -2421,7 +2740,8 @@ key "adaptive_smc_for_abc"
 \begin_inset Formula $K(x_{t},\boldsymbol{x}_{t+1})$
 \end_inset
 
-, but before describing it we need introduce one change to the above.
+ in the weight update step, but before describing it we need to introduce
+ one change to the above.
  Instead of having only one sample 
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
@@ -2488,24 +2808,189 @@ How is the performance increased?
 \end_layout
 
 \begin_layout Standard
-Is 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
-\end_inset
-
- a valid proposal distribution? Yes, as we will show it is.
- We claim that the marginal distribution for 
+The question is now whether this new proposal distribution is valid.
+ We claim that the marginals for 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- is the same for any 
-\begin_inset Formula $m$
+ in 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
 \end_inset
 
-, and that this distribution is 
-\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})$
+ are equal up to a constant for any integer 
+\begin_inset Formula $m>0$
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Prove the claim
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y}) & \propto p(\boldsymbol{y}|\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m})p(\{\boldsymbol{x}\}_{1:m}|\boldsymbol{\theta})p(\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Proposal density with equal marginal likelihood for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To motivate the proposal distribution in the next section we need to establish
+ a result: That 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+ and 
+\begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
+\end_inset
+
+ have the same marginals for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+.
+ Remember that it is this marginal distribution that we are interested in,
+ since it is an approximation to the posterior.
+\end_layout
+
+\begin_layout Standard
+We calculate the marginal for 
+\begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
+\end_inset
+
+, by in
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+tegrating out all the 
+\begin_inset Formula $\boldsymbol{x}_{i}$
+\end_inset
+
+'s:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{i=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us extract 
+\begin_inset Formula $i=1$
+\end_inset
+
+ from the sum above and look at the expression:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}=\\
+ & p(\boldsymbol{\theta})\int...\int I_{\epsilon,y}(\boldsymbol{x}_{1})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the part of the integral where 
+\begin_inset Formula $i=1$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}_{1})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})d\boldsymbol{x}_{1} & =\\
+p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}_{1})p(\boldsymbol{x}_{1}|\boldsymbol{\theta})d\boldsymbol{x}_{1}\prod_{i=2}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}) & =\\
+\text{by the definition of our likelihood} & \text{}\\
+p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})\prod_{i=2}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $j\neq1$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta})\int p(\boldsymbol{x}_{2}|\boldsymbol{\theta})d\boldsymbol{x}_{2} & =\\
+\mathrm{c}p(\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Putting it all together we have:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{i=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}=\\
+ & \mathrm{c}_{2}mp_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})\propto\\
+ & p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So viewing it from the perspective of the marginal of 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ we can write:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})\propto(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})\label{eq:proportional_distributions}
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -2651,40 +3136,23 @@ The likelihood function,
 
 , appears in the Metropolis-Hastings ratio above, but we cannot evaluate
  it.
- We will replace the ratio with one that has the same marginal distribution
- in 
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
-.
- Our claim is that the ratio in equation 
+ It is here we can use the result in equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:mh-ratio"
+reference "eq:proportional_distributions"
 
 \end_inset
 
- has the same marginal in 
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
- as the ratio:
-\begin_inset Formula 
-\[
-\min\left(1,\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)
-\]
-
-\end_inset
-
- 
+, by replacing the MH-ratio with an equivalent one:
 \end_layout
 
 \begin_layout Standard
-To prove the equality we start by extracting part of the nominator above:
 \begin_inset Formula 
 \begin{align*}
-\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(m)})p(\boldsymbol{\theta}_{i+1}) & =\\
-\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})\frac{1}{\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
+\min\left(\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right) & =\\
+\text{insert expression from \ref{eq:proportional_distributions}}\\
+\min\left(\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right) & =\\
+\min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)
 \end{align*}
 
 \end_inset
@@ -2693,159 +3161,26 @@ To prove the equality we start by extracting part of the nominator above:
 \end_layout
 
 \begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-Now look at the marginal for 
-\begin_inset Formula $\boldsymbol{\theta}$
+Intuitively we can see ratio is doing: If more of the samples generated
+ at step 
+\begin_inset Formula $i+1$
 \end_inset
 
- in the expression 
-\begin_inset Formula $\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})$
+ lie within 
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
- by integrating out all the 
-\begin_inset Formula $\boldsymbol{x}_{i+1}$
+ of 
+\begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
-'s:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}
-\end{align*}
-
+ than the ones generated at step 
+\begin_inset Formula $i$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Let us extract 
-\begin_inset Formula $k=1$
-\end_inset
-
- from the sum above and look at the expression for it:
-\begin_inset Formula 
-\begin{align*}
-\int...\int & I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
- & p(\boldsymbol{\theta}_{i+1})\int...\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For the part of the integral where 
-\begin_inset Formula $j=1$
-\end_inset
-
- we get:
-\begin_inset Formula 
-\begin{align*}
-p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)} & =\\
-p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})p(\boldsymbol{x}_{i+1}^{(1)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}) & =\\
-p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(1)}|\boldsymbol{y})\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})
-\end{align*}
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Last line is wrong
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $j\neq1$
-\end_inset
-
- we get:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Does it integrate to 1 since it is a likelihood?
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{align*}
-p(\boldsymbol{\theta}_{i+1})\int p(\boldsymbol{x}_{i+1}^{(2)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(2)} & =\\
-p(\boldsymbol{\theta}_{i+1})
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Putting it all together we are left with:
-\begin_inset Formula 
-\begin{align*}
-\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
-\sum_{k=1}^{m}p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{y})
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Assuming the 
-\begin_inset Formula $\boldsymbol{x}_{i+1}^{(k)}$
-\end_inset
-
- are independent this distribution is the same as 
-\begin_inset Formula $mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})$
-\end_inset
-
-.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Times m?
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{align*}
-\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})} & =\\
-\frac{mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})} & =\\
-\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
-\end{align*}
-
-\end_inset
-
-
+, the update will be accepted.
+ If fewer particles lie within this radius, there is less of a chance of
+ the update being accepted.
 \end_layout
 
 \begin_layout Standard
