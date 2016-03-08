@@ -805,6 +805,13 @@ Markov Chain Monte Carlo
 \end_layout
 
 \begin_layout Standard
+Even though the method we will focus on is not a Markov Chain Monte Carlo
+ (MCMC) method, it does make use of some the theory underlying MCMC, so
+ we will quickly go through some of the basics that we will need to understand
+ the later discussion.
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -1659,6 +1666,13 @@ The output in the end is a set of weighted samples, which in turn can be
 
 \begin_layout Subsection
 Sampling importance resampling algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sampling-importance-resampling"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1789,7 +1803,7 @@ Resample from the set
 \begin_inset Formula $\boldsymbol{Y}_{i}$
 \end_inset
 
- being propotional to the weight 
+ being proportional to the weight 
 \begin_inset Formula $w(\boldsymbol{Y}_{i})$
 \end_inset
 
@@ -1931,8 +1945,8 @@ The constant
 \end_inset
 
  we get a good approximation to the distribution.
- In the next next we will extend the weight calculation step by splitting
- into several steps that can be computed recursively.
+ In the next section we will extend the weight calculation step by splitting
+ into several smaller steps that can be computed recursively.
 \end_layout
 
 \begin_layout Subsection
@@ -2112,6 +2126,35 @@ In summary we are faced with two challenges: Finding good proposal distributions
 
 \begin_layout Subsubsection
 Weight degeneracy
+\end_layout
+
+\begin_layout Standard
+When updating the weights, their variance will increase, that is: The weights
+ will spread out.
+ It may happen that a proportion of the weights tend toward 0.
+ This does not mean that the particles with these weights are stuck in a
+ low weight region forever, but in practice we would like to avoid spending
+ too much computational resources on updating particles that do not contribute
+ to our approximation of 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ A low weight means a low probability of drawing that particle in step 3
+ in the SIR algorithm in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sampling-importance-resampling"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A strategy to better utilize the computational resources is to insert a
+ resampling step in the incremental weight update process if a high proportion
+ of the particles get stuck with low weights.
 \end_layout
 
 \begin_layout Standard
