@@ -258,15 +258,26 @@ Bayesian inference
 \end_layout
 
 \begin_layout Standard
+We start with a quick overview of the basics of Bayesian inference to better
+ our understanding of the problems that led to the development of ABC methods.
+\end_layout
+
+\begin_layout Standard
 Our main goal is to summarize a dataset, 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
-, through a set of statistics, 
-\begin_inset Formula $\boldsymbol{\theta}$
+, through a set of functions on the data 
+\begin_inset Formula $S(\boldsymbol{y})$
 \end_inset
 
 .
+ We call a such a function of the data a statistic, and the they can in
+ turn be estimates for parameters, which denote
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ here, in a model.
  We assume that 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
@@ -759,7 +770,7 @@ Insert reference to chapters
 
 \end_inset
 
- for a more in-depth look.
+ for a more in-depth discussion.
 \end_layout
 
 \begin_layout Standard
@@ -1278,6 +1289,16 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview of areas of research.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add an example scenario where the likelihood cannot be calculated
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1709,8 +1730,68 @@ Show figure
 
 \begin_inset Formula 
 \[
-g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
+\exists c\text{ such that }cg(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In words: There must be a constant 
+\begin_inset Formula $c$
+\end_inset
+
+ such that 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ always is greater than 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ An illustration is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Target-and-proposal"
+
+\end_inset
+
+.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Target and proposal distribution.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Target-and-proposal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/targetAndProposalIllustration.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1745,15 +1826,30 @@ To see how this relationship lets us approximate the distribution of
 \begin_inset Formula $\boldsymbol{X}$
 \end_inset
 
-, we start by defining the quantity known as the weight as 
-\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+, we start by defining the quantity known as the standardized importance
+ weight as:
+\begin_inset Formula 
+\[
+w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{m}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
+\]
+
 \end_inset
 
-, and 
-\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+
+\end_layout
+
+\begin_layout Standard
+The reason why we standardise the weights, is that we then do not have to
+ think about 
+\begin_inset Formula $c$
 \end_inset
 
- being draws from the distribution of 
+, since it will cancel in the nominator and denominator.
+ We also define 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
+\end_inset
+
+ to be draws from the distribution of 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
@@ -1768,11 +1864,12 @@ Use better notation
 \end_inset
 
 .
+ Now consider the following algorithm:
 \end_layout
 
 \begin_layout Enumerate
 Sample 
-\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
 \end_inset
 
  from 
@@ -1784,7 +1881,7 @@ Sample
 
 \begin_layout Enumerate
 Calculate the weights, 
-\begin_inset Formula $w(\boldsymbol{Y}_{i})=\frac{p(\boldsymbol{Y}_{i})}{g(\boldsymbol{Y}_{i})}$
+\begin_inset Formula $w(\boldsymbol{y}_{i})=\frac{p(\boldsymbol{y}_{i})}{g(\boldsymbol{y}_{i})}$
 \end_inset
 
 
@@ -1792,7 +1889,7 @@ Calculate the weights,
 
 \begin_layout Enumerate
 Resample from the set 
-\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
 \end_inset
 
  
@@ -1800,16 +1897,16 @@ Resample from the set
 \end_inset
 
  times with probabilities for drawing 
-\begin_inset Formula $\boldsymbol{Y}_{i}$
+\begin_inset Formula $\boldsymbol{y}_{i}$
 \end_inset
 
  being proportional to the weight 
-\begin_inset Formula $w(\boldsymbol{Y}_{i})$
+\begin_inset Formula $w(\boldsymbol{y}_{i})$
 \end_inset
 
 .
  Denote this resampled set as 
-\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
 \end_inset
 
 .
@@ -1817,7 +1914,7 @@ Resample from the set
 
 \begin_layout Standard
 We now claim that the sample set 
-\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
 \end_inset
 
  converges to the distribution for 
@@ -2129,8 +2226,8 @@ Weight degeneracy
 \end_layout
 
 \begin_layout Standard
-When updating the weights, their variance will increase, that is: The weights
- will spread out.
+When updating the weights, their variance will increase, that is: They will
+ spread out.
  It may happen that a proportion of the weights tend toward 0.
  This does not mean that the particles with these weights are stuck in a
  low weight region forever, but in practice we would like to avoid spending
@@ -3187,16 +3284,13 @@ reference "eq:proportional_distributions"
 \end_inset
 
 , by replacing the MH-ratio with an equivalent one:
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
-\begin{align*}
-\min\left(\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right) & =\\
+\begin{multline*}
+\min\left(\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
 \text{insert expression from \ref{eq:proportional_distributions}}\\
-\min\left(\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right) & =\\
+\min\left(\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
 \min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)
-\end{align*}
+\end{multline*}
 
 \end_inset
 
