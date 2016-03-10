@@ -863,7 +863,7 @@ To understand how likelihood-free methods work, let us look at the posterior
  (see 
 \begin_inset CommandInset citation
 LatexCommand cite
-key "2010arXiv1001.2058S"
+key "Sisson2011"
 
 \end_inset
 
@@ -1752,7 +1752,7 @@ In words: There must be a constant
 \end_inset
 
 .
- An illustration is shown in figure 
+ An illustration is provided in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Target-and-proposal"
@@ -2645,19 +2645,6 @@ To anchor the recursion at the start we assume that we are able to sample
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Does the proposal always have to be bigger than the target here?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
 w_{2}(x_{2}) & =w_{1}(x_{1})u_{2}(x_{1})\\
@@ -2687,8 +2674,8 @@ w_{i}(x_{i})=\frac{p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{1}(x_{1})\P
 \end_layout
 
 \begin_layout Standard
-So at every step we have a weighted sample from the approximation to the
- target distribution 
+At every step we have a weighted sample from the approximation to the target
+ distribution 
 \begin_inset Formula $\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})$
 \end_inset
 
@@ -2718,12 +2705,30 @@ We recognize
 \end_inset
 
  as a proposal distribution.
- We now see why the approximation to the target distribution had the form
- it did, and a requirement for an approximation distribution to function
- in this setup is that it has the target distribution as a marginal:
+ We now see why the approximation, 
+\begin_inset Formula $\hat{p}_{i}(\boldsymbol{x}_{i})$
+\end_inset
+
+, to the target distribution had the form it did, and a requirement for
+ an approximation distribution to function in this setup is that it has
+ the target distribution as a marginal:
 \begin_inset Formula 
 \[
 \int\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(x_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This requirement is necessary to be able to recover the target distibution,
+ and is fulfilled by in our case by the construction of the approximation,
+ as can be seen if we look at the integral for an arbitrary backward kernel:
+\begin_inset Formula 
+\[
+\int_{\boldsymbol{X}}L(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=1
 \]
 
 \end_inset
@@ -2745,6 +2750,43 @@ reference "sub:Sequential-Importance-Sampling"
 
 \begin_layout Subsubsection
 Choice of backward kernel
+\end_layout
+
+\begin_layout Standard
+The backward kernels are essentially arbitrary, but the choice of them will
+ affect the efficiency of the computation.
+ A desirable property, as mentioned, is that the weights have low variance,
+ so we can try to choose a backward kernel that achieves this.
+ Del Moral et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ do this and show the following result: The sequence of backward kernels
+ that minimize the variance of the unnormalized importance weight is given
+ by:
+\begin_inset Formula 
+\[
+L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1}=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that the correct distributions are used here
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
