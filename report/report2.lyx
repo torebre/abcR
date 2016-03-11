@@ -2766,17 +2766,107 @@ key "citeulike:637817"
 
 \end_inset
 
- do this and show the following result: The sequence of backward kernels
- that minimize the variance of the unnormalized importance weight is given
+ do just this and show the following result: The sequence of backward kernels
+ that minimize the variance of the unnormalized importance weights is given
  by:
 \begin_inset Formula 
 \[
-L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1}=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}
+L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+To prove it consider the conditional variance formula applied to 
+\begin_inset Formula $w_{i}(\boldsymbol{X}_{1:i})$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i}))=\mathrm{E}(\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))+\mathrm{Var}(\mathrm{E}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can use this formula since 
+\begin_inset Formula $w_{i}(\boldsymbol{X}_{1:i})$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{X}_{i}$
+\end_inset
+
+, are defined on the same probability space: Even though 
+\begin_inset Formula $\boldsymbol{X}_{1:i}$
+\end_inset
+
+ is a sequence of random vectors, the weight at step 
+\begin_inset Formula $i$
+\end_inset
+
+ is a single random vector.
+\end_layout
+
+\begin_layout Standard
+A property of conditional expectations is: 
+\begin_inset Formula $\mathrm{E}(g(\boldsymbol{Y})\boldsymbol{X}|\boldsymbol{Y})=g(\boldsymbol{Y})\mathrm{E}(\boldsymbol{X}|\boldsymbol{Y})$
+\end_inset
+
+, where 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+ are random vectors, and 
+\begin_inset Formula $g(y)$
+\end_inset
+
+ is a function from 
+\begin_inset Formula $\mathbb{R}\to\mathbb{R}$
+\end_inset
+
+.
+ This property also yields the following: 
+\begin_inset Formula $\mathrm{E}(g(\boldsymbol{X})|\boldsymbol{X})=g(\boldsymbol{X})$
+\end_inset
+
+.
+ Applying this, we have for the expectation in the second term:
+\begin_inset Formula 
+\[
+\mathrm{E}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})=w_{i}(\boldsymbol{X}_{i})=\frac{\hat{p}_{i}(\boldsymbol{X}_{i})}{g_{i}(\boldsymbol{X}_{i})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that these distributions have been defined as used here
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
