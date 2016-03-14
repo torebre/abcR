@@ -1,0 +1,242 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Following 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to Del Moral
+\end_layout
+
+\end_inset
+
+ we use a proposal density of the form:
+\begin_inset Formula 
+\[
+q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since we cannot evaluate the likelihood, we make use of the following equality
+ for the Metropolis-Hastings ratio:
+\begin_inset Formula 
+\begin{eqnarray*}
+\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}\right) & =\\
+\min\left(1,\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To prove the equality we start by extracting part of the expression above:
+\begin_inset Formula 
+\begin{align*}
+\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(m)})p(\boldsymbol{\theta}_{i+1}) & =\\
+ & =\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})\frac{1}{\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Now look at the marginal for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ in the expression 
+\begin_inset Formula $\sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})$
+\end_inset
+
+ by integrating out all the 
+\begin_inset Formula $\boldsymbol{x}_{i+1}$
+\end_inset
+
+'s:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}\\
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us extract 
+\begin_inset Formula $k=1$
+\end_inset
+
+ from the sum above and look at the expression for it:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
+ & p(\boldsymbol{\theta}_{i+1})\int...\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the part of the integral where 
+\begin_inset Formula $j=1$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)} & =\\
+p(\boldsymbol{\theta}_{i+1})\int I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(1)})p(\boldsymbol{x}_{i+1}^{(1)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}) & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(1)}|y)\prod_{j=2}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $j\neq1$
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta}_{i+1})\int p(\boldsymbol{x}_{i+1}^{(2)}|\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(2)} & =\\
+p(\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Putting it all together we are left with:
+\begin_inset Formula 
+\begin{align*}
+\int...\int & \sum_{k=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i+1}^{(k)})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i+1})d\boldsymbol{x}_{i+1}^{(1)}...d\boldsymbol{x}_{i+1}^{(m)}=\\
+ & \sum_{k=1}^{m}p_{\epsilon}(\boldsymbol{\theta}_{i+1},\boldsymbol{x}_{i+1}^{(k)}|y)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming the 
+\begin_inset Formula $\boldsymbol{x}_{i+1}^{(k)}$
+\end_inset
+
+ are independent this distribution is the same as 
+\begin_inset Formula $mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+\begin_inset Formula 
+\begin{align*}
+\frac{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(k)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})} & =\\
+\frac{mp_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})}{\sum_{k=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{k}^{(k)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})} & =\\
+\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{k=1}^{m}p(\boldsymbol{x}_{i+1}^{(k)}|\boldsymbol{\theta}_{i+1})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the marginal distribution 
+\end_layout
+
+\end_body
+\end_document

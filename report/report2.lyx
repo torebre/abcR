@@ -253,6 +253,19 @@ We start with a quick look at the basics of Bayesian inference, and point
  other ABC methods.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check names in reference list
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Bayesian inference
 \end_layout
@@ -273,7 +286,7 @@ Our main goal is to summarize a dataset,
 
 .
  We call a such a function of the data a statistic, and the they can in
- turn be estimates for parameters, which denote
+ turn be estimates for parameters, which we denote 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -298,12 +311,12 @@ Our main goal is to summarize a dataset,
 
 .
  A random vector is a function from the sample space to 
-\begin_inset Formula $\mathrm{\boldsymbol{R}^{n}}$
+\begin_inset Formula $\mathbb{R}^{n}$
 \end_inset
 
 , and a statistic is in turn defined to be a function on a random variable/vecto
-r .
- For a more thorough look at the definitions see 
+r.
+ For a more thorough look at the definitions see chapter 5 of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CaseBerg:01"
@@ -311,17 +324,6 @@ key "CaseBerg:01"
 \end_inset
 
 .
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Check edition.
- Insert references to chapters
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -335,7 +337,7 @@ To make it more concrete,
 
  would be a function from the sample space, which here would the set of
  all permutations of 50 people in the population, into 
-\begin_inset Formula $\mathrm{\boldsymbol{R}^{50}}$
+\begin_inset Formula $\mathbb{R}^{50}$
 \end_inset
 
 .
@@ -591,6 +593,16 @@ There are expressions for the two terms on the right side:
 \end_inset
 
  is termed the prior distribution.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Also mention predictive distribution
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -735,7 +747,7 @@ reference "eq:conjugate_prior"
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
-, and 
+, and the mean 
 \begin_inset Formula $\theta_{1}$
 \end_inset
 
@@ -753,20 +765,10 @@ sufficient
 \end_inset
 
 .
- Later we will touch upon this concept again, but see 
+ Later we will touch upon this concept again, but see chapter 6 of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "CaseBerg:01"
-
-\end_inset
-
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference to chapters
-\end_layout
 
 \end_inset
 
@@ -811,15 +813,256 @@ To evaluate the posterior in such cases we need to look at other techniques
 Approximating the posterior
 \end_layout
 
+\begin_layout Standard
+There exist a multitude of methods for approximating a distribution, and
+ we will make no attempt at an in-depth description.
+ We again refer to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gelman2013bayesian"
+
+\end_inset
+
+ which provides an overview.
+ 
+\end_layout
+
+\begin_layout Standard
+To get a feel for what the problem is, we proceed with a short discussion
+ of some points.
+ We might have a closed expression for the probability density function,
+ which means a formula with no inifinte series involed, for the distribution,
+ but still not be able to easily compute statistics involving it.
+ Consider the expected value of some function of a parameter 
+\begin_inset Formula $\theta$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\mathrm{E}(h(\theta)|y)=\int h(\theta)p(\theta|y)d\theta\approx\frac{1}{N}\sum_{n=1}^{N}h(\theta_{n}^{s})\label{eq:expected_value}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check use of variables
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It may very well be that we cannot compute the integral in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expected_value"
+
+\end_inset
+
+, and so cannot compute the expected value.
+ In our one-dimensional, there is only one parameter to estimate, examples
+ so far this might not seem like a big problem to handle: The integral can
+ be estimated to the required level of accuracy using some numerical procedure.
+ However, in more real settings one can be confronted with much larger models
+ with many unknown parameters, resulting in a much more complicated high-dimensi
+onal integral which will be more difficult to estimate.
+\end_layout
+
+\begin_layout Standard
+In equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expected_value"
+
+\end_inset
+
+ we allude to a way of achieving an approximation of the expected value
+ without evaluating the integral.
+ In the formula 
+\begin_inset Formula $\theta_{n}^{s}$
+\end_inset
+
+ denotes a simulated sample, that is: It is a draw from 
+\begin_inset Formula $p(\theta|y$
+\end_inset
+
+).
+ Intuitively if we have a large collection of samples, 
+\begin_inset Formula $\theta^{s}$
+\end_inset
+
+, and compute the average of 
+\begin_inset Formula $h(\theta^{s})$
+\end_inset
+
+, we expect to get an approximation to the expected value.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write a bit more
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can carry this idea further: With sample draws we can get an estimate
+ of any aspect of the distribution 
+\begin_inset Formula $p(\theta|y)$
+\end_inset
+
+, including the distribution itself, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Approximations-to-normal"
+
+\end_inset
+
+ for an illustration.
+ So if we had a method of generating samples from an arbitrary distrubtion,
+ it would be a very useful tool.
+ In the next section we will describe the foundations of a popular set of
+ methods that do just this and go under the collective term Markov Chain
+ Monte Carlo (MCMC) methods.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Approximations to normal distribution.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Approximations-to-normal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/sample_approximations.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Markov Chain Monte Carlo
 \end_layout
 
 \begin_layout Standard
-Even though the method we will focus on is not a Markov Chain Monte Carlo
- (MCMC) method, it does make use of some the theory underlying MCMC, so
- we will quickly go through some of the basics that we will need to understand
- the later discussion.
+Even though the method we will focus on later is not an MCMC method, it
+ does make use of some the theory underlying MCMC, so we will quickly go
+ through some of the basics that we will need to understand the later discussion.
+\end_layout
+
+\begin_layout Standard
+The core idea of an MCMC method is to use what is called a Markov Chain,
+ which is a form of stochastic process, to generate samples from some distributi
+on.
+ To start us off we define what a stochastic process is: A stochastic process
+ is a collection of indexed random variables, 
+\begin_inset Formula $X(t)$
+\end_inset
+
+, where 
+\begin_inset Formula $t$
+\end_inset
+
+ is a member of some countable set.
+ For instance tossing a coin multiple times could be viewed as a stochastic
+ process.
+ Let 
+\begin_inset Formula $t$
+\end_inset
+
+ denote toss number, and let 
+\begin_inset Formula $X(t)$
+\end_inset
+
+ be 1 if the coin turns up heads, and 0 if tails.
+ Assuming the coin is fair we have 
+\begin_inset Formula $P(X(t))=\frac{1}{2}$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A Markov Chain is a stochastic process that posesses what is called the
+ Markov property:
+\begin_inset Formula 
+\begin{align*}
+P(X(t)=x_{t}|P(X(t-1)_{t-1},P(X(t-2)_{t-2},...)= & P(X(t)=x_{t}|P(X(t-1)=x_{t-1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The state of the process given its history, depends only on the state at
+ the previous step.
+ If we assume that the toin tosses mentioned above are independent, this
+ process fulfills the Markov property.
+ Actually, it more than fulfills it since we have 
+\begin_inset Formula $P(X(t)=x_{t}|X(t-1)=x_{t-1})=P(X(t)=x_{t})$
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more.
+ Mention Gibbs sampling
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1235,18 +1478,8 @@ Ideally we would want
 \begin_inset Formula $\mathrm{S}(\cdot)$
 \end_inset
 
- to be sufficient 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference to statistical inference book
-\end_layout
-
-\end_inset
-
-for the parameters that are being estimated, since then we have the following
- relation, again letting 
+ to be sufficient for the parameters that are being estimated, since then
+ we have the following relation, again letting 
 \begin_inset Formula $p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})$
 \end_inset
 
@@ -1718,16 +1951,6 @@ y density function
 \end_inset
 
  and the following holds:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Show figure
-\end_layout
-
-\end_inset
-
-
 \begin_inset Formula 
 \[
 \exists c\text{ such that }cg(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
@@ -2609,12 +2832,12 @@ Looking at the weight update we get:
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{align*}
-u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\boldsymbol{x}_{i-1})}\\
- & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(x_{t+1},x_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
- & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
- & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(x_{i},x_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}
-\end{align*}
+\begin{align}
+u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\boldsymbol{x}_{i-1})}\nonumber \\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(\boldsymbol{x}_{t+1},\boldsymbol{x}_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\label{eq:weight_update}
+\end{align}
 
 \end_inset
 
@@ -2770,9 +2993,19 @@ key "citeulike:637817"
  that minimize the variance of the unnormalized importance weights is given
  by:
 \begin_inset Formula 
-\[
-L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}
-\]
+\begin{equation}
+L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}\label{eq:optimal_backward_kernel}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check indices
+\end_layout
 
 \end_inset
 
@@ -2854,6 +3087,14 @@ A property of conditional expectations is:
 \end_layout
 
 \begin_layout Standard
+Note that this expression does not depend on 
+\begin_inset Formula $L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})$
+\end_inset
+
+, so the choice of backward kernel does not influence this term.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -2877,6 +3118,75 @@ Check that the correct distributions are used here
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Now we turn our attention t 
+\begin_inset Formula $\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})$
+\end_inset
+
+.
+ If we insert 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:optimal_backward_kernel"
+
+\end_inset
+
+ into the expression for the weight update in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_update"
+
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\[
+\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\frac{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{p_{i}(\boldsymbol{x}_{i})}=1
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Should these be random variables?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which is a constant, and so has 0 variance.
+ Since this holds for all the weight updates, it also does for 
+\begin_inset Formula $w_{i}(\boldsymbol{X}_{1:i})$
+\end_inset
+
+, and we have 
+\begin_inset Formula $\mathrm{E}(\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+To compute the optimal kernel we need to compute the distributions 
+\begin_inset Formula $p_{i-1}(\boldsymbol{x}_{i-1})$
+\end_inset
+
+ and 
+\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
+\end_inset
+
+ which we often cannot do in practice.
+ We are thus left to chose a suboptimal kernel, and we will return the question
+ of how to chose one later when we describe the actual implementation of
+ the SMC sampler.
 \end_layout
 
 \begin_layout Subsection
@@ -2992,7 +3302,7 @@ Using this sequence,
 
 \begin_layout Subsubsection
 Use of multiple particles for each sample of 
-\begin_inset Formula $\theta$
+\begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
 
@@ -3299,11 +3609,15 @@ The MH-ratio term is:
 \end_layout
 
 \begin_layout Standard
-We now propose that the Markov chain with update probability 
-\begin_inset Formula $P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)$
+We now propose that the Markov chain with update probability: 
+\begin_inset Formula 
+\[
+P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)
+\]
+
 \end_inset
 
- has invariant density 
+ Has invariant density 
 \begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
 \end_inset
 

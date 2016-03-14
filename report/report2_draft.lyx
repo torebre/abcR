@@ -1,0 +1,2431 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+% Først spesifiserer vi hvilken dokumentklasse vi vil ha og noen 
+% globale opsjoner. Bytt ut 'article' med 'book' hvis du vil ha 
+% med kapitler.
+%\documentclass[a4paper, twoside, titlepage, 11pt]{article}
+
+% Så sier vi fra om hvilke tilleggspakker vi trenger
+% til dokumentet vårt. De som du ikke trenger (se kommentaren) 
+% kan det være en fordel å kommentere ut (sett prosenttegn foran),
+% da vil kompilering gå raskere.
+
+%\usepackage[norsk]{babel}	% norske navn rundt omkring
+\usepackage[T1]{fontenc}		% norsk tegnsett (æøå)
+%\usepackage[utf8]{inputenc}	% norsk tegnsett
+\usepackage{geometry}		% anbefalt pakke for å styre marger.
+
+\usepackage{amsmath,amsfonts,amssymb} % matematikksymboler
+\usepackage{amsthm}                   % for å lage teoremer og lignende.
+\usepackage{graphicx}                 % inkludering av grafikk
+\usepackage{subfig}                   % hvis du vil kunne ha flere
+                                      % figurer inni en figur
+\usepackage{listings}                 % Fin for inkludering av kildekode
+
+%\usepackage{hyperref}                % Lager hyperlinker i evt. pdf-dokument
+                                      % men har noen bugs, så den er kommentert
+                                      % bort her.
+                                 
+% Indeksgenerering er kommentert ut her. Ta bort prosenttegnene
+% hvis du vil ha en indeks:
+%\usepackage{makeidx}     
+%\makeindex              
+
+
+\usepackage{algpseudocode}
+
+
+% \begin{document}
+
+\pagestyle{empty}
+\pagenumbering{roman}
+
+% Inkluder forsida:
+%\input{forside}
+
+% Romerske tall på alt før selve rapporten starter er pent.
+\pagenumbering{roman}
+
+\usepackage{placeins}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize a4paper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section*
+Approximate Bayesian Computation
+\end_layout
+
+\begin_layout Standard
+The likelihood function may be difficult to evaluate, for instance it may
+ be computationally intractable to do so, or the function does not have
+ an analytic form.
+ In such settings what are termed likelihood-free methods can be employed
+ to draw inferences.
+ The name refers to the fact that the methods do not explicitly evaluate
+ the likelihood function, but instead approximate it using simulations.
+ A requirement is then that we must at least be able to generate samples
+ from the likelihood.
+\end_layout
+
+\begin_layout Standard
+To understand how likelihood-free methods work, let us look at the posterior
+ again, and introduce an auxillary variable, 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to likelihood-free Markov chain Monte Carlo
+\end_layout
+
+\end_inset
+
+.
+ From Bayes rule we have:
+\begin_inset Formula 
+\begin{equation}
+p(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})\propto p(\boldsymbol{\theta}|\boldsymbol{x},\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\label{eq:abc_sampling_distribution}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The posterior can be retrieved by integrating out 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(\boldsymbol{\theta}|\boldsymbol{y})\propto p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is assumed that we have an expression for the prior, 
+\begin_inset Formula $p(\boldsymbol{\theta})$
+\end_inset
+
+, and are able to generate samples from 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta}).$
+\end_inset
+
+ If 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})$
+\end_inset
+
+ is defined to the Dirac-function with 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we were able to draw samples from the likelihood function such that 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+, we could estimate the posterior probability.
+ A simple algorithm for this is shown in algorithm listing  
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "likelihoo-free_alg1"
+
+\end_inset
+
+.
+ The algorithm will produce samples from the posterior, but there is a practical
+ problem in the comparison 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+.
+ For continuous probability distributions, the probability that two samples
+ are exactly the same is likely to be 0, and for discrete probability distributi
+ons the probability for the being the same is also likely to be close to
+ 0 in practical problems.
+ So the algorithm in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "likelihoo-free_alg1"
+
+\end_inset
+
+ is not practically useful, since most samples being generated will be discarded.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FloatBarrier
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Likelihood free sampling
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "likelihoo-free_alg1"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow 0$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples 
+\backslash
+leftarrow 
+\backslash
+text{empty array}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{$counter<N$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $
+\backslash
+boldsymbol{
+\backslash
+theta}$ from $p(
+\backslash
+boldsymbol{
+\backslash
+theta})$ 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $
+\backslash
+boldsymbol{x}$ from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$
+\backslash
+boldsymbol{x}=
+\backslash
+boldsymbol{y}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples[counter] 
+\backslash
+leftarrow 
+\backslash
+boldsymbol{
+\backslash
+theta}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter=counter+1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Keeping the core idea, we can make a couple of changes to make the algorithm
+ more useful.
+ The requirement that 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}$
+\end_inset
+
+ can be relaxed, and instead samples that lie within some defined distance
+ of 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ are accepeted as well: 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\rho$
+\end_inset
+
+.
+ This begs the question what 
+\begin_inset Formula $\rho$
+\end_inset
+
+ should be, and how it affects the approximation.
+ Intuitively smaller values yields better approximations, but increases
+ computation time, since more samples are discarded.
+ We will examine strategies to determine 
+\begin_inset Formula $\rho$
+\end_inset
+
+ later.
+\end_layout
+
+\begin_layout Standard
+We also need to make a choice for a distance function 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+.
+ If 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ are vectors consisting of numbers, the Euclidean distance could for instance
+ be used, which may or may not be a good choice.
+ In other cases the Euclidean distance measure cannot be used directly on
+ the samples, if the sample for instance represents a DNA sequence, which
+ does not have a clear numerical representation.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add some examples of what a sample can be (DNA sequence, result from a stochasti
+c process)
+\end_layout
+
+\end_inset
+
+ Attention also has to be paid to the cost of evaluating 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+.
+ The samples can contain large amount of data, again think of a DNA sequence
+ as an example.
+\end_layout
+
+\begin_layout Standard
+If we cannot find a suitable distance measure that works directly on the
+ samples, or if it would be computationally intractable to evaluate such
+ a distance function, we can instead focus on summary statistics for the
+ sample.
+ Let 
+\begin_inset Formula $\mathrm{S}(\boldsymbol{x})$
+\end_inset
+
+ denote the possibly vector valued summary statistic we have chosen for
+ 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+.
+ The main point is that we assume 
+\begin_inset Formula $dim(S(\boldsymbol{x}))<dim(\boldsymbol{x})$
+\end_inset
+
+ holds, and so it should be computationally cheaper to evaluate 
+\begin_inset Formula $d(S(\boldsymbol{x}),S(\boldsymbol{y}))$
+\end_inset
+
+.
+ Also note that the reduction in dimension in practice renders the probability
+ that 
+\begin_inset Formula $S(\boldsymbol{x})=S(\boldsymbol{y})$
+\end_inset
+
+ greater than that of 
+\begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}.$
+\end_inset
+
+ This improves the efficiency of algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "likelihoo-free_alg1"
+
+\end_inset
+
+, but again, probably not to such a degree to make it practically useful.
+\end_layout
+
+\begin_layout Standard
+Ideally we would want 
+\begin_inset Formula $\mathrm{S}(\cdot)$
+\end_inset
+
+ to be sufficient 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference to statistical inference book
+\end_layout
+
+\end_inset
+
+for the parameters that are being estimated, since then we have the following
+ relation, again letting 
+\begin_inset Formula $p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})$
+\end_inset
+
+ be the Dirac-delta function:
+\begin_inset Formula 
+\begin{align*}
+p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymbol{\theta})\int_{S(Y)}p(S(\boldsymbol{y})|S(\boldsymbol{x}),\boldsymbol{\theta})p(S(\boldsymbol{x})|\boldsymbol{\theta})dS(\boldsymbol{x})\\
+ & =p(\boldsymbol{\theta})p(S(\boldsymbol{y})|\boldsymbol{\theta})\\
+ & \text{by suffiency}\\
+ & =p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add section about distance measures on statistics
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Several strategies have been developed for dealing with the difficulties
+ in ABC: Finding suitable statistics automatically and improving the efficiency,
+ being two areas where work has been done.
+ See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "approx_bayes_comp"
+
+\end_inset
+
+ for an overview of areas of research.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Show MCMC method, and how SMC can be an alternative?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Sequential Monte Carlo in an ABC setting
+\end_layout
+
+\begin_layout Standard
+Sequential Monte Carlo (SMC) methods provide an alternative to MCMC methods
+ when generating samples from a distribution, and there exist several variations
+ on how it is used within ABC, see for example 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Peters2012,Toni187,adaptive_smc_for_abc"
+
+\end_inset
+
+.
+ An SMC method decomposes the problem of generating a sample from the target
+ distribution into a sequence of steps that are smaller and simpler than
+ trying to generate a sample directly.
+ It does this by first generating a number of samples from an approximation
+ to the target distribution, termed particles, and then updating these by
+ guiding them through the series of further approximations to the target
+ distribution.
+ We will in following look at the at the algorithm developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+, which in turn builds on what is termed an SMC sampler developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The output in the end is a set of weighted samples, which in turn can be
+ used to approximate a sample set from the target distribution.
+ The premise will be explained in detail, and we start with the concept
+ of a weighted sample, which we illustrate by looking at the sampling importance
+ resampling (SIR) method for generating samples from a distribution.
+\end_layout
+
+\begin_layout Subsection*
+Sampling importance resampling algorithm
+\end_layout
+
+\begin_layout Standard
+Suppose we have a 
+\begin_inset Formula $k$
+\end_inset
+
+-dimensional random variable 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ coming from a distribution with probability density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, and that we are unable to generate samples it from because it is computational
+ly intractable.
+ Suppose further that we have another density defined on the same space
+ that we are able to generate samples from, and that this density has probabilit
+y density function 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ and the following holds:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Show figure
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can use this relationship to give the samples we draw from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ a weight based on how probable this sample is under 
+\begin_inset Formula $p(\cdot)$
+\end_inset
+
+, and then use these samples and weights to generate samples that approximate
+ the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+.
+ Since we are drawing samples from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ we call it the proposal distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+To see how this relationship lets us approximate the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+, we start by defining the quantity known as the weight as 
+\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+\end_inset
+
+, and 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ being draws from the distribution of 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use better notation
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Sample 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ from 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the weights, 
+\begin_inset Formula $w(\boldsymbol{Y}_{i})=\frac{p(\boldsymbol{Y}_{i})}{g(\boldsymbol{Y}_{i})}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Resample from the set 
+\begin_inset Formula $\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}$
+\end_inset
+
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ times with probabilities for drawing 
+\begin_inset Formula $\boldsymbol{Y}_{i}$
+\end_inset
+
+ being propotional to the weight 
+\begin_inset Formula $w(\boldsymbol{Y}_{i})$
+\end_inset
+
+.
+ Denote this resampled set as 
+\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We now claim that the sample set 
+\begin_inset Formula $\boldsymbol{X}_{1},...,\boldsymbol{X}_{m}$
+\end_inset
+
+ converges to the distribution for 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use better notation
+\end_layout
+
+\end_inset
+
+as 
+\begin_inset Formula $m\to\infty$
+\end_inset
+
+.
+ Following a similar route as found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 293-295"
+key "ross2013simulation"
+
+\end_inset
+
+ we prove this by first noting that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By the strong law of large numbers we get:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check strong law of large numbers
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})=\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y}))\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y})|I(\boldsymbol{Y}\in A))P(I(\boldsymbol{Y}\in A)\\
+ & =E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also have:
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{Y}_{i}) & =E(w(\boldsymbol{Y}))\\
+ & =E(\frac{p(\boldsymbol{Y})}{g(\boldsymbol{Y})})\\
+ & =\int\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =\int p(\boldsymbol{y})d\boldsymbol{y}\\
+ & =C
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $C$
+\end_inset
+
+ is an unknown constant.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{alignat*}{1}
+\lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =C^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
+ & =C^{-1}\int_{\boldsymbol{y}\in A}\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =C^{-1}\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\end{alignat*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the other hand we have by Lebesgue's dominated convergence theorem:
+\begin_inset Formula 
+\[
+P(\boldsymbol{X}\in A)=CE(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n})=\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The constant 
+\begin_inset Formula $C$
+\end_inset
+
+ does not affect the sampling distribution, and we see that for large 
+\begin_inset Formula $m$
+\end_inset
+
+ we get a good approximation to the distribution.
+ In the next next we will extend the weight calculation step by splitting
+ into several steps that can be computed recursively.
+\end_layout
+
+\begin_layout Subsection*
+Sequential Importance Sampling
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The expression for the weight in the previous section, 
+\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+\end_inset
+
+, can be rewritten as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}\label{eq:weight_decomposition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we define 
+\begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
+\end_inset
+
+, the above can be written recursively as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $1\leq t\leq k$
+\end_inset
+
+, we define 
+\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{t})$
+\end_inset
+
+.
+ To ease the notation we define 
+\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}$
+\end_inset
+
+ and call it the weight update.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that the expression is correct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Doing such a decomposition has some advantages when dealing with high-dimensiona
+l problems, where it is difficult to find a good proposal distribution
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 46-47"
+key "liu2001monte"
+
+\end_inset
+
+: It lets us stop calculation of the weights early if we see it comes close
+ to 0, and we can also make use of 
+\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+ when setting up the proposal distribution 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There is a problem in that we need the marginal distributions, 
+\begin_inset Formula $p(x_{1})$
+\end_inset
+
+,
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+,..., to get expressions for the conditional distributions.
+ To get the marginal distributions there is a need to integrate out variables.
+ For instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x_{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This may be difficult, or impossible, and to get around this problem, we
+ introduce another layer of complexity and look for a sequence of marginal
+ distributions that are approximations to 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
+\end_inset
+
+: 
+\begin_inset Formula $\hat{p}(x_{1})$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{p}(x_{1},x_{2})$
+\end_inset
+
+,...,
+\begin_inset Formula $p(x_{1},x_{2},...,x_{k})$
+\end_inset
+
+.
+ The full joint distribution in the previous is not an approximation, but
+ the actual 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ So we can view the approximations as converging to the true distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+In summary we are faced with two challenges: Finding good proposal distributions
+, and approximations 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{p}(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add section on problems: Weight degeneracy.
+ How to remedy: Resampling
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Sequential Markov chain sampler
+\end_layout
+
+\begin_layout Standard
+Recalling the nominator and denominator from 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+, we see that the weight update iterations in the SMC method we described
+ operate on an increasing probability space: 
+\begin_inset Formula $x_{1},(x_{2}|x_{1}),(x_{3}|x_{1},x_{2}),...$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear notation
+\end_layout
+
+\end_inset
+
+ The SMC sampler developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write why this is important
+\end_layout
+
+\end_inset
+
+instead operates on the same probability space through all the weight updates.
+ Note that this means we cannot use the decomposition shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+ right out of the box.
+\end_layout
+
+\begin_layout Standard
+Nevertheless, we still want to decompose the problem of drawing samples
+ from 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ somehow.
+ To do this we again start by defining a sequence of better and better approxima
+te distributions to 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+: 
+\begin_inset Formula $\{p_{i}(\boldsymbol{x})\}_{i\in1,...,n}$
+\end_inset
+
+, and the the corresponding proposal distributions are denoted similarly
+ 
+\begin_inset Formula $\{g_{i}(\boldsymbol{x})\}_{i\in1,...,n}$
+\end_inset
+
+.
+ The idea developed in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ uses a Markov kernel to establish the proposal distribution at step 
+\begin_inset Formula $i$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+g_{i}(\boldsymbol{x}|\boldsymbol{x}')=K(\boldsymbol{x}',\boldsymbol{x})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\boldsymbol{x}'$
+\end_inset
+
+ is distributed according to 
+\begin_inset Formula $g_{i-1}(\boldsymbol{x}')$
+\end_inset
+
+.
+ The marginal distribution 
+\begin_inset Formula $g_{i}(\boldsymbol{x})$
+\end_inset
+
+ is given as:
+\begin_inset Formula 
+\begin{equation}
+g_{i}(\boldsymbol{x})=\int K(\boldsymbol{x}',\boldsymbol{x})g_{i-1}(\boldsymbol{x}\text{'})d\boldsymbol{x}'\label{eq:kernel_update}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that we need this marginal distribution, since the decomposition in
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_decomposition"
+
+\end_inset
+
+ is unavailable to us.
+ The rationale behind the use of a kernel, is that as the target distribution
+ evolves from one step to the next, it should be possible for us to use
+ the particles at step 
+\begin_inset Formula $i-1$
+\end_inset
+
+ to make a good approximation to the target at step 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ However the integral in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:kernel_update"
+
+\end_inset
+
+ turns out to be impossible to compute in most cases.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One approach to get around this is to approximate 
+\begin_inset Formula $g_{i}(\boldsymbol{x})$
+\end_inset
+
+ pointwise:
+\begin_inset Formula 
+\begin{equation}
+g_{i}(\boldsymbol{x})\approx g_{i}^{n}(\boldsymbol{x})=\frac{1}{n}\sum_{j=1}^{n}K(\boldsymbol{X}_{i-1}^{(j)},\boldsymbol{x})\label{eq:update_approximation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming we use the 
+\begin_inset Formula $n$
+\end_inset
+
+ particles we are evolving in when doing the weight update above, we need
+ to perform 
+\begin_inset Formula $n$
+\end_inset
+
+ pointwise evaluations of 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:update_approximation"
+
+\end_inset
+
+ for each of the 
+\begin_inset Formula $n$
+\end_inset
+
+ particles, resulting in a complexity on the order of 
+\begin_inset Formula $O(n^{2})$
+\end_inset
+
+ for one weight update step.
+ This is computationally prohibitive when 
+\begin_inset Formula $n$
+\end_inset
+
+ is large.
+\end_layout
+
+\begin_layout Subsubsection*
+Use of backward kernel in weight update
+\end_layout
+
+\begin_layout Standard
+To avoid having to compute 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:update_approximation"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "citeulike:637817"
+
+\end_inset
+
+ proposes to use what they call backward kernels.
+ This idea also lets us frame the weight updates in the form we described
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+.
+ The resulting algorithm has complexity 
+\begin_inset Formula $O(n)$
+\end_inset
+
+ and provides asymptotically consistent estimates.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The backward kernel is introduced as a part of an approximation to the approxima
+tion 
+\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
+\end_inset
+
+ as was described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+, and is defined as follows:
+\begin_inset Formula 
+\[
+\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=1}^{i-1}L_{i}(x_{t+1},x_{t})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $L(x_{i+1},x_{i})$
+\end_inset
+
+ is a kernel that gives the probability going from 
+\begin_inset Formula $x_{i+1}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ We will return to what this kernel can look like later.
+ For the proposal distribution we set up a similar sequence of kernels,
+ but here with increasing indices: From 
+\begin_inset Formula $x_{i-1}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+g_{i}(x_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},x_{i})\\
+ & =\hat{p}_{i-2}(\boldsymbol{x}_{i-2})K_{i-2}(\boldsymbol{x}_{i-2},\boldsymbol{x}_{i-1})K_{i-1}(\boldsymbol{x}_{i-1},x_{i})\\
+ & =\hat{p}_{1}(\boldsymbol{x}_{1})\prod_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that these approximations and proposals are not defined in terms of
+ marginal distributions, 
+\begin_inset Formula $g_{i}(\boldsymbol{x}_{i})$
+\end_inset
+
+, but conditional ones, 
+\begin_inset Formula $g_{i}(x_{i}|\boldsymbol{x}_{i-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Looking at the weight update we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\boldsymbol{x}_{i-1})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(x_{t+1},x_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(x_{i},x_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check indices
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To anchor the recursion at the start we assume that we are able to sample
+ perfectly from the first approximation 
+\begin_inset Formula $p_{1}(\boldsymbol{x}_{1})$
+\end_inset
+
+, so that we can set 
+\begin_inset Formula $\hat{p}_{1}(\boldsymbol{x}_{1})=p_{1}(\boldsymbol{x}_{1})$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Does the proposal always have to be bigger than the target here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+w_{2}(x_{2}) & =w_{1}(x_{1})u_{2}(x_{1})\\
+ & =\frac{p_{1}(x_{1})}{p_{1}(x_{1})}\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}\\
+ & =\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In general the weight at 
+\begin_inset Formula $i$
+\end_inset
+
+ is:
+\begin_inset Formula 
+\[
+w_{i}(x_{i})=\frac{p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So at every step we have a weighted sample from the approximation to the
+ target distribution 
+\begin_inset Formula $\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})$
+\end_inset
+
+.
+ However, our goal is to have a weighted sample from 
+\begin_inset Formula $p_{i}(x_{i})$
+\end_inset
+
+, but viewing the expression for the weight on the equivalent form:
+\begin_inset Formula 
+\[
+w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We recognize 
+\begin_inset Formula $p_{i}(x_{i})$
+\end_inset
+
+ as the desired target distribution, and 
+\begin_inset Formula $\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}$
+\end_inset
+
+ as a proposal distribution.
+ We now see why the approximation to the target distribution had the form
+ it did, and a requirement for an approximation distribution to function
+ in this setup is that it has the target distribution as a marginal:
+\begin_inset Formula 
+\[
+\int\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(x_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With these kernels the problem of generating a weight sample can be written
+ in the recursive form we described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Choice of backward kernel
+\end_layout
+
+\begin_layout Subsection*
+SMC sampler in an ABC setting
+\end_layout
+
+\begin_layout Standard
+We now follow the work done in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ and describe how the SMC sampler can be used in an ABC setting.
+ Remembering the expression in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:abc_sampling_distribution"
+
+\end_inset
+
+ for the distribution we are sampling from in ABC, a possible sequence of
+ approximations to the true posterior is given by decreasing the distance
+ between the observations and drawn samples, that is: Let 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ be sample and 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ an observation, and define a sequence of decreasing values 
+\begin_inset Formula $\epsilon_{1}>\epsilon_{2}>...>\epsilon_{n}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})$
+\end_inset
+
+ denote the distribution such that drawn samples from it lie within 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ from 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, that is: 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon_{i}$
+\end_inset
+
+.
+ As 
+\begin_inset Formula $\epsilon\to0$
+\end_inset
+
+ we expect 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{x}|\boldsymbol{\theta},\boldsymbol{y})\to p(\boldsymbol{y}|\boldsymbol{\theta})$
+\end_inset
+
+, with 
+\begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})$
+\end_inset
+
+ denoting the true likelihood function relating to the target posterior
+ distribution
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear what this means
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Using this sequence as approximations to the target distribution, and assuming
+ we already have statistics and we are left with tasks of specifying forward
+ and backward kernels, and a schedule for updating the cutoff distances
+ 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Choice of kernel
+\end_layout
+
+\begin_layout Standard
+Del Moral et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ use an MCMC kernel, 
+\begin_inset Formula $K_{i}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m},\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m})$
+\end_inset
+
+, with invariant density 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+ at each weight update step.
+ The kernel uses a Metropolis-Hastings (MH) step to achieve the desired
+ invariant density.
+ To show the form of the kernel we start by defining a proposal distribution:
+\begin_inset Formula 
+\[
+q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The MH-ratio term is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\alpha(i,i+1)=\min(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now propose that the Markov chain with update probability 
+\begin_inset Formula $P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)$
+\end_inset
+
+ has invariant density 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+ For this to be the case we must first show that (see for example chapter
+ 4.9 if Ross 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ross2006introduction"
+
+\end_inset
+
+ for a more in detail discussion of the requirements):
+\begin_inset Formula 
+\[
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Expanding 
+\begin_inset Formula $P(i,i+1)$
+\end_inset
+
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & \alpha(i,i+1)=\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\alpha(i+1,i)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\alpha(i,i+1)=1$
+\end_inset
+
+, then 
+\begin_inset Formula $\alpha(i+1,i)=\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}<1$
+\end_inset
+
+, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Also check when it is equal to 1
+\end_layout
+
+\end_inset
+
+ and we have:
+\begin_inset Formula 
+\begin{align*}
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})} & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similarly when 
+\begin_inset Formula $\alpha(i+1,i)=1$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more about conditions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The likelihood function, 
+\begin_inset Formula $p(\boldsymbol{x}|\boldsymbol{\theta})$
+\end_inset
+
+, is used when determining the probability of the proposal above, but since
+ we cannot evaluate this function we look at a form that is equivalent in
+ this setting:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert formula
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Expression for variance of theta
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Algorithm
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Transition to how this is implemented in the code example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SMC in ABC
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Require $
+\backslash
+epsilon_{stop},
+\backslash
+alpha,
+\backslash
+beta,N$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+epsilon 
+\backslash
+leftarrow 
+\backslash
+infty$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $ess 
+\backslash
+leftarrow N$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{
+\backslash
+theta}_{n} 
+\backslash
+leftarrow$ $N$ samples from $p(
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $particles 
+\backslash
+leftarrow $ $N$ samples from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{W}_{n}
+\backslash
+leftarrow [
+\backslash
+frac{1}{N},...,
+\backslash
+frac{1}{N}]$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{$
+\backslash
+epsilon 
+\backslash
+geq 
+\backslash
+epsilon_{stop}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+epsilon 
+\backslash
+leftarrow FindNextEpsilon(
+\backslash
+epsilon,
+\backslash
+boldsymbol{W}_{n})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$ess < 
+\backslash
+beta N$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $(
+\backslash
+boldsymbol{
+\backslash
+theta}, particles) 
+\backslash
+leftarrow 
+\backslash
+mathrm{Resample}$
+\backslash
+Comment{Resampling}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+For{$i
+\backslash
+leftarrow[1,..,N]$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $(
+\backslash
+boldsymbol{
+\backslash
+theta}_{n}^{(i)}, particles^{(i)})
+\backslash
+leftarrow 
+\backslash
+mathrm{Mutate}(
+\backslash
+epsilon, particles^{(i)}, W_{n-1}^{(i)}, 
+\backslash
+boldsymbol{
+\backslash
+theta}^{(i)})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFor
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{ESS}{$
+\backslash
+boldsymbol{W_{n}}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+sum_{i=1}^{N}W_{n}^{(i)})^{-1}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{FindNextEpsilon}{$
+\backslash
+epsilon_{n-1},
+\backslash
+boldsymbol{w_{n-1}}$} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Solve $ESS(
+\backslash
+frac{I_{
+\backslash
+epsilon_{n}}(
+\backslash
+boldsymbol{x}_{k})}{I_{
+\backslash
+epsilon_{n-1}}(
+\backslash
+boldsymbol{x}_{k})})=
+\backslash
+alpha ESS(
+\backslash
+boldsymbol{w_{n-1}})$ for $
+\backslash
+epsilon_{n}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $
+\backslash
+epsilon_{n}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{Mutate}{$
+\backslash
+epsilon,particle,
+\backslash
+boldsymbol{w},
+\backslash
+boldsymbol{
+\backslash
+theta}_{old}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{
+\backslash
+theta}_{new} 
+\backslash
+leftarrow$ Sample from $q(
+\backslash
+boldsymbol{
+\backslash
+theta}|
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $particle_{new} 
+\backslash
+leftarrow$ Sample from $p(
+\backslash
+boldsymbol{x}|
+\backslash
+boldsymbol{
+\backslash
+theta}_{new})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $r 
+\backslash
+leftarrow 
+\backslash
+min(1,
+\backslash
+frac{I_{
+\backslash
+epsilon_{n}}(particle_{new})}{I_{
+\backslash
+epsilon_{n}}(particle)})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+If{$r < $ Sample from $Uniform(0, 1)$}
+\backslash
+Comment{Metropolis-Hastings step}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+boldsymbol{
+\backslash
+theta},particle)$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Else
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+boldsymbol{
+\backslash
+theta}_{new},particle_{new})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndIf
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Function{Resample}{$
+\backslash
+boldsymbol{
+\backslash
+theta}, particles, 
+\backslash
+boldsymbol{w}$, N}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample indices from a multinomial distribution $f(x_{1},...x_{N};N,w_{1},...,w_{
+N})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $(
+\backslash
+theta_{1}^{(1)},...,
+\backslash
+theta_{1}^{(x_{1})},...,
+\backslash
+theta_{N}^{(1)},...,
+\backslash
+theta_{N}^{(x_{N})},particles_{1}^{(1)},...,particles_{N}^{(x_{N})})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndFunction
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Section on kernels.
+ Update schedules
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagebreak
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
