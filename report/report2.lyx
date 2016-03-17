@@ -2454,8 +2454,8 @@ When updating the weights, their variance will increase, that is: They will
  It may happen that a proportion of the weights tend toward 0.
  This does not mean that the particles with these weights are stuck in a
  low weight region forever, but in practice we would like to avoid spending
- too much computational resources on updating particles that do not contribute
- to our approximation of 
+ too much computational resources on updating particles that do not appear
+ to contribute to our approximation of 
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
@@ -2475,6 +2475,225 @@ reference "sub:Sampling-importance-resampling"
 A strategy to better utilize the computational resources is to insert a
  resampling step in the incremental weight update process if a high proportion
  of the particles get stuck with low weights.
+ This strategy is used in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ and we will also employ it.
+ Resampling is not the only method of dealing with degenerate weights in
+ sequential Monte Carlo methods, see chapter 3 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+ for more information, which also includes some variations on how the actual
+ resampling is done.
+\end_layout
+
+\begin_layout Standard
+In short the resampling creates a new sample set that has a better distribution
+ of the weights, by picking particles from the existing sample set and favouring
+ those with high weights.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write a bit more
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Efficient Sample Size
+\end_layout
+
+\begin_layout Standard
+A question we need to answer is when we should do a resampling.
+ To determine this we will look at a quantity called the Effective Sample
+ Size (ESS) as the weights are updated.
+ It is defined as such:
+\begin_inset Formula 
+\begin{equation}
+\mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of samples and 
+\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ the variance of the weights with respect to the proposal distribution.
+ We interpret it to mean that 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $n$
+\end_inset
+
+ weighted samples are worth as much as 
+\begin_inset Formula $\mathrm{ESS}(n)$
+\end_inset
+
+ independent and identically drawn samples from the target distribution
+ 
+\begin_inset Formula $p$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{X})$
+\end_inset
+
+.
+\begin_inset Quotes erd
+\end_inset
+
+ Looking at 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ we see that the max value for 
+\begin_inset Formula $\mathrm{ESS}(n)$
+\end_inset
+
+ is 
+\begin_inset Formula $n$
+\end_inset
+
+, and it occurs when the variance is 0.
+ For instance if we set 
+\begin_inset Formula $g(\boldsymbol{X})=p(\boldsymbol{X})$
+\end_inset
+
+ this will occur, and it makes sense since then we are actually sampling
+ from the target distribution.
+ It could also occur if all the weights were equally bad, say all ratios
+ weigths were 
+\begin_inset Formula $\frac{1}{1000}$
+\end_inset
+
+, so it is not a perfect measure.
+\end_layout
+
+\begin_layout Standard
+We provide some more justification for why 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ looks the way is does.
+ The notion comes from a technial report by Kong 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+, who examined the efficiency between two estimators for the expected value
+ of a random variable:
+\begin_inset Formula 
+\[
+\mu=\mathrm{E}_{p}(h(\boldsymbol{X}))=\int h(\boldsymbol{x})p(\boldsymbol{x})d\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mu}=\frac{1}{n}\sum_{i=1}^{n}h(\boldsymbol{x}_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\tilde{\mu}=\frac{w_{1}h(\boldsymbol{x}_{1})+...+w_{n}h(\boldsymbol{x}_{n})}{w_{1}+...+w_{n}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When comparing the efficiencies of estimators, one can look at the ratio
+ of them:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{\mathrm{var}_{g}(\tilde{\mu})}{\mathrm{var}_{p}(\hat{\mu})}\approx1+\mathrm{var}_{g}\left(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})}\right)=1+\mathrm{var}_{g}(w(\boldsymbol{X}))
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\tilde{\mu}$
+\end_inset
+
+ is using samples from 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ from 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+.
+ The approximation in the above equation is the main result of the technial
+ report
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
