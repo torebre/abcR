@@ -1952,9 +1952,9 @@ y density function
 
  and the following holds:
 \begin_inset Formula 
-\[
-\exists c\text{ such that }cg(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}
-\]
+\begin{equation}
+\exists c\text{ such that }cg(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}\label{eq:importance_sampling}
+\end{equation}
 
 \end_inset
 
@@ -2512,14 +2512,21 @@ Write a bit more
 \end_layout
 
 \begin_layout Subsubsection
-Efficient Sample Size
+Effective Sample Size
 \end_layout
 
 \begin_layout Standard
 A question we need to answer is when we should do a resampling.
  To determine this we will look at a quantity called the Effective Sample
  Size (ESS) as the weights are updated.
- It is defined as such:
+ We take our definition from Liu 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+, where it is defined as such:
 \begin_inset Formula 
 \begin{equation}
 \mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
@@ -2650,14 +2657,14 @@ Insert reference
 
 \begin_layout Standard
 When comparing the efficiencies of estimators, one can look at the ratio
- of them:
+ between them:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\frac{\mathrm{var}_{g}(\tilde{\mu})}{\mathrm{var}_{p}(\hat{\mu})}\approx1+\mathrm{var}_{g}\left(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})}\right)=1+\mathrm{var}_{g}(w(\boldsymbol{X}))
-\]
+\begin{equation}
+\frac{\mathrm{var}_{g}(\tilde{\mu})}{\mathrm{var}_{p}(\hat{\mu})}\approx1+\mathrm{var}_{g}\left(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})}\right)=1+\mathrm{var}_{g}(w(\boldsymbol{X}))\label{eq:ratio_approximation}
+\end{equation}
 
 \end_inset
 
@@ -2682,8 +2689,28 @@ Where
 \end_inset
 
 .
- The approximation in the above equation is the main result of the technial
- report
+ Low variance is a desirable property of an estimator, so a large ratio
+ is in favour of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+, and a low in favour of 
+\begin_inset Formula $\tilde{\mu}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The approximation in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ratio_approximation"
+
+\end_inset
+
+ is the main result of the technial report
 \begin_inset Note Note
 status open
 
@@ -2694,6 +2721,181 @@ Insert reference
 \end_inset
 
 .
+ Liu 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+ then uses this approximation to justify the following:
+\begin_inset Formula 
+\[
+\frac{\mathrm{var}_{p}(h(\boldsymbol{X}))}{\mathrm{var}_{g}(w(\boldsymbol{X})h(\boldsymbol{X}))}\approx\frac{1}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $h(\cdot)$
+\end_inset
+
+ is some function of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+, for our purposes we can assume it is the identity function.
+ The expression tells us that one sample from 
+\begin_inset Formula $p(\boldsymbol{X})$
+\end_inset
+
+, is worth about 
+\begin_inset Formula $1+\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ weighted sample.
+ If there are 
+\begin_inset Formula $n$
+\end_inset
+
+ samples, we multiple the expression by 
+\begin_inset Formula $n$
+\end_inset
+
+ and get 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+.
+ Note that the weights, 
+\begin_inset Formula $w(\boldsymbol{X})$
+\end_inset
+
+, here and in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ refer to the unnormalised weights.
+ Also note that in practice we need to estimate 
+\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ by using the sample variance for instance.
+\end_layout
+
+\begin_layout Standard
+Since we are following Del Moral et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+, we use a simplified version of the effective sample size that can be justified
+ because we use normalised weights:
+\begin_inset Formula 
+\[
+\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In our setup we actually estimate cannot 
+\begin_inset Formula $\mathrm{var}(w(\boldsymbol{X}))$
+\end_inset
+
+ using the sample variance, since that requires us to know the actual weights,
+ not the normalised ones, and that in turn requires us to know the constant
+ 
+\begin_inset Formula $c$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:importance_sampling"
+
+\end_inset
+
+, and not knowing that was the reason we used normalised weights in the
+ first place.
+\end_layout
+
+\begin_layout Standard
+Instead of using the sample variance, we instead use a quantity called the
+ coefficient of variation:
+\begin_inset Formula 
+\[
+\mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The definition in Liu had n - 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting this into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+\frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\\
+ & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\\
+ & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\\
+ & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})-n^{-2})}\\
+ & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\\
+ & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear what the weights expressions refer to here.
+ Make clear
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2708,6 +2910,15 @@ Add section on problems: Weight degeneracy.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Using this measure of ESS, we trigger a resampling when it drops below a
+ given threshold.
+ The rationale being that the weights then have spread out so much, that
+ we are wasting computations on particles that are in low probably regions
+ of the probability space, and should instead concentrate more one the regions
+ were the particles with higher weights are located.
 \end_layout
 
 \begin_layout Subsection
