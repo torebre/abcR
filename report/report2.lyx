@@ -182,18 +182,8 @@ likelihood-free
 \shape default
  methods.
  The first such were developed in the field of population genetics in the
- late 1990s
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Check if this is a correct spelling
-\end_layout
-
-\end_inset
-
-, and has since found use in other areas, notably in those with a relation
- to biology, see sections 3 and 7 in 
+ late 1990s, and has since found use in other areas, notably in those with
+ a relation to biology, see sections 3 and 7 in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "1ef20ace6466467899d76e9976c9b6fa"
@@ -249,21 +239,6 @@ We start with a quick look at the basics of Bayesian inference, and point
  and it is here ABC becomes an alternative.
  We then describe ABC in general, before looking at the mentioned SMC in
  ABC approach for obtaining samples.
- This approach will be illustrated by some examples, and comparisons to
- other ABC methods.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Check names in reference list
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Section
@@ -814,24 +789,10 @@ Approximating the posterior
 \end_layout
 
 \begin_layout Standard
-There exist a multitude of methods for approximating a distribution, and
- we will make no attempt at an in-depth description.
- We again refer to 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "gelman2013bayesian"
-
-\end_inset
-
- which provides an overview.
- 
-\end_layout
-
-\begin_layout Standard
 To get a feel for what the problem is, we proceed with a short discussion
  of some points.
  We might have a closed expression for the probability density function,
- which means a formula with no inifinte series involed, for the distribution,
+ which means a formula with no inifinte series involved, for the distribution,
  but still not be able to easily compute statistics involving it.
  Consider the expected value of some function of a parameter 
 \begin_inset Formula $\theta$
@@ -867,9 +828,9 @@ reference "eq:expected_value"
 \end_inset
 
 , and so cannot compute the expected value.
- In our one-dimensional, there is only one parameter to estimate, examples
- so far this might not seem like a big problem to handle: The integral can
- be estimated to the required level of accuracy using some numerical procedure.
+ In our one-dimensional example where there is only one parameter to estimate,
+ this might not seem like a big problem to handle: The integral can be estimated
+ to the required level of accuracy using some numerical procedure.
  However, in more real settings one can be confronted with much larger models
  with many unknown parameters, resulting in a much more complicated high-dimensi
 onal integral which will be more difficult to estimate.
@@ -940,10 +901,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -973,13 +930,85 @@ name "fig:Approximations-to-normal"
 
 \end_layout
 
-\begin_layout Plain Layout
+\end_inset
+
 
 \end_layout
+
+\begin_layout Standard
+MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
+ they are not the only methods available for approximating a probability
+ distribution.
+ We touch upon another method, importance sampling, later on since it is
+ an ingredient in the method which is our main focus.
+ 
+\end_layout
+
+\begin_layout Standard
+Another method is to try to approximate the distribution by using mixtures
+ of more tractable ones, for instance normal distributions.
+ Yet another strategy is to look at marginals of subsets of there parameters
+ involved, try to approximate those and then combining them to approximate
+ the full posterior.
+ For instance:
+\begin_inset Formula 
+\[
+p(\boldsymbol{\theta}|\boldsymbol{y})\propto p(\boldsymbol{y}|\theta_{1},\theta_{2})p(\theta_{1},\theta_{2}|\theta_{3})p(\theta_{3})
+\]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Say 
+\begin_inset Formula $\boldsymbol{\theta}=[\theta_{1},\theta_{2},\theta_{3}]$
+\end_inset
+
+ represents three parameters, and assume
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $p(\boldsymbol{y}|\theta_{1},\theta_{2})$
+\end_inset
+
+, 
+\begin_inset Formula $p(\theta_{1},\theta_{2}|\theta_{3})$
+\end_inset
+
+ and 
+\begin_inset Formula $p(\theta_{3})$
+\end_inset
+
+ can each be sufficiently approxmiated by some mixture of normal distributions.
+ This also illustrates a point we will return to: Splitting the big problem
+ of approximating 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+ into a series of smaller subproblems.
+\end_layout
+
+\begin_layout Standard
+Suffice to say the field is huge, and we again refer to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gelman2013bayesian"
+
+\end_inset
+
+ which provides an overview, and especially chapter 13 of that text which
+ provides insights into methods that do not use MCMC.
 \end_layout
 
 \begin_layout Subsection
@@ -988,8 +1017,9 @@ Markov Chain Monte Carlo
 
 \begin_layout Standard
 Even though the method we will focus on later is not an MCMC method, it
- does make use of some the theory underlying MCMC, so we will quickly go
- through some of the basics that we will need to understand the later discussion.
+ does make use of some the theory underlying MCMC, and we will also compare
+ it with an MCMC method, so we quickly go through some of the basics that
+ we will need to understand the later discussion.
 \end_layout
 
 \begin_layout Standard
@@ -1016,7 +1046,11 @@ on.
 \begin_inset Formula $X(t)$
 \end_inset
 
- be 1 if the coin turns up heads, and 0 if tails.
+ be 1 if the coin turns up heads, and 0 if tails, at toss 
+\begin_inset Formula $t$
+\end_inset
+
+.
  Assuming the coin is fair we have 
 \begin_inset Formula $P(X(t))=\frac{1}{2}$
 \end_inset
@@ -1051,7 +1085,39 @@ The state of the process given its history, depends only on the state at
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+In this simple setup we see that 
+\begin_inset Formula $X(t)$
+\end_inset
+
+ is a Bernoulli random variable with probability 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+, so as the coin is being tossed we are getting samples from this distribution.
  
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $p(\boldsymbol{X})$
+\end_inset
+
+ we the distribution we seek to approximate.
+ We also introduce what we call a proposal distribution 
+\begin_inset Formula $q(t,t+1)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 

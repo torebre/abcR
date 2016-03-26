@@ -3,42 +3,60 @@
 
 # SMC
 #' @export
-Smc <- function(max.iterations = 40, alpha = 0.9, number.of.particles = 100, resample.ratio = 0.5, stop.epsilon = 0.1, initial.particles = NULL,
+Smc <- function(max.iterations = 40, alpha = 0.9, number.of.particles = 100, resample.ratio = 0.5, start.epsilon = 10, stop.epsilon = 0.1,
                 number.of.replicates = 1,
                 SampleFunction, ForwardKernelSample, DistanceFunction, GenerateRandomSampleFromTheta) {
+
+  variable.env <- new.env(parent = emptyenv())
+
   # Create an initial set of particles
-  thetas <- matrix(sapply(1:number.of.particles, function(x) { GenerateRandomSampleFromTheta() }), nrow = number.of.particles, ncol = 1)
-  particles <- SampleFunction(thetas, number.of.replicates)
+  variable.env$thetas <- matrix(sapply(1:number.of.particles, function(x) { GenerateRandomSampleFromTheta() }),
+                                nrow = number.of.particles, ncol = 1)
+  variable.env$particles <- SampleFunction(variable.env$thetas, number.of.replicates)
 
   counter <- 0
   resample.limit <- number.of.particles * resample.ratio
 
-
   # previous.inclusion.sum <- CalculateInclusionSum(samples, DistanceFunction, current.epsilon, kObservation)
-  weights <- rep(1 / number.of.particles, number.of.particles)
+  variable.env$weights <- rep(1 / number.of.particles, number.of.particles)
   # previous.effective.sample.size <- ComputeEffectiveSampleSize(previous.weights)
   effective.sample.size <- number.of.particles
-  current.epsilon <- 1000000
+  current.epsilon <-start.epsilon
 
   # temp.function <- Vectorize(function(x) {FindNextEpsilon(x, current.epsilon, particles, weights)})
   # curve(temp.function, from = 1, to = 15)
 
-  effective.sample.sizes <- list()
-  epsilons <- list()
-  all.thetas <- list()
-  all.weights <- list()
-  all.particles <- list()
+  variable.env$effective.sample.sizes <- list()
+  variable.env$epsilons <- list()
+  variable.env$all.thetas <- list()
+  variable.env$all.weights <- list()
+  variable.env$all.particles <- list()
+
+
+  Resample <- function(my.env) {
+    resampling.indices <- sample(1:number.of.particles, number.of.particles, replace = T, prob = my.env$weights)
+    my.env$particles <- my.env$particles[resampling.indices]
+    # TODO Figure why thetas was a matrix with two columns
+    my.env$thetas <- my.env$thetas[resampling.indices]
+    my.env$weights <- rep(1 / number.of.particles, number.of.particles)
+  }
+
+  AddValuesToLists <- function(my.counter) {
+    variable.env$epsilons[[counter]] <- current.epsilon
+    variable.env$effective.sample.sizes[[counter]] <- effective.sample.size
+    variable.env$all.thetas[[counter]] <- variable.env$thetas
+    variable.env$all.weights[[counter]] <- variable.env$weights
+    variable.env$all.particles[[counter]] <- unlist(variable.env$particles)
+  }
 
   counter <- 1
 
   while (T) {
     # Adaptation
     print(paste("Current epsilon: ", current.epsilon))
-    epsilons[[counter]] <- current.epsilon
-    effective.sample.sizes[[counter]] <- effective.sample.size
-    all.thetas[[counter]] <- thetas
-    all.weights[[counter]] <- weights
-    all.particles[[counter]] <- unlist(particles)
+
+    AddValuesToLists(counter)
+    counter <- counter + 1
 
     if(current.epsilon <= stop.epsilon) {
       break
@@ -46,37 +64,37 @@ Smc <- function(max.iterations = 40, alpha = 0.9, number.of.particles = 100, res
 
     # Find next epsilon
     epsilon.new <- uniroot(function(epsilon.candidate) {
-      FindNextEpsilon(epsilon.candidate, current.epsilon, particles, weights, alpha)
+      FindNextEpsilon(epsilon.candidate, current.epsilon, variable.env$particles, variable.env$weights, alpha)
     }, extendInt = "no", c(0, current.epsilon))$root
 
+    # epsilon.new <- current.epsilon - 0.1
+    # if(epsilon.new < 1e-6) {
+    #   break
+    # }
+
     # TODO Only compute the weights once, not here and in FindNextEpsilon
-    weights <- NormalizeVector(weights * CalculateWeightUpdates(particles, current.epsilon, epsilon.new, DistanceFunction))
+    variable.env$weights <- NormalizeVector(variable.env$weights * CalculateWeightUpdates(variable.env$particles, current.epsilon, epsilon.new, DistanceFunction))
     if(epsilon.new < current.epsilon) {
       current.epsilon <- epsilon.new
     }
 
-    effective.sample.size <- ComputeEffectiveSampleSize(weights)
+    print(paste("Alive particles: ", sum(variable.env$weights > 0)))
+
+    effective.sample.size <- ComputeEffectiveSampleSize(variable.env$weights)
+
+    # print(paste("Effective sample size: ", effective.sample.size))
 
     # Resampling
     if(effective.sample.size < resample.ratio * number.of.particles) {
-
-      print("Resampling")
-      resampling.indices <- sample(1:number.of.particles, number.of.particles, replace = T, prob = weights)
-      particles <- particles[resampling.indices]
-    # TODO Figure why thetas was a matrix with two columns
-      thetas <- thetas[resampling.indices]
-      weights <- rep(1 / number.of.particles, number.of.particles)
+      print(paste("Resampling at step: ", counter))
+      Resample(variable.env)
     }
 
     # Mutation
-    # sink("/dev/null")
-    iterated.samples <- ForwardKernelSample(particles, thetas, current.epsilon, weights)
-    # sink()
+    iterated.samples <- ForwardKernelSample(variable.env$particles, variable.env$thetas, current.epsilon, variable.env$weights)
 
-    particles <- iterated.samples$samples
-    thetas <- iterated.samples$theta
-
-    counter <- counter + 1
+    variable.env$particles <- iterated.samples$samples
+    variable.env$thetas <- iterated.samples$theta
 
     print(paste("Counter: ", counter, " Effective sample size: ", effective.sample.size))
 
@@ -85,6 +103,11 @@ Smc <- function(max.iterations = 40, alpha = 0.9, number.of.particles = 100, res
     }
   }
 
+  Resample(variable.env)
+  AddValuesToLists(counter)
+
+  list(effective.sample.sizes = variable.env$effective.sample.sizes, epsilons = variable.env$epsilons,
+       all.thetas = variable.env$all.thetas, all.weights = variable.env$all.weights, all.particles = variable.env$all.particles)
 }
 
 ComputeEffectiveSampleSize <- function(weights) {
@@ -156,7 +179,7 @@ CalculateWeightUpdateForParticle <- function(my.samples, my.particle.number, my.
     return(1)
   }
 
-  return(sum1 / sum2)
+  sum1 / sum2
 }
 
 
