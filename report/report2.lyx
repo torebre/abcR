@@ -1088,6 +1088,56 @@ The state of the process given its history, depends only on the state at
 \end_layout
 
 \begin_layout Standard
+We need to introduce some more terms related to Markov processes.
+ Associated with a process there is the transition probability.
+ This is the probability of the process going from a state 
+\begin_inset Formula $x_{1}$
+\end_inset
+
+ at step 
+\begin_inset Formula $t$
+\end_inset
+
+ to a state 
+\begin_inset Formula $x_{2}$
+\end_inset
+
+ at step 
+\begin_inset Formula $t+1$
+\end_inset
+
+.
+ For the coin toss example, we have two states, heads and tails, and the
+ probability of going between the different states can be visualised in
+ a matrix:
+\begin_inset Formula 
+\[
+\begin{array}{ccc}
+ & H & T\\
+H & \frac{1}{2} & \frac{1}{2}\\
+T & \frac{1}{2} & \frac{1}{2}
+\end{array}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 In this simple setup we see that 
 \begin_inset Formula $X(t)$
 \end_inset
@@ -1111,10 +1161,6 @@ Let
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Standard
@@ -1261,7 +1307,7 @@ reference "likelihoo-free_alg1"
  are exactly the same is 0, and for discrete probability distributions the
  probability for the being the same is also likely to be close to 0 in practical
  problems.
- Agorithm 
+ Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -1593,6 +1639,27 @@ status open
 
 \begin_layout Plain Layout
 Add an example scenario where the likelihood cannot be calculated
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Choice of summary statistics
+\end_layout
+
+\begin_layout Standard
+From the above we see that the approximation works when we choose sufficient
+ statistics.
+ However, in practical problems we are likely to be unable to find sufficient
+ statistics.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more
 \end_layout
 
 \end_inset
@@ -4817,6 +4884,100 @@ Section on kernels.
 
 \begin_layout Section
 Examples
+\end_layout
+
+\begin_layout Standard
+We provide an implementation of the algorithm of Del Moral et.
+ al.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+ in R, and illustrate it on a simple example also taken from Del Moral.
+\end_layout
+
+\begin_layout Subsection
+Toy example
+\end_layout
+
+\begin_layout Standard
+The distribution we wish to create a sample set from is given as follows,
+ first the likelihood:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(x|\theta)\sim\frac{1}{2}\mathrm{N}(\theta,1)+\frac{1}{2}\mathrm{N}(\theta,\frac{1}{100})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter 
+\begin_inset Formula $\theta$
+\end_inset
+
+ is assumed to be uniform on the interval 
+\begin_inset Formula $[-10,10]$
+\end_inset
+
+.
+ A single observation, 
+\begin_inset Formula $y=0$
+\end_inset
+
+, is introduced, and the posterior then has the form:
+\begin_inset Formula 
+\[
+p(\theta|x)\propto(\mathrm{N}(\theta,1)+\mathrm{N}(\theta,\frac{1}{100}))\mathrm{I}_{[-10,10]}(\theta)
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Is it correct to use the 
+\begin_inset Quotes eld
+\end_inset
+
+proportional to
+\begin_inset Quotes erd
+\end_inset
+
+ symbol here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The absolute difference between the generated 
+\begin_inset Formula $x$
+\end_inset
+
+ and the observation 
+\begin_inset Formula $y$
+\end_inset
+
+ is chosen as the distance function: 
+\begin_inset Formula $d(x,y)=|x-y|$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
