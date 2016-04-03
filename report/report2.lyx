@@ -251,21 +251,29 @@ We start with a quick overview of the basics of Bayesian inference to better
 \end_layout
 
 \begin_layout Standard
-Our main goal is to summarize a dataset, 
+Our main goal here is to fit a model we have specified to some dataset,
+ 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
-, through a set of functions on the data 
+, we have observed.
+ The model will have parameters, and we would like to be able to say which
+ ranges of the parameters are the most probable given the data.
+\end_layout
+
+\begin_layout Standard
+To estimate the model parameters we use functions of the observed data.
+ We call a such functions of the data statistics, and will denote it 
 \begin_inset Formula $S(\boldsymbol{y})$
 \end_inset
 
 .
- We call a such a function of the data a statistic, and the they can in
- turn be estimates for parameters, which we denote 
+ We want to choose statistcs that estimate the model parameters, which we
+ denote 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- here, in a model.
+.
  We assume that 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
@@ -289,8 +297,8 @@ Our main goal is to summarize a dataset,
 \begin_inset Formula $\mathbb{R}^{n}$
 \end_inset
 
-, and a statistic is in turn defined to be a function on a random variable/vecto
-r.
+, and a statistic is then in turn defined to be a function on a random variable/
+vector.
  For a more thorough look at the definitions see chapter 5 of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -364,6 +372,16 @@ There are two approaches to viewing
 \end_inset
 
 ?
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert figure
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -425,21 +443,6 @@ Viewing
 \end_inset
 
  as a random vector gives us what is termed the Bayesian approach to inference.
- We can reformulate our main goal a bit to better fit in this framework:
- Let 
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
- denote a vector of model parameters, and 
-\begin_inset Formula $\boldsymbol{y}$
-\end_inset
-
- is a vector of observed data.
- Our aim is to make inferences about 
-\begin_inset Formula $\boldsymbol{\theta}$
-\end_inset
-
- that are consistent with the observed data.
  In a data analysis setting we can view this inference process to consist
  of three steps (see 
 \begin_inset CommandInset citation
@@ -568,16 +571,21 @@ There are expressions for the two terms on the right side:
 \end_inset
 
  is termed the prior distribution.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Also mention predictive distribution
-\end_layout
-
+ Evaluating the posterior distribution is at the core of Bayesian inference.
+ If now the expression for 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
+ has some closed form and is integrable, we are all set to start making
+ inferences about 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
 
+, but we shall see that 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+ is not always on such a nice form.
 \end_layout
 
 \begin_layout Subsection
@@ -904,7 +912,9 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Approximations to normal distribution.
+Approximations to a normal distribution using samples.
+ The solid lines shows the true distribution, and the bars are a historgram
+ of the samples.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Approximations-to-normal"
@@ -939,8 +949,17 @@ name "fig:Approximations-to-normal"
 MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
  they are not the only methods available for approximating a probability
  distribution.
- We touch upon another method, importance sampling, later on since it is
- an ingredient in the method which is our main focus.
+ We touch upon another method, importance sampling
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What about rejection sampling?
+\end_layout
+
+\end_inset
+
+, later on since it is an ingredient in the method which is our main focus.
  
 \end_layout
 
@@ -1151,16 +1170,87 @@ In this simple setup we see that
 \end_layout
 
 \begin_layout Standard
-Let 
-\begin_inset Formula $p(\boldsymbol{X})$
-\end_inset
-
- we the distribution we seek to approximate.
- We also introduce what we call a proposal distribution 
-\begin_inset Formula $q(t,t+1)$
+Continuing with the coin example, we note that the system can be in one
+ of two states: Either the last state was heads, or it was tails.
+ Let us represent this state as a vector, calling it 
+\begin_inset Formula $\boldsymbol{\pi}_{t}=[1,0]^{T}$
 \end_inset
 
 .
+\begin_inset Formula 
+\begin{align*}
+P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
+\frac{1}{2} & \frac{1}{2}\\
+\frac{1}{2} & \frac{1}{2}
+\end{array}\right]\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\frac{1}{2}\\
+\frac{1}{2}
+\end{array}\right]\\
+ & =\boldsymbol{\pi}_{t+1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Multiplying the transition matrix with the state vector yields the state
+ vector at the next step.
+ This lets us see what the probability distribution between the different
+ states at some arbitrary step.
+ Assume that there is some state vector such that the following holds:
+\begin_inset Formula 
+\[
+P\boldsymbol{\pi}_{t}=\boldsymbol{\pi}_{t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is: The probability distribution between the states do not change.
+ For the coin toss example we see that this holds for the vector 
+\begin_inset Formula $[\frac{1}{2},\frac{1}{2}]^{T}$
+\end_inset
+
+.
+ Such a probability distribution is called stationary.
+ 
+\end_layout
+
+\begin_layout Standard
+In the coin toss example the state distribution is discrete, but Markov
+ processes are also defined where the state distribution is continuous.
+ We could imagine a process where a state vector is defined as 
+\begin_inset Formula $\pi_{t}\sim\mathrm{N}(0,1)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We introduce a probability distribution we term the proposal distribution,
+ 
+\begin_inset Formula $q(i,j)$
+\end_inset
+
+, which gives the probability of going from state 
+\begin_inset Formula $i$
+\end_inset
+
+ to state 
+\begin_inset Formula $j$
+\end_inset
+
+ in the next step.
 \end_layout
 
 \begin_layout Standard
@@ -1175,6 +1265,1067 @@ Write more.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Sampling importance resampling algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sampling-importance-resampling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here we illustrate a different method of obtaining samples from some distributio
+n, and one that is the basis for the method which is the main focus of this
+ report.
+ Suppose we have a 
+\begin_inset Formula $k$
+\end_inset
+
+-dimensional random variable 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ coming from a distribution with probability density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, and that we are unable to generate samples it from because, say because
+ it is computationally intractable.
+ Suppose further that we have another density defined on the same probability
+ space that we are able to generate samples from, and that this density
+ has probability density function 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ and the following holds:
+\begin_inset Formula 
+\begin{equation}
+\exists\mathrm{c}\text{ such that }\mathrm{c}g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}\label{eq:importance_sampling}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In words: There must be a constant 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+ such that 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ always is greater than 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ An illustration is provided in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Target-and-proposal"
+
+\end_inset
+
+.
+ 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Target and proposal distribution.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Target-and-proposal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/targetAndProposalIllustration.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can use this relationship to give the samples we draw from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ a weight based on how probable this sample is under 
+\begin_inset Formula $p(\cdot)$
+\end_inset
+
+, and then use these samples and weights to generate samples that approximate
+ the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+.
+ Since we are drawing samples from 
+\begin_inset Formula $g(\cdot)$
+\end_inset
+
+ we call it the proposal distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+To see how this relationship lets us approximate the distribution of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+, we start by defining the quantity known as the standardized importance
+ weight as:
+\begin_inset Formula 
+\[
+w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{m}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The reason why we standardise the weights, is that we then do not have to
+ think about 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+, since it will cancel in the nominator and denominator.
+ We also define 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
+\end_inset
+
+ to be draws from the distribution of 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use better notation
+\end_layout
+
+\end_inset
+
+.
+ Now consider the following algorithm:
+\end_layout
+
+\begin_layout Enumerate
+Sample 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
+\end_inset
+
+ from 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the weights, 
+\begin_inset Formula $w(\boldsymbol{y}_{i})=\frac{p(\boldsymbol{y}_{i})}{g(\boldsymbol{y}_{i})}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Resample from the set 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
+\end_inset
+
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ times with probabilities for drawing 
+\begin_inset Formula $\boldsymbol{y}_{i}$
+\end_inset
+
+ being proportional to the weight 
+\begin_inset Formula $w(\boldsymbol{y}_{i})$
+\end_inset
+
+.
+ Denote this resampled set as 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We now claim that the sample set 
+\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
+\end_inset
+
+ converges to the distribution for 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Use better notation
+\end_layout
+
+\end_inset
+
+as 
+\begin_inset Formula $m\to\infty$
+\end_inset
+
+.
+ Following a similar route as found in 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 293-295"
+key "ross2013simulation"
+
+\end_inset
+
+ we prove this by first noting that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}\\
+ & =\frac{\frac{1}{n}\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\frac{1}{n}\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By the strong law of large numbers we get for the nominator:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check strong law of large numbers
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})=\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y}))\\
+ & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y})|I(\boldsymbol{Y}\in A))P(I(\boldsymbol{Y}\in A)\\
+ & =E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the denominator we have:
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{Y}_{i}) & =E(w(\boldsymbol{Y}))\\
+ & =E(\frac{p(\boldsymbol{Y})}{g(\boldsymbol{Y})})\\
+ & =\int\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =\int p(\boldsymbol{y})d\boldsymbol{y}\\
+ & =\mathrm{c}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+ is an unknown constant.
+ Inserting these expressions into the fraction:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{alignat*}{1}
+\lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\mathrm{c}^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
+ & =\mathrm{c}^{-1}\int_{\boldsymbol{y}\in A}\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
+ & =\mathrm{c}^{-1}\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\end{alignat*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On the other hand we have by a theorem known as Lebesgue's dominated convergence
+ theorem:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathrm{c}P(\boldsymbol{X}\in A) & =\\
+ & \text{by law of double expectation}\\
+\mathrm{c}E(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n}) & =\\
+ & \text{by dominated convergence theorem}\\
+\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check use of constant and theorem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The constant 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+ does not affect the overall shape of the sampling distribution, and we
+ see that for large 
+\begin_inset Formula $n$
+\end_inset
+
+ we get a good approximation.
+ In the next section we will extend the weight calculation step by splitting
+ it into several smaller steps that can be computed recursively.
+\end_layout
+
+\begin_layout Subsection
+Sequential Importance Sampling
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Sequential-Importance-Sampling"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The expression for the weight in the previous section, 
+\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
+\end_inset
+
+, can be rewritten as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}\label{eq:weight_decomposition}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If we define 
+\begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
+\end_inset
+
+, the above can be written recursively as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $1\leq t\leq k$
+\end_inset
+
+, we define 
+\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{t})$
+\end_inset
+
+.
+ To ease the notation we define 
+\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}$
+\end_inset
+
+ and call it the weight update.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that the expression is correct
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Doing such a decomposition has some advantages when dealing with high-dimensiona
+l problems, where it is difficult to find a good proposal distribution
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 46-47"
+key "liu2001monte"
+
+\end_inset
+
+: It lets us stop calculation of the weights early if we see it comes close
+ to 0, and we can also make use of 
+\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+ when setting up the proposal distribution 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+There is a problem in that we need the marginal distributions, 
+\begin_inset Formula $p(x_{1})$
+\end_inset
+
+,
+\begin_inset Formula $p(x_{1},x_{2})$
+\end_inset
+
+,..., to get expressions for the conditional distributions.
+ To get the marginal distributions there is a need to integrate out variables.
+ For instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x_{k}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This may be difficult, or impossible, and to get around this problem we
+ introduce another layer of complexity and look for a sequence of marginal
+ distributions that are approximations to 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
+\end_inset
+
+: 
+\begin_inset Formula $\hat{p}(x_{1})$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{p}(x_{1},x_{2})$
+\end_inset
+
+,...,
+\begin_inset Formula $p(x_{1},x_{2},...,x_{k})$
+\end_inset
+
+.
+ The full joint distribution in the previous is not an approximation, but
+ the actual 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ So we can view the approximations as converging to the true distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+In summary we are faced with two challenges when setting up the sequential
+ importance sampling: Finding good proposal distributions, 
+\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+, and possibly approximations 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\hat{p}(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+ to the true target distribution 
+\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+.
+ In addition when updating the weights there is a danger that a small fraction
+ of the particles will receive most of the weighting, something which may
+ yield a poor approximation to the target distribution.
+ When this occurs it is called weight degeneracy.
+\end_layout
+
+\begin_layout Subsubsection
+Weight degeneracy
+\end_layout
+
+\begin_layout Standard
+When updating the weights, their variance will increase, that is: They will
+ spread out.
+ It may happen that a proportion of the weights tend toward 0.
+ This does not mean that the particles with these weights are stuck in a
+ low weight region forever, but in practice we would like to avoid spending
+ too much computational resources on updating particles that do not appear
+ to contribute to our approximation of 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ A low weight means a low probability of drawing that particle in step 3
+ in the SIR algorithm in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sampling-importance-resampling"
+
+\end_inset
+
+, and so entails a low impact on the final result.
+\end_layout
+
+\begin_layout Standard
+A strategy to better utilize the computational resources is to insert a
+ resampling step in the incremental weight update process if a high proportion
+ of the particles get stuck with low weights.
+ Note that resampling is not the only method of dealing with degenerate
+ weights in sequential Monte Carlo methods, see chapter 3 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+ for more information, which also includes some variations on how the actual
+ resampling can be done.
+\end_layout
+
+\begin_layout Standard
+In short the resampling creates a new sample set that has a better distribution
+ of the weights, by picking particles from the existing sample set and favouring
+ those with high weights.
+ When a resampling is done we draw 
+\begin_inset Formula $n$
+\end_inset
+
+ samples, where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of samples we started out with, from a multinomial distribution
+ where each particle has a probability of being drawn that is proportional
+ to its weight.
+ If the weights are normalised, we just use them as the probabilities in
+ the multinomial distribution.
+ Writing this a bit more mathematically we have: Let 
+\begin_inset Formula $x_{1},...,x_{n}$
+\end_inset
+
+ be the particles, and 
+\begin_inset Formula $w_{1},...,w_{n}$
+\end_inset
+
+ the corresponding normalised weights, and let 
+\begin_inset Formula $1\leq k\leq n$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $K$
+\end_inset
+
+ be the random variable denoting the probability of choosing particle 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ in the resampling step.
+ Then we have: 
+\begin_inset Formula 
+\[
+K\sim\mathrm{Multin}(n,w_{1},...,w_{n})
+\]
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Effective Sample Size
+\end_layout
+
+\begin_layout Standard
+A question we need to answer is when we should do a resampling.
+ To determine this we will look at a quantity called the Effective Sample
+ Size (ESS) as the weights are updated.
+ We take our definition from Liu 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+, where it is defined as such:
+\begin_inset Formula 
+\begin{equation}
+\mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the number of samples and 
+\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ the variance of the normalised weights with respect to the proposal distributio
+n.
+ We interpret it to mean that 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $n$
+\end_inset
+
+ weighted samples are worth as much as 
+\begin_inset Formula $\mathrm{ESS}(n)$
+\end_inset
+
+ independent and identically drawn samples from the target distribution
+ 
+\begin_inset Formula $p$
+\end_inset
+
+(
+\begin_inset Formula $\boldsymbol{X})$
+\end_inset
+
+.
+\begin_inset Quotes erd
+\end_inset
+
+ Looking at 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ we see that the max value for 
+\begin_inset Formula $\mathrm{ESS}(n)$
+\end_inset
+
+ is 
+\begin_inset Formula $n$
+\end_inset
+
+, and it occurs when the variance is 0.
+ For instance if we set 
+\begin_inset Formula $g(\boldsymbol{X})=p(\boldsymbol{X})$
+\end_inset
+
+, proposal equals target distribution, this will occur, and it makes sense
+ since then we are actually sampling from the target distribution.
+ It could also occur if all the weights were equally bad, say all ratios
+ weigths were 
+\begin_inset Formula $\frac{1}{1000}$
+\end_inset
+
+, so it is not a perfect measure.
+\end_layout
+
+\begin_layout Standard
+We provide some justification for why 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ looks the way is does.
+ The notion comes from a technial report by Kong 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+, who examined the efficiency between two estimators for the expected value
+ of a random variable:
+\begin_inset Formula 
+\[
+\mu=\mathrm{E}_{p}(h(\boldsymbol{X}))=\int h(\boldsymbol{x})p(\boldsymbol{x})d\boldsymbol{x}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\hat{\mu}=\frac{1}{n}\sum_{i=1}^{n}h(\boldsymbol{x}_{i})
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\tilde{\mu}=\frac{w_{1}h(\boldsymbol{x}_{1})+...+w_{n}h(\boldsymbol{x}_{n})}{w_{1}+...+w_{n}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When comparing the efficiencies of estimators, one can look at the ratio
+ between them:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\mathrm{var}_{g}(\tilde{\mu})}{\mathrm{var}_{p}(\hat{\mu})}\approx1+\mathrm{var}_{g}\left(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})}\right)=1+\mathrm{var}_{g}(w(\boldsymbol{X}))\label{eq:ratio_approximation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\tilde{\mu}$
+\end_inset
+
+ is using samples from 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+ from 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+.
+ Low variance is a desirable property of an estimator, so a large ratio
+ is in favour of 
+\begin_inset Formula $\hat{\mu}$
+\end_inset
+
+, and a low in favour of 
+\begin_inset Formula $\tilde{\mu}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The approximation in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ratio_approximation"
+
+\end_inset
+
+ is the main result of the technial report
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+.
+ Liu 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "liu2001monte"
+
+\end_inset
+
+ then uses this approximation to justify the following:
+\begin_inset Formula 
+\[
+\frac{\mathrm{var}_{p}(h(\boldsymbol{X}))}{\mathrm{var}_{g}(w(\boldsymbol{X})h(\boldsymbol{X}))}\approx\frac{1}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check use of normalised weights
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $h(\cdot)$
+\end_inset
+
+ is some function of 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+, and for our purposes we can take it to be the identity function.
+ The expression tells us that one sample from 
+\begin_inset Formula $p(\boldsymbol{X})$
+\end_inset
+
+, is worth about 
+\begin_inset Formula $1+\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ weighted sample.
+ If there are 
+\begin_inset Formula $n$
+\end_inset
+
+ samples, we multiple the expression by 
+\begin_inset Formula $n$
+\end_inset
+
+ and get 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+.
+ Note that in practice we need to estimate 
+\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
+\end_inset
+
+ by using the sample variance.
+ 
+\end_layout
+
+\begin_layout Standard
+The justification of the above assumes that the weights, 
+\begin_inset Formula $w(\boldsymbol{X})$
+\end_inset
+
+, refer to the normalised weights.
+ This is a problem if we do not know the constant 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+ in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:importance_sampling"
+
+\end_inset
+
+.
+ In that case we can use a different expression to give a measure of the
+ variability of the normalised weights using the unnormalised weights, called
+ the coefficient of variation:
+\begin_inset Formula 
+\[
+\mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}
+\]
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The definition in Liu had n - 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting this into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess"
+
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\begin{align*}
+\frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\\
+ & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\\
+ & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\\
+ & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})-n^{-2})}\\
+ & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\\
+ & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Unclear what the weights expressions refer to here.
+ Make clear
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add section on problems: Weight degeneracy.
+ How to remedy: Resampling
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using this measure of ESS, we trigger a resampling when it drops below a
+ given threshold to be specified later.
+ The rationale being that the weights at that point have spread out so much,
+ that we are wasting computations on particles that are in low probably
+ regions of the probability space, and should instead concentrate more on
+ the regions were the particles with higher weights are located.
+\end_layout
+
+\begin_layout Standard
+In deriving the expression for the ESS we will use, we went through two
+ approximations, and it is worth keeping in mind that we do not rely on
+ stringent theoretical properties involving it.
+ Indeed the ESS is described as a 
+\begin_inset Quotes eld
+\end_inset
+
+rule of thumb
+\begin_inset Quotes erd
+\end_inset
+
+ that can be used to give an indication of how much the weighted sampled
+ is worth.
 \end_layout
 
 \begin_layout Standard
@@ -2049,1009 +3200,6 @@ The output in the end is a set of weighted samples, which in turn can be
  The premise will be explained in detail, and we start with the concept
  of a weighted sample, which we illustrate by looking at the sampling importance
  resampling (SIR) method for generating samples from a distribution.
-\end_layout
-
-\begin_layout Subsection
-Sampling importance resampling algorithm
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Sampling-importance-resampling"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Suppose we have a 
-\begin_inset Formula $k$
-\end_inset
-
--dimensional random variable 
-\begin_inset Formula $\boldsymbol{X}$
-\end_inset
-
- coming from a distribution with probability density function 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
-, and that we are unable to generate samples it from because it is computational
-ly intractable.
- Suppose further that we have another density defined on the same space
- that we are able to generate samples from, and that this density has probabilit
-y density function 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- and the following holds:
-\begin_inset Formula 
-\begin{equation}
-\exists c\text{ such that }cg(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}\label{eq:importance_sampling}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In words: There must be a constant 
-\begin_inset Formula $c$
-\end_inset
-
- such that 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- always is greater than 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
-.
- An illustration is provided in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Target-and-proposal"
-
-\end_inset
-
-.
- 
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Target and proposal distribution.
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Target-and-proposal"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/targetAndProposalIllustration.png
-	scale 60
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We can use this relationship to give the samples we draw from 
-\begin_inset Formula $g(\cdot)$
-\end_inset
-
- a weight based on how probable this sample is under 
-\begin_inset Formula $p(\cdot)$
-\end_inset
-
-, and then use these samples and weights to generate samples that approximate
- the distribution of 
-\begin_inset Formula $\boldsymbol{X}$
-\end_inset
-
-.
- Since we are drawing samples from 
-\begin_inset Formula $g(\cdot)$
-\end_inset
-
- we call it the proposal distribution.
- 
-\end_layout
-
-\begin_layout Standard
-To see how this relationship lets us approximate the distribution of 
-\begin_inset Formula $\boldsymbol{X}$
-\end_inset
-
-, we start by defining the quantity known as the standardized importance
- weight as:
-\begin_inset Formula 
-\[
-w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{m}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The reason why we standardise the weights, is that we then do not have to
- think about 
-\begin_inset Formula $c$
-\end_inset
-
-, since it will cancel in the nominator and denominator.
- We also define 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- to be draws from the distribution of 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Use better notation
-\end_layout
-
-\end_inset
-
-.
- Now consider the following algorithm:
-\end_layout
-
-\begin_layout Enumerate
-Sample 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- from 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Enumerate
-Calculate the weights, 
-\begin_inset Formula $w(\boldsymbol{y}_{i})=\frac{p(\boldsymbol{y}_{i})}{g(\boldsymbol{y}_{i})}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-Resample from the set 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- 
-\begin_inset Formula $m$
-\end_inset
-
- times with probabilities for drawing 
-\begin_inset Formula $\boldsymbol{y}_{i}$
-\end_inset
-
- being proportional to the weight 
-\begin_inset Formula $w(\boldsymbol{y}_{i})$
-\end_inset
-
-.
- Denote this resampled set as 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-We now claim that the sample set 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
-\end_inset
-
- converges to the distribution for 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Use better notation
-\end_layout
-
-\end_inset
-
-as 
-\begin_inset Formula $m\to\infty$
-\end_inset
-
-.
- Following a similar route as found in 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "pp. 293-295"
-key "ross2013simulation"
-
-\end_inset
-
- we prove this by first noting that:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-By the strong law of large numbers we get:
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Check strong law of large numbers
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{align*}
-\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})=\\
- & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y}))\\
- & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y})|I(\boldsymbol{Y}\in A))P(I(\boldsymbol{Y}\in A)\\
- & =E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We also have:
-\begin_inset Formula 
-\begin{align*}
-\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{Y}_{i}) & =E(w(\boldsymbol{Y}))\\
- & =E(\frac{p(\boldsymbol{Y})}{g(\boldsymbol{Y})})\\
- & =\int\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
- & =\int p(\boldsymbol{y})d\boldsymbol{y}\\
- & =C
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $C$
-\end_inset
-
- is an unknown constant.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{alignat*}{1}
-\lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =C^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
- & =C^{-1}\int_{\boldsymbol{y}\in A}\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
- & =C^{-1}\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
-\end{alignat*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-On the other hand we have by Lebesgue's dominated convergence theorem:
-\begin_inset Formula 
-\[
-P(\boldsymbol{X}\in A)=CE(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n})=\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The constant 
-\begin_inset Formula $C$
-\end_inset
-
- does not affect the sampling distribution, and we see that for large 
-\begin_inset Formula $m$
-\end_inset
-
- we get a good approximation to the distribution.
- In the next section we will extend the weight calculation step by splitting
- into several smaller steps that can be computed recursively.
-\end_layout
-
-\begin_layout Subsection
-Sequential Importance Sampling
-\begin_inset CommandInset label
-LatexCommand label
-name "sub:Sequential-Importance-Sampling"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The expression for the weight in the previous section, 
-\begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
-\end_inset
-
-, can be rewritten as follows:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{1},...,x_{k-1})}{g(x_{1})g(x_{2}|x_{1})g(x_{3}|x_{1},x_{2})...g(x_{k}|x_{1},...,x_{k-1})}\label{eq:weight_decomposition}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If we define 
-\begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
-\end_inset
-
-, the above can be written recursively as:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $1\leq t\leq k$
-\end_inset
-
-, we define 
-\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{t})$
-\end_inset
-
-.
- To ease the notation we define 
-\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}$
-\end_inset
-
- and call it the weight update.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Check that the expression is correct
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Doing such a decomposition has some advantages when dealing with high-dimensiona
-l problems, where it is difficult to find a good proposal distribution
-\begin_inset CommandInset citation
-LatexCommand cite
-after "pp. 46-47"
-key "liu2001monte"
-
-\end_inset
-
-: It lets us stop calculation of the weights early if we see it comes close
- to 0, and we can also make use of 
-\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
-\end_inset
-
- when setting up the proposal distribution 
-\begin_inset Formula $g(x_{t}|\boldsymbol{x}_{t-1})$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-There is a problem in that we need the marginal distributions, 
-\begin_inset Formula $p(x_{1})$
-\end_inset
-
-,
-\begin_inset Formula $p(x_{1},x_{2})$
-\end_inset
-
-,..., to get expressions for the conditional distributions.
- To get the marginal distributions there is a need to integrate out variables.
- For instance:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x_{k}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This may be difficult, or impossible, and to get around this problem, we
- introduce another layer of complexity and look for a sequence of marginal
- distributions that are approximations to 
-\begin_inset Formula $p(\boldsymbol{x}_{t})$
-\end_inset
-
-: 
-\begin_inset Formula $\hat{p}(x_{1})$
-\end_inset
-
-, 
-\begin_inset Formula $\hat{p}(x_{1},x_{2})$
-\end_inset
-
-,...,
-\begin_inset Formula $p(x_{1},x_{2},...,x_{k})$
-\end_inset
-
-.
- The full joint distribution in the previous is not an approximation, but
- the actual 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
-.
- So we can view the approximations as converging to the true distribution.
- 
-\end_layout
-
-\begin_layout Standard
-In summary we are faced with two challenges: Finding good proposal distributions
-, and approximations 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $\hat{p}(x_{t}|\boldsymbol{x}_{t-1})$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsubsection
-Weight degeneracy
-\end_layout
-
-\begin_layout Standard
-When updating the weights, their variance will increase, that is: They will
- spread out.
- It may happen that a proportion of the weights tend toward 0.
- This does not mean that the particles with these weights are stuck in a
- low weight region forever, but in practice we would like to avoid spending
- too much computational resources on updating particles that do not appear
- to contribute to our approximation of 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
-.
- A low weight means a low probability of drawing that particle in step 3
- in the SIR algorithm in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Sampling-importance-resampling"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-A strategy to better utilize the computational resources is to insert a
- resampling step in the incremental weight update process if a high proportion
- of the particles get stuck with low weights.
- This strategy is used in 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "adaptive_smc_for_abc"
-
-\end_inset
-
- and we will also employ it.
- Resampling is not the only method of dealing with degenerate weights in
- sequential Monte Carlo methods, see chapter 3 of 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "liu2001monte"
-
-\end_inset
-
- for more information, which also includes some variations on how the actual
- resampling is done.
-\end_layout
-
-\begin_layout Standard
-In short the resampling creates a new sample set that has a better distribution
- of the weights, by picking particles from the existing sample set and favouring
- those with high weights.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write a bit more
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-Effective Sample Size
-\end_layout
-
-\begin_layout Standard
-A question we need to answer is when we should do a resampling.
- To determine this we will look at a quantity called the Effective Sample
- Size (ESS) as the weights are updated.
- We take our definition from Liu 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "liu2001monte"
-
-\end_inset
-
-, where it is defined as such:
-\begin_inset Formula 
-\begin{equation}
-\mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $n$
-\end_inset
-
- is the number of samples and 
-\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
-\end_inset
-
- the variance of the weights with respect to the proposal distribution.
- We interpret it to mean that 
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Formula $n$
-\end_inset
-
- weighted samples are worth as much as 
-\begin_inset Formula $\mathrm{ESS}(n)$
-\end_inset
-
- independent and identically drawn samples from the target distribution
- 
-\begin_inset Formula $p$
-\end_inset
-
-(
-\begin_inset Formula $\boldsymbol{X})$
-\end_inset
-
-.
-\begin_inset Quotes erd
-\end_inset
-
- Looking at 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess"
-
-\end_inset
-
- we see that the max value for 
-\begin_inset Formula $\mathrm{ESS}(n)$
-\end_inset
-
- is 
-\begin_inset Formula $n$
-\end_inset
-
-, and it occurs when the variance is 0.
- For instance if we set 
-\begin_inset Formula $g(\boldsymbol{X})=p(\boldsymbol{X})$
-\end_inset
-
- this will occur, and it makes sense since then we are actually sampling
- from the target distribution.
- It could also occur if all the weights were equally bad, say all ratios
- weigths were 
-\begin_inset Formula $\frac{1}{1000}$
-\end_inset
-
-, so it is not a perfect measure.
-\end_layout
-
-\begin_layout Standard
-We provide some more justification for why 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess"
-
-\end_inset
-
- looks the way is does.
- The notion comes from a technial report by Kong 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
-
-\end_inset
-
-, who examined the efficiency between two estimators for the expected value
- of a random variable:
-\begin_inset Formula 
-\[
-\mu=\mathrm{E}_{p}(h(\boldsymbol{X}))=\int h(\boldsymbol{x})p(\boldsymbol{x})d\boldsymbol{x}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\hat{\mu}=\frac{1}{n}\sum_{i=1}^{n}h(\boldsymbol{x}_{i})
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\tilde{\mu}=\frac{w_{1}h(\boldsymbol{x}_{1})+...+w_{n}h(\boldsymbol{x}_{n})}{w_{1}+...+w_{n}}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-When comparing the efficiencies of estimators, one can look at the ratio
- between them:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\frac{\mathrm{var}_{g}(\tilde{\mu})}{\mathrm{var}_{p}(\hat{\mu})}\approx1+\mathrm{var}_{g}\left(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})}\right)=1+\mathrm{var}_{g}(w(\boldsymbol{X}))\label{eq:ratio_approximation}
-\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $\tilde{\mu}$
-\end_inset
-
- is using samples from 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
- and 
-\begin_inset Formula $\hat{\mu}$
-\end_inset
-
- from 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
-.
- Low variance is a desirable property of an estimator, so a large ratio
- is in favour of 
-\begin_inset Formula $\hat{\mu}$
-\end_inset
-
-, and a low in favour of 
-\begin_inset Formula $\tilde{\mu}$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-The approximation in equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ratio_approximation"
-
-\end_inset
-
- is the main result of the technial report
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
-
-\end_inset
-
-.
- Liu 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "liu2001monte"
-
-\end_inset
-
- then uses this approximation to justify the following:
-\begin_inset Formula 
-\[
-\frac{\mathrm{var}_{p}(h(\boldsymbol{X}))}{\mathrm{var}_{g}(w(\boldsymbol{X})h(\boldsymbol{X}))}\approx\frac{1}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $h(\cdot)$
-\end_inset
-
- is some function of 
-\begin_inset Formula $\boldsymbol{X}$
-\end_inset
-
-, for our purposes we can assume it is the identity function.
- The expression tells us that one sample from 
-\begin_inset Formula $p(\boldsymbol{X})$
-\end_inset
-
-, is worth about 
-\begin_inset Formula $1+\mathrm{var}_{g}(w(\boldsymbol{X}))$
-\end_inset
-
- weighted sample.
- If there are 
-\begin_inset Formula $n$
-\end_inset
-
- samples, we multiple the expression by 
-\begin_inset Formula $n$
-\end_inset
-
- and get 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess"
-
-\end_inset
-
-.
- Note that the weights, 
-\begin_inset Formula $w(\boldsymbol{X})$
-\end_inset
-
-, here and in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess"
-
-\end_inset
-
- refer to the unnormalised weights.
- Also note that in practice we need to estimate 
-\begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
-\end_inset
-
- by using the sample variance for instance.
-\end_layout
-
-\begin_layout Standard
-Since we are following Del Moral et.
- al.
- 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "adaptive_smc_for_abc"
-
-\end_inset
-
-, we use a simplified version of the effective sample size that can be justified
- because we use normalised weights:
-\begin_inset Formula 
-\[
-\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In our setup we actually estimate cannot 
-\begin_inset Formula $\mathrm{var}(w(\boldsymbol{X}))$
-\end_inset
-
- using the sample variance, since that requires us to know the actual weights,
- not the normalised ones, and that in turn requires us to know the constant
- 
-\begin_inset Formula $c$
-\end_inset
-
- in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:importance_sampling"
-
-\end_inset
-
-, and not knowing that was the reason we used normalised weights in the
- first place.
-\end_layout
-
-\begin_layout Standard
-Instead of using the sample variance, we instead use a quantity called the
- coefficient of variation:
-\begin_inset Formula 
-\[
-\mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}
-\]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-The definition in Liu had n - 1
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Inserting this into 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess"
-
-\end_inset
-
- we get:
-\begin_inset Formula 
-\begin{align*}
-\frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\\
- & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\\
- & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\\
- & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})-n^{-2})}\\
- & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\\
- & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Unclear what the weights expressions refer to here.
- Make clear
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Add section on problems: Weight degeneracy.
- How to remedy: Resampling
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Using this measure of ESS, we trigger a resampling when it drops below a
- given threshold.
- The rationale being that the weights then have spread out so much, that
- we are wasting computations on particles that are in low probably regions
- of the probability space, and should instead concentrate more one the regions
- were the particles with higher weights are located.
 \end_layout
 
 \begin_layout Subsection
@@ -4882,6 +5030,22 @@ Section on kernels.
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FloatBarrier
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Examples
 \end_layout
@@ -4978,6 +5142,31 @@ The absolute difference between the generated
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+pagebreak
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Source code
+\end_layout
+
+\begin_layout Standard
+The source code is available from Github.
 \end_layout
 
 \begin_layout Standard

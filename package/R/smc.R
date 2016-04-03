@@ -2,26 +2,34 @@
 
 
 
-# SMC
+#' Performs a run using a Sequential Markov Chain (SMC) method.
+#'
+#' This is an implementation of a SMC method. It will do a run
+#' based on the input parameters.
+#'
 #' @export
 Smc <-
-  function(max.iterations = 40,
+  function(smc.configuration,
+           max.iterations = 40,
            alpha = 0.9,
            number.of.particles = 100,
            resample.ratio = 0.5,
            start.epsilon = 10,
            stop.epsilon = 0.1,
            number.of.replicates = 1,
-           SampleFunction,
-           ForwardKernelSample,
-           DistanceFunction,
-           GenerateRandomSampleFromTheta) {
+           verbose = F
+           ) {
+    SampleFunction <- smc.configuration[["SampleFunction"]]
+    ForwardKernelSample <- smc.configuration[["ForwardKernelSample"]]
+    DistanceFunction <- smc.configuration[["DistanceFunction"]]
+    GenerateRandomPrior <- smc.configuration[["GenerateRandomPrior"]]
+
     variable.env <- new.env(parent = emptyenv())
 
     # Create an initial set of particles
     variable.env$thetas <-
       matrix(sapply(1:number.of.particles, function(x) {
-        GenerateRandomSampleFromTheta()
+        GenerateRandomPrior()
       }),
       nrow = number.of.particles,
       ncol = 1)
@@ -69,7 +77,9 @@ Smc <-
 
     while (T) {
       # Adaptation
+      if(verbose) {
       print(paste("Current epsilon: ", current.epsilon))
+      }
 
       AddValuesToLists(counter)
       counter <- counter + 1
@@ -85,14 +95,10 @@ Smc <-
           current.epsilon,
           variable.env$particles,
           variable.env$weights,
-          alpha
+          alpha,
+          DistanceFunction
         )
       }, extendInt = "no", c(0, current.epsilon))$root
-
-      # epsilon.new <- current.epsilon - 0.1
-      # if(epsilon.new < 1e-6) {
-      #   break
-      # }
 
       # TODO Only compute the weights once, not here and in FindNextEpsilon
       variable.env$weights <-
@@ -113,7 +119,9 @@ Smc <-
 
       # Resampling
       if (effective.sample.size < resample.ratio * number.of.particles) {
+        if(verbose) {
         print(paste("Resampling at step: ", counter))
+        }
         Resample(variable.env)
       }
 
@@ -129,12 +137,14 @@ Smc <-
       variable.env$particles <- iterated.samples$samples
       variable.env$thetas <- iterated.samples$theta
 
+      if(verbose) {
       print(paste(
         "Counter: ",
         counter,
         " Effective sample size: ",
         effective.sample.size
       ))
+      }
 
       if (counter == max.iterations) {
         break
@@ -151,6 +161,7 @@ Smc <-
       all.weights = variable.env$all.weights,
       all.particles = variable.env$all.particles
     )
+
   }
 
 ComputeEffectiveSampleSize <- function(weights) {
@@ -163,7 +174,8 @@ FindNextEpsilon <-
            my.current.epsilon,
            my.particles,
            my.previous.weights,
-           alpha) {
+           alpha,
+           DistanceFunction) {
     ess.old <- ComputeEffectiveSampleSize(my.previous.weights)
     weight.updates <-
       CalculateWeightUpdates(my.particles,
