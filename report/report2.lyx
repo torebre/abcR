@@ -100,6 +100,7 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\listings_params "breaklines=true,captionpos=b,frame=tb,language=R"
 \tracking_changes false
 \output_changes false
 \html_math_output 0
@@ -5166,7 +5167,63 @@ Source code
 \end_layout
 
 \begin_layout Standard
-The source code is available from Github.
+An implementation of the algorithm is available as R code 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "R_language"
+
+\end_inset
+
+, and the source code is available from Github.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Cite devtools-package
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+install.packages("devtools")
+\end_layout
+
+\begin_layout Plain Layout
+
+devtools::install_github("toreb/abcProject", build_vignettes = TRUE)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To see a vignette describing the toy example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+browseVignettes("abcProject")
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
