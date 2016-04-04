@@ -19,103 +19,11 @@ VisualiseToyExampleState <-
     weights <- unlist(smc.result[["all.weights"]][state.to.visualise])
     particles <- unlist(smc.result[["all.particles"]][state.to.visualise])
 
-
-    number.of.particles <- length(particles)
-#
-#     theta.upper <- max(thetas)
-#     theta.lower <- min(thetas)
-#
-#     Posterior2 <- function(my.theta) {
-#       0.5 * dnorm(0, mean = my.theta, sd = 1) + 0.5 * dnorm(0, mean = my.theta, sd = 1 / 10)
-#     }
-#
-#     VectorizedPosterior2 <- Vectorize(Posterior2)
-
     op <- par("mfrow" = c(2, 2))
-#
-#     hist(
-#       unlist(thetas),
-#       # h = 0.1,
-#       # xlim = c(-5, 5),
-#       # ylim = c(0, 2),
-#       freq = F,
-#       ann = F
-#     )
-#     title(latex2exp::latex2exp("$\\theta$"))
-#
-#
-#     # Posterior <- function(my.theta) {
-#     #   my.epsilon <- results$epsilons[[j]]
-#     #   (pnorm(my.epsilon - my.theta) - pnorm(-(my.epsilon + my.theta)) + pnorm(10 * (my.epsilon - my.theta))) - pnorm(-10 * (my.epsilon + my.theta))
-#     # }
-#     # VectorizedPosteror <- Vectorize(Posterior)
-#     # curve(VectorizedPosterior,
-#     #       from = -5,
-#     #       to = 5, add = T)
-#
-#     curve(
-#       VectorizedPosterior2,
-#       from = -5,
-#       to = 5,
-#       add = T,
-#       col = "green"
-#     )
-
     PlotHistogram(thetas)
-
-
-    # # Plot particles
-    # cumulative.angle <- 0
-    # x.coords <- rep(NA, number.of.particles)
-    # y.coords <- rep(NA, number.of.particles)
-    # colors <- rep(NA, number.of.particles)
-    # for (i in 1:number.of.particles) {
-    #   particle.distance <- particles[i]
-    #   x.coords[i] <- cos(cumulative.angle) * particle.distance
-    #   y.coords[i] <- sin(cumulative.angle) * particle.distance
-    #   cumulative.angle <- cumulative.angle + sector.size
-    #
-    #   if (weights[i] > 0) {
-    #     colors[i] <- "red"
-    #   }
-    #   else {
-    #     colors[i] <- "blue"
-    #   }
-    # }
     PlotParticles(particles, weights)
-#
-#     plot(
-#       unlist(smc.result$epsilons)[1:state.to.visualise],
-#       type = "l",
-#       ann = F,
-#       xlim = c(0, state.to.visualise),
-#       ylim = c(0, 10)
-#     )
-#     title(
-#       main = latex2exp::latex2exp("$\\epsilon_{n}$"),
-#       ylab = latex2exp::latex2exp("$\\epsilon_{n}$"),
-#       xlab = "n"
-#     )
-
     PlotEpsilonTrace(smc.result, state.to.visualise)
-
-
-    # ess.trace <- unlist(smc.result$effective.sample.sizes)[1:state.to.visualise]
-    # ess.max <- max(ess.trace)
-    # plot(
-    #   ess.trace,
-    #   type = "l",
-    #   ylim = c(0, ess.max),
-    #   ann = F,
-    #   xlim = c(0, state.to.visualise)
-    # )
-    # # abline(h = 5000)
-    # title(main = "ESS",
-    #       xlab = "n",
-    #       ylab = "EFF")
-
     PlotEssTrace(smc.result, state.to.visualise)
-
     par(op)
   }
 
@@ -179,9 +87,6 @@ PlotHistogram <- function(thetas) {
 
   hist(
     unlist(thetas),
-    # h = 0.1,
-    # xlim = c(-5, 5),
-    # ylim = c(0, 2),
     freq = F,
     ann = F
   )
@@ -194,9 +99,7 @@ PlotHistogram <- function(thetas) {
     add = T,
     col = "green"
   )
-
 }
-
 
 #' Plot epsilon trace.
 #'

@@ -4,7 +4,7 @@
 \alias{smcToyExample}
 \title{SMC toy example.}
 \usage{
-smcToyExample(observation)
+smcToyExample()
 }
 \description{
 SMC toy example.
