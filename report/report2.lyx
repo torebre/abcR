@@ -75,7 +75,16 @@
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref false
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
 \papersize a4paper
 \use_geometry false
 \use_amsmath 1
@@ -220,7 +229,7 @@ key "approx_bayes_comp"
 
  for an overview of research on the computational part.
  Here we will focus on one computational strategy that there are several
- variations on in the ABC literature: Use of what is called sequential Monte
+ variations on in the ABC literature: Use of what is called Sequential Monte
  Carlo (SMC) when obtaining samples from the approximation to the posterior.
  More specifically we will focus on the work done in 
 \begin_inset CommandInset citation
@@ -899,7 +908,13 @@ reference "fig:Approximations-to-normal"
 \end_inset
 
  for an illustration.
- So if we had a method of generating samples from an arbitrary distrubtion,
+ The figure shows that with enough samples we are able to construct the
+ shape of the probability density function, and thus have complete information
+ about the distribution.
+\end_layout
+
+\begin_layout Standard
+If we now had a method of generating samples from an arbitrary distrubtion,
  it would be a very useful tool.
  In the next section we will describe the foundations of a popular set of
  methods that do just this and go under the collective term Markov Chain
@@ -950,17 +965,8 @@ name "fig:Approximations-to-normal"
 MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
  they are not the only methods available for approximating a probability
  distribution.
- We touch upon another method, importance sampling
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-What about rejection sampling?
-\end_layout
-
-\end_inset
-
-, later on since it is an ingredient in the method which is our main focus.
+ We touch upon another method, importance sampling, later on since it is
+ an ingredient in the SMC method which is our main focus.
  
 \end_layout
 
@@ -1020,15 +1026,16 @@ Say
 \end_layout
 
 \begin_layout Standard
-Suffice to say the field is huge, and we again refer to 
+Suffice to say the field dealing with how to approximate a distribution
+ is huge, and we again refer to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gelman2013bayesian"
 
 \end_inset
 
- which provides an overview, and especially chapter 13 of that text which
- provides insights into methods that do not use MCMC.
+ which provides an overview over both MCMC and other methods (see especially
+ chapter 13 of that text for non-MCMC methods).
 \end_layout
 
 \begin_layout Subsection
@@ -1037,9 +1044,8 @@ Markov Chain Monte Carlo
 
 \begin_layout Standard
 Even though the method we will focus on later is not an MCMC method, it
- does make use of some the theory underlying MCMC, and we will also compare
- it with an MCMC method, so we quickly go through some of the basics that
- we will need to understand the later discussion.
+ does make use of some the underlying theory, so we quickly go through some
+ of the basics that we will need to understand the later discussion.
 \end_layout
 
 \begin_layout Standard
@@ -1206,9 +1212,9 @@ Multiplying the transition matrix with the state vector yields the state
  states at some arbitrary step.
  Assume that there is some state vector such that the following holds:
 \begin_inset Formula 
-\[
-P\boldsymbol{\pi}_{t}=\boldsymbol{\pi}_{t}
-\]
+\begin{equation}
+P\boldsymbol{\pi}_{t}=\boldsymbol{\pi}_{t}\label{eq:stationary_distribution}
+\end{equation}
 
 \end_inset
 
@@ -1234,7 +1240,125 @@ In the coin toss example the state distribution is discrete, but Markov
 \end_inset
 
 .
- 
+ The notation we have used in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_distribution"
+
+\end_inset
+
+ breaks down when going to the continuous case however if we continue to
+ view 
+\begin_inset Formula $P$
+\end_inset
+
+ as a matrix.
+ Instead we view 
+\begin_inset Formula $P$
+\end_inset
+
+ as what is called a kernel, and keep using the notation in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_distribution"
+
+\end_inset
+
+.
+ Without going into to details, what a kernel does is to give a probability
+ of going from a state, say 
+\begin_inset Formula $i$
+\end_inset
+
+, to another state 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ We write this probability as 
+\begin_inset Formula $P(i,j)$
+\end_inset
+
+.
+ We also write 
+\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
+\end_inset
+
+ to mean that probability that the chain is in state 
+\begin_inset Formula $i$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Going back to the problem of generating samples from some arbitrary distribution
+, 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, the idea now is to construct a 
+\begin_inset Formula $P$
+\end_inset
+
+ such that the distribution we want to generate samples from is the stationary
+ distribution of the Markov Chain.
+ If we find a 
+\begin_inset Formula $P$
+\end_inset
+
+ as described we can generate a new sample from 
+\begin_inset Formula $\boldsymbol{\pi}_{t}$
+\end_inset
+
+ by iterating the Markov process one step.
+ Note that by iterating the process we do not mean doing a multiplication
+ like 
+\begin_inset Formula $P\boldsymbol{\pi}_{t}$
+\end_inset
+
+.
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_distribution"
+
+\end_inset
+
+ describes the change of the whole probability distribution, we are now
+ interested in a single realisation.
+ Returning to the coin toss example a single realisation could be 
+\begin_inset Formula $H-T-T-H-H$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
+\end_inset
+
+ denote the probability that the process is in state 
+\begin_inset Formula $i$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1295,8 +1419,8 @@ n, and one that is the basis for the method which is the main focus of this
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
-, and that we are unable to generate samples it from because, say because
- it is computationally intractable.
+, and that we are unable to generate samples from it, say because it is
+ computationally intractable to do so.
  Suppose further that we have another density defined on the same probability
  space that we are able to generate samples from, and that this density
  has probability density function 
@@ -1336,6 +1460,9 @@ reference "fig:Target-and-proposal"
 \end_inset
 
 .
+ The blue curve is the probability density function of the distribution
+ we can generate samples from, and the red curve form the one we cannot
+ generate samples from.
  
 \begin_inset Float figure
 wide false
@@ -2027,7 +2154,7 @@ reference "eq:ess"
 \end_inset
 
  looks the way is does.
- The notion comes from a technial report by Kong 
+ The notion comes from a technical report by Kong 
 \begin_inset Note Note
 status open
 
@@ -2050,6 +2177,10 @@ Insert reference
 \end_layout
 
 \begin_layout Standard
+One estimator is the mean:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \[
 \hat{\mu}=\frac{1}{n}\sum_{i=1}^{n}h(\boldsymbol{x}_{i})
@@ -2058,6 +2189,10 @@ Insert reference
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Another one is a weighted mean, where the weigths have been normalised:
 \end_layout
 
 \begin_layout Standard
@@ -2072,8 +2207,8 @@ Insert reference
 \end_layout
 
 \begin_layout Standard
-When comparing the efficiencies of estimators, one can look at the ratio
- between them:
+When comparing the efficiencies of estimators, a common approach is to look
+ at the ratio between them:
 \end_layout
 
 \begin_layout Standard
@@ -2216,7 +2351,7 @@ The justification of the above assumes that the weights,
 \begin_inset Formula $w(\boldsymbol{X})$
 \end_inset
 
-, refer to the normalised weights.
+, refer to the unnormalised weights.
  This is a problem if we do not know the constant 
 \begin_inset Formula $\mathrm{c}$
 \end_inset
@@ -2261,14 +2396,68 @@ reference "eq:ess"
 \end_inset
 
  we get:
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following is wrong
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{align}
+\frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\nonumber \\
+ & \approx\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\nonumber \\
+ & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\nonumber \\
+ & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})+n^{-2})}\nonumber \\
+ & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\nonumber \\
+ & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}\label{eq:ess_expression}
+\end{align}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The approximation in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess_expression"
+
+\end_inset
+
+ is justified as follows: 
 \begin_inset Formula 
 \begin{align*}
-\frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\\
- & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\\
- & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\\
- & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})-n^{-2})}\\
- & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\\
- & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}
+\mathrm{E}(w(\boldsymbol{X})) & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}w(\boldsymbol{x})g(\boldsymbol{x})d\boldsymbol{x}\\
+ & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}g(\boldsymbol{x})d\boldsymbol{x}\\
+ & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}p(\boldsymbol{x})d\boldsymbol{x}\\
+ & =1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ is an 
+\begin_inset Formula $m$
+\end_inset
+
+-dimensional vector.
+ We then have:
+\begin_inset Formula 
+\begin{align*}
+\mathrm{E}(\bar{w}(\boldsymbol{X})) & =\frac{1}{n}\sum_{i=1}^{n}\mathrm{E}(w_{i}(\boldsymbol{X}))\\
+ & =\\
 \end{align*}
 
 \end_inset
@@ -5174,17 +5363,50 @@ key "R_language"
 
 \end_inset
 
-, and the source code is available from Github.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Cite devtools-package
-\end_layout
+, and the source code is available from GitHub at 
+\begin_inset CommandInset href
+LatexCommand href
+name "https://github.com/torebre/abcProject"
+target "https://github.com/torebre/abcProject"
 
 \end_inset
 
+.
+ The code may be downloaded as a zip-file through the web page, or if the
+ user is familiar with the Git source code management system, he can clone
+ the repository using the link found on the page.
+\end_layout
 
+\begin_layout Subsection
+Installing the package in R
+\end_layout
+
+\begin_layout Standard
+The code in the repository is laid out in the form of an R-package.
+ To use it the user must install the package.
+ The easiest way to do this is by using Hadley Wickham's devtools-package
+\begin_inset CommandInset citation
+LatexCommand cite
+key "devtools"
+
+\end_inset
+
+, which is available on CRAN.
+\end_layout
+
+\begin_layout Standard
+One function in the devtools-package allows the user to install R-packages
+ directly from GitHub.
+ In the following snippet the code for this project is installed with a
+ flag that builds the vignettes for the project.
+ A vignette is term for long form documentation that can be included with
+ R-packages.
+ Building them can take some time, and all the suggested package installs
+ specified in the package will also be installed when build_vignettes is
+ set to true.
+ If the user is not interested in viewing the vignettes, because he only
+ wants to look at and use the code say, he can drop the build_vignettes
+ argument from the install command, since the default value is false.
 \end_layout
 
 \begin_layout Standard
@@ -5199,7 +5421,7 @@ install.packages("devtools")
 
 \begin_layout Plain Layout
 
-devtools::install_github("toreb/abcProject", build_vignettes = TRUE)
+devtools::install_github("torebre/abcProject", build_vignettes = TRUE)
 \end_layout
 
 \end_inset
@@ -5208,7 +5430,8 @@ devtools::install_github("toreb/abcProject", build_vignettes = TRUE)
 \end_layout
 
 \begin_layout Standard
-To see a vignette describing the toy example:
+If the code is installed with the build_vignettes flag set to true, it is
+ possible to see a vignette describing the toy example:
 \end_layout
 
 \begin_layout Standard
@@ -5218,7 +5441,36 @@ status open
 
 \begin_layout Plain Layout
 
-browseVignettes("abcProject")
+vignette("smcToyExample")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To uninstall the package run:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+devtools::devtools::uninstall("abcProject")
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check that the uninstall works
 \end_layout
 
 \end_inset
