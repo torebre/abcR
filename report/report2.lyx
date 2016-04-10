@@ -4685,6 +4685,18 @@ Algorithm
 \end_layout
 
 \begin_layout Standard
+Using a kernel function on the form described, the full algorithm looks
+ as the pseduo-code given in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:SMC-in-ABC"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
@@ -4708,6 +4720,13 @@ status open
 
 \begin_layout Plain Layout
 SMC in ABC
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:SMC-in-ABC"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -5206,18 +5225,153 @@ end{algorithmic}
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Section on kernels.
- Update schedules
+\begin_layout Subsubsection
+Resampling schedule
 \end_layout
+
+\begin_layout Standard
+In algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:SMC-in-ABC"
+
+\end_inset
+
+ we have used the same update strategy as in Del Moral et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+.
+ At each iteration the following equation is solved for 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{equation}
+\mathrm{ESS}(\boldsymbol{w}_{n})=\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})\label{eq:ess_update}
+\end{equation}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $\alpha\in(0,1)$
+\end_inset
+
+ is some given constant that will be explained later.
+ The dependency on 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+ shows up if we expand the expression for how we calculate 
+\begin_inset Formula $\boldsymbol{w}_{n}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\boldsymbol{w}_{n}=\boldsymbol{w}_{n-1}\frac{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n}}(\boldsymbol{x}_{n-1}^{(i)})}{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n-1}}(\boldsymbol{x}_{n-1}^{(i)})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where each particle has 
+\begin_inset Formula $m$
+\end_inset
+
+ replicates.
+ As a function of 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+ it is not continuous, so we cannot solve 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess_update"
+
+\end_inset
+
+ by finding the derivative, and it is not certain that an exact solution
+ exists for all 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+.
+ So in practice an approximate solution is found using some numerical method.
+ In our implementation the bisection method is used.
+\end_layout
+
+\begin_layout Standard
+The idea behind 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ess_update"
+
+\end_inset
+
+ is to find a 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+ so that we make reasonable progress towards 0.
+ Remember that we would like 
+\begin_inset Formula $\epsilon_{n}\to0$
+\end_inset
+
+ as 
+\begin_inset Formula $n$
+\end_inset
+
+ increases to get a better and better approximation to the distribution.
+ The other concern when updating 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+ is to avoid taking a too big step so that algorithm collapses.
+ We see that all the weights can collapse to 0 if the step is too big.
+\end_layout
+
+\begin_layout Standard
+To control the update schedule, the parameter 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is given as input to the algorithm.
+ A small 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ favours taking large steps, which means rapid progress towards 0, and hence
+ quicker overall computation, but at the danger of the algorithm collapsing,
+ and even if it does not, the final approximation may be bad.
+ A large 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ works in the opposition direction: The final approximation is good, with
+ the caveat that the statistics we have chosen actually gives a good approximati
+on to the distribution when 
+\begin_inset Formula $\epsilon_{n}\to0$
+\end_inset
+
+.
+ The downside is that the approximation progresses more slowly.
 \end_layout
 
 \begin_layout Standard
