@@ -227,10 +227,11 @@ key "approx_bayes_comp"
 
 \end_inset
 
- for an overview of research on the computational part.
- Here we will focus on one computational strategy that there are several
- variations on in the ABC literature: Use of what is called Sequential Monte
- Carlo (SMC) when obtaining samples from the approximation to the posterior.
+ for an overview of current research.
+ In this report we focus on explining one computational strategy that there
+ are several variations on in the ABC literature: Use of what is called
+ Sequential Monte Carlo (SMC) when obtaining samples from the approximation
+ to the posterior.
  More specifically we will focus on the work done in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -238,7 +239,7 @@ key "adaptive_smc_for_abc"
 
 \end_inset
 
- and explain that in detail.
+ in detail.
 \end_layout
 
 \begin_layout Standard
@@ -929,7 +930,7 @@ status open
 
 \begin_layout Plain Layout
 Approximations to a normal distribution using samples.
- The solid lines shows the true distribution, and the bars are a historgram
+ The solid lines show the true distribution, and the bars are a historgram
  of the samples.
 \begin_inset CommandInset label
 LatexCommand label
@@ -1206,6 +1207,68 @@ P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
 \end_layout
 
 \begin_layout Standard
+Using 
+\begin_inset Formula $P$
+\end_inset
+
+ we can generate a possible sequence of throws.
+ Say that the first throw was heads, 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ From the 
+\begin_inset Quotes eld
+\end_inset
+
+heads state
+\begin_inset Quotes erd
+\end_inset
+
+ we see from the first row of 
+\begin_inset Formula $P$
+\end_inset
+
+, that there is an equal probability of going to either heads or tails.
+ The next state can be determined by choosing it a random given the probabilitie
+s in the first row.
+ Say the state is tails, 
+\begin_inset Formula $t$
+\end_inset
+
+, now the process starts over again, but this time looking at the second
+ row of 
+\begin_inset Formula $P$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Say that we did not know how to sample from a binomial distribution.
+ The idea we will develop is to find a 
+\begin_inset Formula $P$
+\end_inset
+
+ such that samples provided in the manner described above has a binomial
+ distribution.
+ Note that we do not sample from 
+\begin_inset Formula $X(t)$
+\end_inset
+
+ in the iteration.
+ Given a state 
+\begin_inset Formula $x(1)$
+\end_inset
+
+ we use 
+\begin_inset Formula $P$
+\end_inset
+
+ to find the next state to go to.
+\end_layout
+
+\begin_layout Standard
 Multiplying the transition matrix with the state vector yields the state
  vector at the next step.
  This lets us see what the probability distribution between the different
@@ -1359,6 +1422,52 @@ Write more
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The process is that an initial sample is provided through some mechanism,
+ ideally through a sampling from 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, but it does not have to be.
+ Call this initial sample 
+\begin_inset Formula $\boldsymbol{x}(1)$
+\end_inset
+
+.
+ Then using the kernel, 
+\begin_inset Formula $P(\boldsymbol{x}(1),j)$
+\end_inset
+
+, we have a probability distribution over states, 
+\begin_inset Formula $j$
+\end_inset
+
+, the process can go to.
+ By drawing 
+\begin_inset Formula $j$
+\end_inset
+
+ in a special fashion that we describe later, we choose jumps so that the
+ series of realisations, 
+\begin_inset Formula $\boldsymbol{x}(t)$
+\end_inset
+
+, form a sample set from 
+\begin_inset Formula $\boldsymbol{\pi}.$
+\end_inset
+
+ The core idea here is that we never draw a sample from 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, we instead use the kernel go from one sample to the next.
+ We only need to be evaluate 
+\begin_inset Formula $p_{\boldsymbol{\pi}}(\boldsymbol{x}(t))$
+\end_inset
+
+, not draw from it.
 \end_layout
 
 \begin_layout Standard
@@ -2996,11 +3105,96 @@ From the above we see that the approximation works when we choose sufficient
  statistics.
  However, in practical problems we are likely to be unable to find sufficient
  statistics.
+ Note in passing that if we define our statistic to just be the sample itself,
+ 
+\begin_inset Formula $S(\boldsymbol{y})=\boldsymbol{y}$
+\end_inset
+
+, it is a sufficient statistic, but in a practial problem it is unlikely
+ we can use the sample directly in this way for reasons pointed to above.
+\end_layout
+
+\begin_layout Standard
+Our main focus in this report is however on a computational method for generatin
+g samples so that the defined distance between the statistics of the generated
+ samples and the observed samples tend to 0 as we progress: 
+\begin_inset Formula $d(S(\boldsymbol{x}),S(\boldsymbol{y}))\to0$
+\end_inset
+
+.
+ We make an assumption that proper statistics have been chosen for the problem
+ at hand, and will not have much to say about how this choice has been done.
+\end_layout
+
+\begin_layout Standard
+Finding proper statistics can be a difficult problem.
+ In practice it may be that the statistics are chosen by a domain expert,
+ say a evolutionary biologist when the problem revolves around the spread
+ of genes in a population for instance, and it is not possible to derive
+ sound theoretical properties.
+ That is: Do we really approach the true distribution as the distance goes
+ to 0?
+\end_layout
+
+\begin_layout Standard
+For some information about the problem in general and approaches that have
+ been developed to tackle it, we refer to the overview article in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "approx_bayes_comp"
+
+\end_inset
+
+.
+ To give a little flavour of an approach, we mention that the one developed
+ in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
+
+\end_inset
+
+, which also includes some general information about the problem of finding
+ summary statistics, generates a large number of statistics on the simulated
+ data, for instance one summary statistic may be: 
+\begin_inset Formula $S(\boldsymbol{x})=[\boldsymbol{x},\boldsymbol{x}^{2},\boldsymbol{x}^{3},\boldsymbol{x}^{4}]$
+\end_inset
+
+.
+ Where 
+\begin_inset Formula $\boldsymbol{x}^{2}$
+\end_inset
+
+ is interpreted to mean all datapoints in 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ in the second power, and so on.
+ Then these summary statistics are regressed on the the simulated parameter
+ 
+\begin_inset Formula $\tilde{\boldsymbol{\theta}}$
+\end_inset
+
+, that was used as basis for generating the sample set.
+ The regression gives provides an estimate of 
+\begin_inset Formula $\mathrm{E}(\boldsymbol{\theta}|\boldsymbol{x})$
+\end_inset
+
+.
+ A large number of, randomly if wanted, summary statistics can be generated
+ an be part of the regression, and the ones that best help explain 
+\begin_inset Formula $\tilde{\boldsymbol{\theta}}$
+\end_inset
+
+, will be given the highest weight.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Write more
+Write a little bit more
 \end_layout
 
 \end_inset
@@ -4346,7 +4540,7 @@ To motivate the proposal distribution in the next section we need to establish
 \begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
 \end_inset
 
- have the same marginals for 
+ have the same marginals, up to a constant, for 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -4356,7 +4550,14 @@ To motivate the proposal distribution in the next section we need to establish
 \end_layout
 
 \begin_layout Standard
-We calculate the marginal for 
+To show the equivalence for the two distributions, we follow 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Beaumont1139"
+
+\end_inset
+
+ and start by calculating the marginal for 
 \begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
 \end_inset
 
@@ -4476,13 +4677,24 @@ p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})\propto
 
 \end_layout
 
+\begin_layout Standard
+And our proposition is proved.
+\end_layout
+
 \begin_layout Subsubsection
 Choice of kernel
 \end_layout
 
 \begin_layout Standard
-The kernel uses a Metropolis-Hastings (MH) step to achieve the desired invariant
- density.
+Following 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+ the kernel uses a Metropolis-Hastings (MH) step to achieve the desired
+ invariant density.
  To show the form of the kernel we start by defining a proposal distribution:
 \begin_inset Formula 
 \[
@@ -4510,7 +4722,12 @@ The MH-ratio term is:
 \end_layout
 
 \begin_layout Standard
-We now propose that the Markov chain with update probability: 
+We now the invariant density, 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+, and the proposal density, and from those we can determine what the Markov
+ chain update probability must look like: 
 \begin_inset Formula 
 \[
 P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)
@@ -4518,20 +4735,16 @@ P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}
 
 \end_inset
 
- Has invariant density 
-\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
-\end_inset
-
-.
- For this to be the case we must first show that the balance equation is
- fulfilled (see for example chapter 4.9 if Ross 
+We check our suggestion for the update probability by showing that the detailed
+ balance equation is fulfilled (see for example chapter 4.9 if Ross 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ross2006introduction"
 
 \end_inset
 
- for a more in detail discussion of the requirements):
+ for a more detailed discussion of the requirements a Markov chain must
+ fulfill for it to be used in an MCMC setting):
 \begin_inset Formula 
 \[
 p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)
@@ -4645,7 +4858,7 @@ reference "eq:proportional_distributions"
 \end_layout
 
 \begin_layout Standard
-Intuitively we can see ratio is doing: If more of the samples generated
+Intuitively we can see what the ratio is doing: If more of the samples generated
  at step 
 \begin_inset Formula $i+1$
 \end_inset
@@ -5397,16 +5610,35 @@ Examples
 \begin_layout Standard
 We provide an implementation of the algorithm of Del Moral et.
  al.
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
 
 \end_inset
 
- in R, and illustrate it on a simple example also taken from Del Moral.
+in R, and illustrate it on a simple example used in both 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+, 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Beaumont12102009"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Sisson06022007"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
