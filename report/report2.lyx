@@ -1136,7 +1136,7 @@ We need to introduce some more terms related to Markov processes.
 .
  For the coin toss example, we have two states, heads and tails, and the
  probability of going between the different states can be visualised in
- a matrix:
+ matrix form:
 \begin_inset Formula 
 \[
 \begin{array}{ccc}
@@ -1152,66 +1152,16 @@ T & \frac{1}{2} & \frac{1}{2}
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write more
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In this simple setup we see that 
-\begin_inset Formula $X(t)$
-\end_inset
-
- is a Bernoulli random variable with probability 
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
-, so as the coin is being tossed we are getting samples from this distribution.
- 
-\end_layout
-
-\begin_layout Standard
-Continuing with the coin example, we note that the system can be in one
- of two states: Either the last state was heads, or it was tails.
- Let us represent this state as a vector, calling it 
-\begin_inset Formula $\boldsymbol{\pi}_{t}=[1,0]^{T}$
-\end_inset
-
-.
-\begin_inset Formula 
-\begin{align*}
-P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
-\frac{1}{2} & \frac{1}{2}\\
-\frac{1}{2} & \frac{1}{2}
-\end{array}\right]\left[\begin{array}{c}
-1\\
-0
-\end{array}\right]\\
- & =\left[\begin{array}{c}
-\frac{1}{2}\\
-\frac{1}{2}
-\end{array}\right]\\
- & =\boldsymbol{\pi}_{t+1}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Using 
+Let us denote the matrix with the transition probabilities 
 \begin_inset Formula $P$
 \end_inset
 
- we can generate a possible sequence of throws.
+.
+ Continuing with the coin toss example we can use 
+\begin_inset Formula $P$
+\end_inset
+
+ to generate a sequence of possible outcomes of throws.
  Say that the first throw was heads, 
 \begin_inset Formula $h$
 \end_inset
@@ -1238,6 +1188,238 @@ s in the first row.
 
 , now the process starts over again, but this time looking at the second
  row of 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ We can continue this process indefinitely, producing a large sample of
+ toin tosses.
+\end_layout
+
+\begin_layout Standard
+When we toss the coin we are in effect doing a sampling from a Bernoulli-distrib
+ution, but notice that in the above, we do not actually throw the coin,
+ we look at 
+\begin_inset Formula $P$
+\end_inset
+
+ to determine what the next outcome should be.
+\end_layout
+
+\begin_layout Standard
+Now we ask the question: Which probability distribution does a large sequence
+ of our simulated coin tosses appear to come from? The probability of going
+ to heads or tails is the same, so the large sequence of tosses appears
+ to come from the Bernoulli distribution with 
+\begin_inset Formula $p=\frac{1}{2}$
+\end_inset
+
+.
+ This is the same result we would get if we actually tossed the coin a large
+ number of times.
+\end_layout
+
+\begin_layout Standard
+This very simple example does contain a key idea that we will develop: We
+ have a random variable, in this case a coin toss, 
+\begin_inset Formula $X(t)$
+\end_inset
+
+, distributed accoring to a Bernoulli distribution, and we have the transition
+ probabilities in 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ We were able to generate a sample set coming from the Bernoulli distribution
+ by abstaining from sampling from 
+\begin_inset Formula $X(t)$
+\end_inset
+
+, only using the transition probabilities 
+\begin_inset Formula $P$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This is what we will expand on.
+ Given some probability distribution, 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, we will define transition probabilities so that we can generate a sequence
+ of samples that come from 
+\begin_inset Formula $\boldsymbol{\pi}_{t}$
+\end_inset
+
+, without actually doing any sampling from the distribution.
+ Note that we will need to be able to evaluate the probability of a sample,
+ 
+\begin_inset Formula $p_{\boldsymbol{\pi}}(\boldsymbol{x})$
+\end_inset
+
+, though.
+\end_layout
+
+\begin_layout Subsubsection
+Stationary probability of a Markov process
+\end_layout
+
+\begin_layout Standard
+Before explaining how to set up 
+\begin_inset Formula $P$
+\end_inset
+
+, we need to explain the concept of stationary probabilities for a Markov
+ process.
+ Continuing with the coin example, we note that the system can be in one
+ of two states: Either the last state was heads, or it was tails.
+ Let us represent this state as a vector, calling it 
+\begin_inset Formula $\boldsymbol{\pi}_{t}$
+\end_inset
+
+.
+ The state vector has two elements, indicating the probability of either
+ heads or tails.
+ We have 
+\begin_inset Formula $\sum_{i\in\{H,T\}}\boldsymbol{\pi}_{t}(i)=1$
+\end_inset
+
+ since it is a probability distribution.
+ Say that we observed the state of the system at time 
+\begin_inset Formula $t$
+\end_inset
+
+, and it was heads, the state is then 
+\begin_inset Formula $\boldsymbol{\pi}_{t}=\left[1,0\right]^{T}$
+\end_inset
+
+.
+ Using the transition matrix 
+\begin_inset Formula $P$
+\end_inset
+
+ we can now determine the probability of the different states at later time
+ steps in the following manner:
+\begin_inset Formula 
+\begin{align*}
+P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
+\frac{1}{2} & \frac{1}{2}\\
+\frac{1}{2} & \frac{1}{2}
+\end{array}\right]\left[\begin{array}{c}
+1\\
+0
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\frac{1}{2}\\
+\frac{1}{2}
+\end{array}\right]\\
+ & =\boldsymbol{\pi}_{t+1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We do not give any proofs that this gives the correct distribution here,
+ only appeal to intuition and refer to for instance 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert reference
+\end_layout
+
+\end_inset
+
+ for a more rigorous treatment.
+ Now note the following:
+\begin_inset Formula 
+\begin{align*}
+P\boldsymbol{\pi}_{t+1} & =\left[\begin{array}{cc}
+\frac{1}{2} & \frac{1}{2}\\
+\frac{1}{2} & \frac{1}{2}
+\end{array}\right]\left[\begin{array}{c}
+\frac{1}{2}\\
+\frac{1}{2}
+\end{array}\right]\\
+ & =\left[\begin{array}{c}
+\frac{1}{2}\\
+\frac{1}{2}
+\end{array}\right]\\
+ & =\boldsymbol{\pi}_{t+2}=\boldsymbol{\pi}_{t+1}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The distribution stays the same as we iterate.
+ Given a transition matrix, if we have a distribution, 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, that does not change as change as we multiply with 
+\begin_inset Formula $P$
+\end_inset
+
+, we say that the distribution is stationary.
+ Since the distribution does not change we can drop the 
+\begin_inset Formula $t$
+\end_inset
+
+ subscript and just write:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P\boldsymbol{\pi}=\boldsymbol{\pi}\label{eq:stationary_distribution}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So if we can find a 
+\begin_inset Formula $P$
+\end_inset
+
+ such that the distribution we want to sample from, 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+, is the stationary distribution of a Markov chain, we have a way to generate
+ samples from 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ without actually having to draw samples from the distribution.
+ We start with a realisation from 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ and then choose the next realisation using 
+\begin_inset Formula $P$
+\end_inset
+
+.
+ The probability distribution for the next realisation will be 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ because of the stationarity.
+ This is what we described in the previous section.
+ We are now in the position to describe an algorithm for the construction
+ of 
 \begin_inset Formula $P$
 \end_inset
 
@@ -1274,14 +1456,6 @@ Multiplying the transition matrix with the state vector yields the state
  This lets us see what the probability distribution between the different
  states at some arbitrary step.
  Assume that there is some state vector such that the following holds:
-\begin_inset Formula 
-\begin{equation}
-P\boldsymbol{\pi}_{t}=\boldsymbol{\pi}_{t}\label{eq:stationary_distribution}
-\end{equation}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1293,69 +1467,6 @@ That is: The probability distribution between the states do not change.
 .
  Such a probability distribution is called stationary.
  
-\end_layout
-
-\begin_layout Standard
-In the coin toss example the state distribution is discrete, but Markov
- processes are also defined where the state distribution is continuous.
- We could imagine a process where a state vector is defined as 
-\begin_inset Formula $\pi_{t}\sim\mathrm{N}(0,1)$
-\end_inset
-
-.
- The notation we have used in equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:stationary_distribution"
-
-\end_inset
-
- breaks down when going to the continuous case however if we continue to
- view 
-\begin_inset Formula $P$
-\end_inset
-
- as a matrix.
- Instead we view 
-\begin_inset Formula $P$
-\end_inset
-
- as what is called a kernel, and keep using the notation in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:stationary_distribution"
-
-\end_inset
-
-.
- Without going into to details, what a kernel does is to give a probability
- of going from a state, say 
-\begin_inset Formula $i$
-\end_inset
-
-, to another state 
-\begin_inset Formula $j$
-\end_inset
-
-.
- We write this probability as 
-\begin_inset Formula $P(i,j)$
-\end_inset
-
-.
- We also write 
-\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
-\end_inset
-
- to mean that probability that the chain is in state 
-\begin_inset Formula $i$
-\end_inset
-
- at time 
-\begin_inset Formula $t$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Standard
@@ -1422,6 +1533,77 @@ Write more
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Transition kernel
+\end_layout
+
+\begin_layout Standard
+In the coin toss example the state distribution is discrete, but Markov
+ processes are also defined where the state distribution is continuous.
+ We could imagine a process where a state vector is defined as 
+\begin_inset Formula $\pi_{t}\sim\mathrm{N}(0,1)$
+\end_inset
+
+.
+ The notation we have used in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_distribution"
+
+\end_inset
+
+ breaks down when going to the continuous case however if we continue to
+ view 
+\begin_inset Formula $P$
+\end_inset
+
+ as a matrix.
+ Instead we view 
+\begin_inset Formula $P$
+\end_inset
+
+ as what is called a kernel, and keep using the notation in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_distribution"
+
+\end_inset
+
+.
+ Without going into details, what the kernel does is to give a probability
+ of going from a state, say 
+\begin_inset Formula $i$
+\end_inset
+
+, to another state 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ We write this probability as 
+\begin_inset Formula $P(i,j)$
+\end_inset
+
+.
+ We also write 
+\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
+\end_inset
+
+ to mean that probability that the chain is in state 
+\begin_inset Formula $i$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Required properties for the Markov process
 \end_layout
 
 \begin_layout Standard
@@ -1499,6 +1681,55 @@ Write more.
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection
+Metropolis-Hastings algorithm
+\end_layout
+
+\begin_layout Standard
+We now proceed to describe the construction a transition matrix that will
+ allow us to obtain samples from an arbitrary distribution.
+ This will result in what is called the Metropolis-Hastings algorithm.
+ We stick to the discrete case for the time being, and later describe how
+ the results carry over to the situation when we want to sample from a coninuous
+ distribution.
+\end_layout
+
+\begin_layout Standard
+First the transistion matrix is decomposed as follows:
+\begin_inset Formula 
+\[
+P(i,j)=\begin{cases}
+q(i,j)\alpha(i,j) & i\neq j\\
+q(i,i)+\sum_{k\neq i}q(i,k)(1-\alpha(i,k) & i=j
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can view 
+\begin_inset Formula $q(i,j)$
+\end_inset
+
+ as a matrix, and 
+\begin_inset Formula $\alpha(i,j)$
+\end_inset
+
+ is better viewed as a function.
+ Both give a probability of going from state 
+\begin_inset Formula $i$
+\end_inset
+
+ to state 
+\begin_inset Formula $j$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -1657,7 +1888,15 @@ The reason why we standardise the weights, is that we then do not have to
 \end_inset
 
 , since it will cancel in the nominator and denominator.
- We also define 
+ This is necessary if we only know the target, or proposal, distribution
+ up to a constant.
+ If we knew the constant, we could use the unnormalised weights, and then
+ our draws would be from the exact target distribution, and not one that
+ is only proportional to it.
+\end_layout
+
+\begin_layout Standard
+We also define 
 \begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
 \end_inset
 
