@@ -1418,116 +1418,378 @@ So if we can find a
 
  because of the stationarity.
  This is what we described in the previous section.
- We are now in the position to describe an algorithm for the construction
- of 
-\begin_inset Formula $P$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Say that we did not know how to sample from a binomial distribution.
- The idea we will develop is to find a 
-\begin_inset Formula $P$
-\end_inset
-
- such that samples provided in the manner described above has a binomial
- distribution.
- Note that we do not sample from 
-\begin_inset Formula $X(t)$
-\end_inset
-
- in the iteration.
- Given a state 
-\begin_inset Formula $x(1)$
-\end_inset
-
- we use 
-\begin_inset Formula $P$
-\end_inset
-
- to find the next state to go to.
-\end_layout
-
-\begin_layout Standard
-Multiplying the transition matrix with the state vector yields the state
- vector at the next step.
- This lets us see what the probability distribution between the different
- states at some arbitrary step.
- Assume that there is some state vector such that the following holds:
-\end_layout
-
-\begin_layout Standard
-That is: The probability distribution between the states do not change.
- For the coin toss example we see that this holds for the vector 
-\begin_inset Formula $[\frac{1}{2},\frac{1}{2}]^{T}$
-\end_inset
-
-.
- Such a probability distribution is called stationary.
  
 \end_layout
 
+\begin_layout Subsubsection
+Metropolis-Hastings algorithm
+\end_layout
+
 \begin_layout Standard
-Going back to the problem of generating samples from some arbitrary distribution
-, 
-\begin_inset Formula $\boldsymbol{\pi}$
-\end_inset
+We now proceed to describe the construction a transition matrix that will
+ allow us to obtain samples from an arbitrary distribution.
+ This will result in what is called the Metropolis-Hastings algorithm.
+ We stick to the discrete case for the time being, and later describe how
+ the results carry over to the situation when we want to sample from a coninuous
+ distribution.
+\end_layout
 
-, the idea now is to construct a 
-\begin_inset Formula $P$
-\end_inset
+\begin_layout Standard
+The elements of the transition matrix are given as:
+\end_layout
 
- such that the distribution we want to generate samples from is the stationary
- distribution of the Markov Chain.
- If we find a 
-\begin_inset Formula $P$
-\end_inset
-
- as described we can generate a new sample from 
-\begin_inset Formula $\boldsymbol{\pi}_{t}$
-\end_inset
-
- by iterating the Markov process one step.
- Note that by iterating the process we do not mean doing a multiplication
- like 
-\begin_inset Formula $P\boldsymbol{\pi}_{t}$
-\end_inset
-
-.
- Equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:stationary_distribution"
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(i,j)=\begin{cases}
+Q(i,j)\alpha(i,j) & i\neq j\\
+Q(i,i)+\sum_{k\neq i}Q(i,k)(1-\alpha(i,k)) & i=j
+\end{cases}\label{eq:transition_probabilities}
+\end{equation}
 
 \end_inset
 
- describes the change of the whole probability distribution, we are now
- interested in a single realisation.
- Returning to the coin toss example a single realisation could be 
-\begin_inset Formula $H-T-T-H-H$
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $Q$
 \end_inset
 
-.
- Let 
-\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
+ is a matrix, and 
+\begin_inset Formula $\alpha(i,j)$
 \end_inset
 
- denote the probability that the process is in state 
+ is better viewed as a function.
+ Both give a probability of going from state 
 \begin_inset Formula $i$
 \end_inset
 
- at time 
-\begin_inset Formula $t$
+ to state 
+\begin_inset Formula $j$
 \end_inset
 
 .
-\begin_inset Note Note
+ We need to impose some conditions on 
+\begin_inset Formula $Q$
+\end_inset
+
+: It needs to be an irreducible transition matrix.
+ What this means is that we for any state 
+\begin_inset Formula $i$
+\end_inset
+
+ have a positive probability that it will enter any other state 
+\begin_inset Formula $j$
+\end_inset
+
+ in some number of steps.
+ This is written as 
+\begin_inset Formula $P^{n}(i,j)>0$
+\end_inset
+
+ for some 
+\begin_inset Formula $n\geq0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We now define 
+\begin_inset Formula $\alpha(i,j)$
+\end_inset
+
+:
+\begin_inset Formula 
+\[
+\alpha(i,j)=\min\left(\frac{Q(j,i)\boldsymbol{\pi}(j)}{Q(i,j)\boldsymbol{\pi}(i)},1\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A Markov chain where the following holds is called time reversible:
+\begin_inset Formula 
+\begin{equation}
+P(i,j)\boldsymbol{\pi}(i)=P(j,i)\boldsymbol{\pi}(j),\forall i,j\label{eq:time_reversible}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Such a chain will have stationary probability 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+.
+ We see this intuitively, if the probability of going from 
+\begin_inset Formula $i$
+\end_inset
+
+ to 
+\begin_inset Formula $j$
+\end_inset
+
+ is the same as going from 
+\begin_inset Formula $j$
+\end_inset
+
+ to 
+\begin_inset Formula $i$
+\end_inset
+
+, the state distribution should not change as the process iterates.
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:time_reversible"
+
+\end_inset
+
+ is also called the detailed balance equation.
+\end_layout
+
+\begin_layout Standard
+Looking at the case 
+\begin_inset Formula $i\ne j$
+\end_inset
+
+ first and inserting 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:transition_probabilities"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:time_reversible"
+
+\end_inset
+
+ we get:
+\begin_inset Formula 
+\[
+Q(i,j)\alpha(i,j)\boldsymbol{\pi}(i)=Q(j,i)\alpha(j,i)\boldsymbol{\pi}(j)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now assume 
+\begin_inset Formula $Q(i,j)\boldsymbol{\pi}(i)>Q(j,i)\boldsymbol{\pi}(j)$
+\end_inset
+
+:
+\begin_inset Formula 
+\begin{align*}
+Q(i,j)\frac{Q(j,i)\boldsymbol{\pi}(j)}{Q(i,j)\boldsymbol{\pi}(i)}\boldsymbol{\pi}(i) & =Q(j,i)\boldsymbol{\pi}(j)\\
+Q(j,i)\boldsymbol{\pi}(j) & =Q(j,i)\boldsymbol{\pi}(j)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $Q(i,j)\boldsymbol{\pi}(i)<Q(j,i)\boldsymbol{\pi}(j)$
+\end_inset
+
+ we have a similar result, and if 
+\begin_inset Formula $i=j$
+\end_inset
+
+ equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:time_reversible"
+
+\end_inset
+
+ is trivially satisfied.
+ So we see that by choosing 
+\begin_inset Formula $P(i,j)$
+\end_inset
+
+ in this manner 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ will be a stationary distribution for the Markov chain.
+\begin_inset Float algorithm
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-Write more
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Metropolis-Hastings
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithmic}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Require $x_{init},N$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples 
+\backslash
+leftarrow 
+\backslash
+text{empty array}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow 1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $x_{prev} 
+\backslash
+leftarrow x_{init}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+While{$counter<N$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Sample $x$ from $Q(x|x_{prev})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+alpha(x_{prev},x) 
+\backslash
+leftarrow 
+\backslash
+min
+\backslash
+left(
+\backslash
+frac{Q(x,x_{prev})
+\backslash
+boldsymbol{
+\backslash
+pi}(x)}{Q(x_{prev},x)
+\backslash
+boldsymbol{
+\backslash
+pi}(x_{prev})},1
+\backslash
+right)$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $samples[counter] 
+\backslash
+leftarrow x_{prev}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $counter 
+\backslash
+leftarrow counter + 1$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Set $x_{prev} 
+\backslash
+leftarrow x$ with probability $
+\backslash
+alpha(x_{prev},x)$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State 
+\backslash
+textbf{return} $samples$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithmic}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1536,13 +1798,101 @@ Write more
 \end_layout
 
 \begin_layout Subsubsection
-Transition kernel
+Required properties for the Markov chain
 \end_layout
 
 \begin_layout Standard
-In the coin toss example the state distribution is discrete, but Markov
- processes are also defined where the state distribution is continuous.
- We could imagine a process where a state vector is defined as 
+In the above some details have been glossed over in order to get the main
+ idea over quickly.
+ One question not addressed is whether a Markov chain can have multiple
+ stationary distributions.
+ Unless we impose restrictions on the Markov chain it can.
+ For there to be a unique stationary distribution we require the chain to
+ be irreducible, which we defined previously, and what is called aperiodic
+ and not transient.
+\end_layout
+
+\begin_layout Standard
+A state, 
+\begin_inset Formula $i$
+\end_inset
+
+, has period 
+\begin_inset Formula $d$
+\end_inset
+
+ if 
+\begin_inset Formula $P_{ii}^{n}=0$
+\end_inset
+
+ whenever 
+\begin_inset Formula $n$
+\end_inset
+
+ is not divisible by 
+\begin_inset Formula $d$
+\end_inset
+
+.
+ In other words it is impossible to return to state 
+\begin_inset Formula $i$
+\end_inset
+
+ after leaving it for at least 
+\begin_inset Formula $n$
+\end_inset
+
+ steps.
+ That a Markov chain is aperiodic means that all states have period 1, so
+ the jump 
+\begin_inset Formula $i\to i$
+\end_inset
+
+ has some positive probability.
+ That it is not transient, also called positive recurrent, means that for
+ each state 
+\begin_inset Formula $i$
+\end_inset
+
+ number of steps until it returns to that state is finite.
+ A Markov chain where the states are aperiodic and positive recurrent is
+ called ergodic.
+\end_layout
+
+\begin_layout Standard
+There is also the question of what to do if we cannot obtain the initial
+ sample from the target distribution.
+ An initial starting value can be choosen at random, but do we then know
+ if the chain will produce correct value always? Assuming the chain is irreducib
+le and ergodic we have the following: Define what is called the limiting
+ probability for a state in the Markov chain: 
+\begin_inset Formula $\boldsymbol{\pi}(j)=\lim_{n\to\infty}P_{ij}^{n}$
+\end_inset
+
+.
+ This probability will exist for all states and will be independent of the
+ initial state of the chain assuming it is irreducible and ergodic.
+ Note that the limiting probability will also be the stationary probability.
+\end_layout
+
+\begin_layout Standard
+This means we can start the chain from any state and know that it will go
+ towards the stationary probability.
+ We do not say anything about how many steps is required for the probability
+ to come reasonably close to the stationary probability.
+ In practice it is common to discard the initial states of the chain when
+ the approximation is presumably bad.
+ This period when the states are discarded is termed the burn-in period
+ of the chain.
+\end_layout
+
+\begin_layout Subsubsection
+Continuous distribution
+\end_layout
+
+\begin_layout Standard
+In the above we have assumed that the state space was discrete, but we could
+ imagine a process where a state vector is defined as 
 \begin_inset Formula $\pi_{t}\sim\mathrm{N}(0,1)$
 \end_inset
 
@@ -1581,155 +1931,24 @@ reference "eq:stationary_distribution"
 \begin_inset Formula $j$
 \end_inset
 
-.
- We write this probability as 
-\begin_inset Formula $P(i,j)$
-\end_inset
-
-.
- We also write 
-\begin_inset Formula $\boldsymbol{\pi}_{t}(i)$
-\end_inset
-
- to mean that probability that the chain is in state 
-\begin_inset Formula $i$
-\end_inset
-
- at time 
-\begin_inset Formula $t$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsubsection
-Required properties for the Markov process
+, just like the transition probability matrix does in the discrete case.
 \end_layout
 
 \begin_layout Standard
-The process is that an initial sample is provided through some mechanism,
- ideally through a sampling from 
-\begin_inset Formula $\boldsymbol{\pi}$
-\end_inset
-
-, but it does not have to be.
- Call this initial sample 
-\begin_inset Formula $\boldsymbol{x}(1)$
-\end_inset
-
-.
- Then using the kernel, 
-\begin_inset Formula $P(\boldsymbol{x}(1),j)$
-\end_inset
-
-, we have a probability distribution over states, 
-\begin_inset Formula $j$
-\end_inset
-
-, the process can go to.
- By drawing 
-\begin_inset Formula $j$
-\end_inset
-
- in a special fashion that we describe later, we choose jumps so that the
- series of realisations, 
-\begin_inset Formula $\boldsymbol{x}(t)$
-\end_inset
-
-, form a sample set from 
-\begin_inset Formula $\boldsymbol{\pi}.$
-\end_inset
-
- The core idea here is that we never draw a sample from 
-\begin_inset Formula $\boldsymbol{\pi}$
-\end_inset
-
-, we instead use the kernel go from one sample to the next.
- We only need to be evaluate 
-\begin_inset Formula $p_{\boldsymbol{\pi}}(\boldsymbol{x}(t))$
-\end_inset
-
-, not draw from it.
-\end_layout
-
-\begin_layout Standard
-We introduce a probability distribution we term the proposal distribution,
- 
-\begin_inset Formula $q(i,j)$
-\end_inset
-
-, which gives the probability of going from state 
-\begin_inset Formula $i$
-\end_inset
-
- to state 
-\begin_inset Formula $j$
-\end_inset
-
- in the next step.
-\end_layout
-
-\begin_layout Standard
+The results for the discrete case do carry over to the continuous one.
+ The proofs are of course a bit different, but suffice to say that it is
+ still irreducibility and ergodicity that we require from the Markov chain.
+ For details on how the results carry over see for example 
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Write more.
- Mention Gibbs sampling
+Insert reference to chapter in MCMC book
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsubsection
-Metropolis-Hastings algorithm
-\end_layout
-
-\begin_layout Standard
-We now proceed to describe the construction a transition matrix that will
- allow us to obtain samples from an arbitrary distribution.
- This will result in what is called the Metropolis-Hastings algorithm.
- We stick to the discrete case for the time being, and later describe how
- the results carry over to the situation when we want to sample from a coninuous
- distribution.
-\end_layout
-
-\begin_layout Standard
-First the transistion matrix is decomposed as follows:
-\begin_inset Formula 
-\[
-P(i,j)=\begin{cases}
-q(i,j)\alpha(i,j) & i\neq j\\
-q(i,i)+\sum_{k\neq i}q(i,k)(1-\alpha(i,k) & i=j
-\end{cases}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We can view 
-\begin_inset Formula $q(i,j)$
-\end_inset
-
- as a matrix, and 
-\begin_inset Formula $\alpha(i,j)$
-\end_inset
-
- is better viewed as a function.
- Both give a probability of going from state 
-\begin_inset Formula $i$
-\end_inset
-
- to state 
-\begin_inset Formula $j$
-\end_inset
-
-.
 \end_layout
 
 \begin_layout Subsection
