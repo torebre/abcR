@@ -97,6 +97,7 @@
 \paperorientation portrait
 \suppress_date false
 \use_refstyle 1
+\notefontcolor #0000ff
 \index Index
 \shortcut idx
 \color #008000
@@ -383,7 +384,7 @@ There are two approaches to viewing
 \end_inset
 
 ?
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -436,7 +437,7 @@ A different approach is to view
 \end_inset
 
 , resulting in probability 1 or 0 respectively
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -691,7 +692,7 @@ p(\theta_{1}|\boldsymbol{y}) & \propto p(\boldsymbol{y}|\theta_{1})p(\theta_{1})
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -715,7 +716,7 @@ Going from the third to the fourth line above involves a bit of algebra,
 \end_layout
 
 \begin_layout Standard
-There are a couple of points of interest in equation 
+There are a couple of points of interest in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:conjugate_prior"
@@ -790,7 +791,7 @@ Using the conjugacy property makes the posterior have a closed form, which
  It may be that the chosen prior and/or likelihood has a form where the
  posterior will be a non-standard distribution or not a closed expression.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -826,7 +827,7 @@ To get a feel for what the problem is, we proceed with a short discussion
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -856,7 +857,7 @@ onal integral which will be more difficult to estimate.
 \end_layout
 
 \begin_layout Standard
-In equation 
+In Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:expected_value"
@@ -883,7 +884,7 @@ reference "eq:expected_value"
 \end_inset
 
 , we expect to get an approximation to the expected value.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -930,7 +931,7 @@ status open
 
 \begin_layout Plain Layout
 Approximations to a normal distribution using samples.
- The solid lines show the true distribution, and the bars are a historgram
+ The solid lines show the true distribution, and the bars are a histogram
  of the samples.
 \begin_inset CommandInset label
 LatexCommand label
@@ -1047,10 +1048,19 @@ Markov Chain Monte Carlo
 Even though the method we will focus on later is not an MCMC method, it
  does make use of some the underlying theory, so we quickly go through some
  of the basics that we will need to understand the later discussion.
+ We do not give proofs for many of the results presented, and instead reference
+ the reader to other texts, for instance 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gamerman2006markov"
+
+\end_inset
+
+, for more detailed discussions.
 \end_layout
 
 \begin_layout Standard
-The core idea of an MCMC method is to use what is called a Markov Chain,
+The core idea of an MCMC method is to use what is called a Markov chain,
  which is a form of stochastic process, to generate samples from some distributi
 on.
  To start us off we define what a stochastic process is: A stochastic process
@@ -1090,7 +1100,7 @@ on.
 \end_layout
 
 \begin_layout Standard
-A Markov Chain is a stochastic process that posesses what is called the
+A Markov chain is a stochastic process that posesses what is called the
  Markov property:
 \begin_inset Formula 
 \begin{align*}
@@ -1117,26 +1127,26 @@ The state of the process given its history, depends only on the state at
 \begin_layout Standard
 We need to introduce some more terms related to Markov processes.
  Associated with a process there is the transition probability.
- This is the probability of the process going from a state 
-\begin_inset Formula $x_{1}$
-\end_inset
-
- at step 
+ This is the probability of the process going from a state at step 
 \begin_inset Formula $t$
 \end_inset
 
- to a state 
-\begin_inset Formula $x_{2}$
-\end_inset
-
- at step 
+ to to next state at step 
 \begin_inset Formula $t+1$
 \end_inset
 
 .
- For the coin toss example, we have two states, heads and tails, and the
- probability of going between the different states can be visualised in
- matrix form:
+ For the coin toss example, we have two states, heads and tails, which we
+ denote 
+\begin_inset Formula $H$
+\end_inset
+
+ and 
+\begin_inset Formula $T$
+\end_inset
+
+, and the probability of going between the different states can be visualised
+ simply in matrix form:
 \begin_inset Formula 
 \[
 \begin{array}{ccc}
@@ -1152,7 +1162,25 @@ T & \frac{1}{2} & \frac{1}{2}
 \end_layout
 
 \begin_layout Standard
-Let us denote the matrix with the transition probabilities 
+Let the rows be the state at time 
+\begin_inset Formula $t$
+\end_inset
+
+, and the columns the state at time 
+\begin_inset Formula $t+1$
+\end_inset
+
+.
+ To see the probability of going from 
+\begin_inset Formula $T$
+\end_inset
+
+ to 
+\begin_inset Formula $H$
+\end_inset
+
+, look at the entry in row 2 and column1 for instance.
+ Let us denote the matrix with the transition probabilities 
 \begin_inset Formula $P$
 \end_inset
 
@@ -1163,7 +1191,7 @@ Let us denote the matrix with the transition probabilities
 
  to generate a sequence of possible outcomes of throws.
  Say that the first throw was heads, 
-\begin_inset Formula $h$
+\begin_inset Formula $H$
 \end_inset
 
 .
@@ -1181,9 +1209,25 @@ heads state
 
 , that there is an equal probability of going to either heads or tails.
  The next state can be determined by choosing it a random given the probabilitie
-s in the first row.
- Say the state is tails, 
-\begin_inset Formula $t$
+s in the first row: There is a 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+ probability of going to 
+\begin_inset Formula $H$
+\end_inset
+
+, and a 
+\begin_inset Formula $\frac{1}{2}$
+\end_inset
+
+ probability of going to 
+\begin_inset Formula $T$
+\end_inset
+
+.
+ Say the next state is tails, 
+\begin_inset Formula $T$
 \end_inset
 
 , now the process starts over again, but this time looking at the second
@@ -1192,14 +1236,19 @@ s in the first row.
 \end_inset
 
 .
- We can continue this process indefinitely, producing a large sample of
- toin tosses.
+ We can continue this process indefinitely, producing a large a sequence
+ representing one string of outcomes.
 \end_layout
 
 \begin_layout Standard
-When we toss the coin we are in effect doing a sampling from a Bernoulli-distrib
-ution, but notice that in the above, we do not actually throw the coin,
- we look at 
+When we toss a coin we are in effect doing a sampling from a Bernoulli-distribut
+ion, and assuming the coin is fair it will have parameter 
+\begin_inset Formula $p=\frac{1}{2}$
+\end_inset
+
+.
+ Notice that in the above however, we do not actually throw the coin, we
+ look at 
 \begin_inset Formula $P$
 \end_inset
 
@@ -1326,13 +1375,10 @@ P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
 
 \begin_layout Standard
 We do not give any proofs that this gives the correct distribution here,
- only appeal to intuition and refer to for instance 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
+ only appeal to intuition and refer to for instance to chaper 4 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "ross2010probability"
 
 \end_inset
 
@@ -1562,14 +1608,14 @@ Looking at the case
 \begin_inset Formula $i\ne j$
 \end_inset
 
- first and inserting 
+ first and inserting Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:transition_probabilities"
 
 \end_inset
 
- into 
+ into Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:time_reversible"
@@ -1613,7 +1659,7 @@ If
 \begin_inset Formula $i=j$
 \end_inset
 
- equation 
+ Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:time_reversible"
@@ -1640,6 +1686,13 @@ status open
 
 \begin_layout Plain Layout
 Metropolis-Hastings
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Metropolis-Hastings"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1797,6 +1850,33 @@ end{algorithmic}
 
 \end_layout
 
+\begin_layout Standard
+Even if a proposed 
+\begin_inset Formula $x$
+\end_inset
+
+ in Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Metropolis-Hastings"
+
+\end_inset
+
+ is rejected, it still counts as a draw.
+ The probabilities do come out correct because of the form of the case 
+\begin_inset Formula $i=j$
+\end_inset
+
+ in Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:transition_probabilities"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Required properties for the Markov chain
 \end_layout
@@ -1893,11 +1973,11 @@ Continuous distribution
 \begin_layout Standard
 In the above we have assumed that the state space was discrete, but we could
  imagine a process where a state vector is defined as 
-\begin_inset Formula $\pi_{t}\sim\mathrm{N}(0,1)$
+\begin_inset Formula $\pi\sim\mathrm{N}(0,1)$
 \end_inset
 
 .
- The notation we have used in equation 
+ The notation we have used in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:stationary_distribution"
@@ -1936,19 +2016,17 @@ reference "eq:stationary_distribution"
 
 \begin_layout Standard
 The results for the discrete case do carry over to the continuous one.
- The proofs are of course a bit different, but suffice to say that it is
- still irreducibility and ergodicity that we require from the Markov chain.
- For details on how the results carry over see for example 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference to chapter in MCMC book
-\end_layout
+ The proofs need need adjustments to deal with a continuous state space,
+ but suffice to say that it is still irreducibility and ergodicity that
+ we require from the Markov chain.
+ For details on how the results carry over see chapter 4.7 of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gamerman2006markov"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Subsection
@@ -2124,7 +2202,7 @@ We also define
 \end_inset
 
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2192,7 +2270,7 @@ We now claim that the sample set
 \end_inset
 
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2231,7 +2309,7 @@ P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{
 
 \begin_layout Standard
 By the strong law of large numbers we get for the nominator:
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2313,7 +2391,7 @@ On the other hand we have by a theorem known as Lebesgue's dominated convergence
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2405,7 +2483,7 @@ Where
 
  and call it the weight update.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2722,12 +2800,9 @@ reference "eq:ess"
 
  looks the way is does.
  The notion comes from a technical report by Kong 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
+\begin_inset CommandInset citation
+LatexCommand cite
+key "kong1992ImportanceSampling"
 
 \end_inset
 
@@ -2821,24 +2896,14 @@ Where
 \end_layout
 
 \begin_layout Standard
-The approximation in equation 
+The approximation in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ratio_approximation"
 
 \end_inset
 
- is the main result of the technial report
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Insert reference
-\end_layout
-
-\end_inset
-
-.
+ is the main result of the technial report.
  Liu 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2858,7 +2923,7 @@ key "liu2001monte"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2942,7 +3007,7 @@ reference "eq:importance_sampling"
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2963,7 +3028,7 @@ reference "eq:ess"
 \end_inset
 
  we get:
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3011,21 +3076,12 @@ reference "eq:ess_expression"
 \end_layout
 
 \begin_layout Standard
-Assuming 
-\begin_inset Formula $\boldsymbol{x}$
-\end_inset
+\begin_inset Note Greyedout
+status open
 
- is an 
-\begin_inset Formula $m$
-\end_inset
-
--dimensional vector.
- We then have:
-\begin_inset Formula 
-\begin{align*}
-\mathrm{E}(\bar{w}(\boldsymbol{X})) & =\frac{1}{n}\sum_{i=1}^{n}\mathrm{E}(w_{i}(\boldsymbol{X}))\\
- & =\\
-\end{align*}
+\begin_layout Plain Layout
+Write more
+\end_layout
 
 \end_inset
 
@@ -3033,26 +3089,12 @@ Assuming
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
 Unclear what the weights expressions refer to here.
  Make clear
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Add section on problems: Weight degeneracy.
- How to remedy: Resampling
 \end_layout
 
 \end_inset
@@ -3197,7 +3239,7 @@ If we were able to draw samples from the likelihood function such that
 \end_inset
 
 , we could estimate the posterior probability.
- A simple algorithm for this is shown in algorithm 
+ A simple algorithm for this is shown in Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -3431,7 +3473,7 @@ We also need to make a choice for a distance function
  the samples, if the sample for instance represents a DNA sequence, which
  does not have a clear numerical representation.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3483,7 +3525,7 @@ If we cannot find a suitable distance measure that works directly on the
 \begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}.$
 \end_inset
 
- This improves the efficiency of algorithm 
+ This improves the efficiency of Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "likelihoo-free_alg1"
@@ -3518,19 +3560,6 @@ p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymb
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Add section about distance measures on statistics
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Several strategies have been developed for dealing with the difficulties
  in ABC: Finding suitable statistics automatically and improving the efficiency,
  being two areas where work has been done.
@@ -3542,7 +3571,7 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview of areas of research.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3648,7 +3677,7 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3660,15 +3689,52 @@ Write a little bit more
 
 \end_layout
 
+\begin_layout Standard
+We give some concrete examples of summary statistics used in the following.
+\end_layout
+
+\begin_layout Subsubsection
+Parameter estimation in small world network disease models
+\end_layout
+
+\begin_layout Standard
+Walker et.
+ al.
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
+
+\end_inset
+
+ used ABC-methods to estimate the parameters in what is called a small world
+ network disease model fitted to data from the SARS virus outbreak in Hong
+ Kong in 2013.
+ The model can be viewed as a network, with nodes representing individuals.
+ The parameters of the model are the probabilities of an individual infecting
+ a neighbour in the network, there are both short range and long range neighbour
+s, the probability of an exposed individual becoming infectious, the probability
+ of an infectious individual either recovering or expiring, and the mean
+ number of connections for a node.
+\end_layout
+
+\begin_layout Standard
+Given a set of parameters the model can be run as stochastic process, and
+ and estimate of the number of newly infected indiviuals per day can be
+ extracted.
+ Here the statistic used was the Euclidean distance between a moving average
+ of the number of newly infected individuals from the model and the same
+ moving average from the reported data.
+\end_layout
+
 \begin_layout Subsection
 MCMC in ABC
 \end_layout
 
 \begin_layout Standard
 To motivate the development of the a sequential Monte Carlo later, we will
- quickly show how MCMC can be used in an ABC setting, and point out a problem
- that the sequential sampler addresses.
- In algorithm 
+ quickly show how MCMC can be used in an ABC setting.
+ In Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Markov-Chain-Monte-in-ABC"
@@ -3985,7 +4051,7 @@ end{algorithmic}
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4062,7 +4128,7 @@ reference "eq:weight_decomposition"
 \end_inset
 
 .
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4079,7 +4145,7 @@ key "citeulike:637817"
 \end_inset
 
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4198,16 +4264,6 @@ reference "eq:kernel_update"
 
  turns out to be impossible to compute in most cases.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Add example
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -4293,7 +4349,7 @@ reference "sub:Sequential-Importance-Sampling"
 \end_inset
 
  and provides asymptotically consistent estimates.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4395,7 +4451,7 @@ u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\bold
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4553,7 +4609,7 @@ L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4648,7 +4704,7 @@ Note that this expression does not depend on
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4661,7 +4717,7 @@ Check that these distributions have been defined as used here
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4686,7 +4742,7 @@ reference "eq:optimal_backward_kernel"
 
 \end_inset
 
- into the expression for the weight update in equation 
+ into the expression for the weight update in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:weight_update"
@@ -4698,16 +4754,6 @@ reference "eq:weight_update"
 \[
 \frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\frac{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{p_{i}(\boldsymbol{x}_{i})}=1
 \]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Should these be random variables?
-\end_layout
 
 \end_inset
 
@@ -4755,7 +4801,7 @@ key "adaptive_smc_for_abc"
 \end_inset
 
  and describe how the SMC sampler can be used in an ABC setting.
- Remembering the expression in equation 
+ Remembering the expression in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:abc_sampling_distribution"
@@ -4930,7 +4976,7 @@ p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})
 The reason for introducing this as a proposal distribution is to reduce
  the variance of the Metropolis-Hastings ratio we will encounter in the
  next section, which in turn increases its performance
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4957,11 +5003,11 @@ The question is now whether this new proposal distribution is valid.
 \end_inset
 
 .
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-Prove the claim
+Prove the claim?
 \end_layout
 
 \end_inset
@@ -5194,15 +5240,7 @@ P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}
 \end_inset
 
 We check our suggestion for the update probability by showing that the detailed
- balance equation is fulfilled (see for example chapter 4.9 if Ross 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "ross2006introduction"
-
-\end_inset
-
- for a more detailed discussion of the requirements a Markov chain must
- fulfill for it to be used in an MCMC setting):
+ balance equation is fulfilled:
 \begin_inset Formula 
 \[
 p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)
@@ -5243,7 +5281,7 @@ If
 \end_inset
 
 , 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5271,7 +5309,7 @@ Similarly when
 \end_inset
 
 .
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5294,7 +5332,7 @@ The likelihood function,
 
 , appears in the Metropolis-Hastings ratio above, but we cannot evaluate
  it.
- It is here we can use the result in equation 
+ It is here we can use the result in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:proportional_distributions"
@@ -5339,7 +5377,7 @@ Intuitively we can see what the ratio is doing: If more of the samples generated
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5368,7 +5406,7 @@ reference "alg:SMC-in-ABC"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5901,7 +5939,7 @@ Resampling schedule
 \end_layout
 
 \begin_layout Standard
-In algorithm 
+In Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:SMC-in-ABC"
@@ -6105,7 +6143,7 @@ Toy example
 
 \begin_layout Standard
 The distribution we wish to create a sample set from is given as follows,
- first the likelihood:
+ first the likelihood is specified as:
 \end_layout
 
 \begin_layout Standard
@@ -6128,34 +6166,11 @@ The parameter
 \begin_inset Formula $[-10,10]$
 \end_inset
 
-.
- A single observation, 
-\begin_inset Formula $y=0$
-\end_inset
-
-, is introduced, and the posterior then has the form:
+, and the posterior then has the form:
 \begin_inset Formula 
 \[
-p(\theta|x)\propto(\mathrm{N}(\theta,1)+\mathrm{N}(\theta,\frac{1}{100}))\mathrm{I}_{[-10,10]}(\theta)
+p(\theta|x)\sim(\mathrm{N}(\theta,1)+\mathrm{N}(\theta,\frac{1}{100}))\mathrm{I}_{[-10,10]}(\theta)
 \]
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Is it correct to use the 
-\begin_inset Quotes eld
-\end_inset
-
-proportional to
-\begin_inset Quotes erd
-\end_inset
-
- symbol here?
-\end_layout
 
 \end_inset
 
@@ -6163,7 +6178,11 @@ proportional to
 \end_layout
 
 \begin_layout Standard
-The absolute difference between the generated 
+A single observation, 
+\begin_inset Formula $y=0$
+\end_inset
+
+, is introduced, and the absolute difference between the generated 
 \begin_inset Formula $x$
 \end_inset
 
@@ -6176,6 +6195,81 @@ The absolute difference between the generated
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+What to focus on here? How much should be done?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Histogram showing sample distribution of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ with 1000, 10000 and 100 000 particles respectively.
+ When running 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ was set to 0.9, and 
+\begin_inset Formula $\epsilon=0.01$
+\end_inset
+
+ was the stopping criterion.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/experiment1_histogram.png
+	scale 30
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/exp1_09_10000_histogram.png
+	scale 30
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/exp1_09_100000_histogram.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6310,7 +6404,7 @@ devtools::devtools::uninstall("abcProject")
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
