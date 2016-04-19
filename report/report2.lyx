@@ -35,6 +35,9 @@
 %\usepackage{makeidx}     
 %\makeindex              
 
+% Needed to make authors appear in citations
+\bibliographystyle{plainnat}
+
 \usepackage{placeins}
 
 \usepackage{algpseudocode}
@@ -75,23 +78,14 @@
 \index_command default
 \paperfontsize default
 \spacing single
-\use_hyperref true
-\pdf_bookmarks true
-\pdf_bookmarksnumbered false
-\pdf_bookmarksopen false
-\pdf_bookmarksopenlevel 1
-\pdf_breaklinks false
-\pdf_pdfborder false
-\pdf_colorlinks false
-\pdf_backref false
-\pdf_pdfusetitle true
+\use_hyperref false
 \papersize a4paper
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
 \use_mhchem 1
 \use_mathdots 1
-\cite_engine basic
+\cite_engine natbib_authoryear
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -205,7 +199,7 @@ key "1ef20ace6466467899d76e9976c9b6fa"
  There are also examples of use in other fields, for instance image analysis
  
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "Moores2014"
 
 \end_inset
@@ -2706,7 +2700,7 @@ Effective Sample Size
 A question we need to answer is when we should do a resampling.
  To determine this we will look at a quantity called the Effective Sample
  Size (ESS) as the weights are updated.
- We take our definition from Liu 
+ We take our definition from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -2799,7 +2793,7 @@ reference "eq:ess"
 \end_inset
 
  looks the way is does.
- The notion comes from a technical report by Kong 
+ The notion comes from a technical report 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "kong1992ImportanceSampling"
@@ -2904,7 +2898,7 @@ reference "eq:ratio_approximation"
 \end_inset
 
  is the main result of the technial report.
- Liu 
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -4589,8 +4583,6 @@ The backward kernels are essentially arbitrary, but the choice of them will
  affect the efficiency of the computation.
  A desirable property, as mentioned, is that the weights have low variance,
  so we can try to choose a backward kernel that achieves this.
- Del Moral et.
- al.
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -4908,9 +4900,6 @@ Use of multiple particles for each sample of
 \end_layout
 
 \begin_layout Standard
-Del Moral et.
- al.
- 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
@@ -5946,9 +5935,7 @@ reference "alg:SMC-in-ABC"
 
 \end_inset
 
- we have used the same update strategy as in Del Moral et.
- al.
- 
+ we have used the same update strategy as in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
@@ -6104,23 +6091,14 @@ Examples
 \end_layout
 
 \begin_layout Standard
-We provide an implementation of the algorithm of Del Moral et.
- al.
- 
+We provide an implementation of the algorithm of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
 
 \end_inset
 
-in R, and illustrate it on a simple example used in both 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "adaptive_smc_for_abc"
-
-\end_inset
-
-, 
+in R, and illustrate it on a simple example used both there and in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Beaumont12102009"
@@ -6322,7 +6300,7 @@ Installing the package in R
 \begin_layout Standard
 The code in the repository is laid out in the form of an R-package.
  To use it the user must install the package.
- The easiest way to do this is by using Hadley Wickham's devtools-package
+ The easiest way to do this is by the devtools-package
 \begin_inset CommandInset citation
 LatexCommand cite
 key "devtools"
