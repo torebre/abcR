@@ -2689,7 +2689,16 @@ K\sim\mathrm{Multin}(n,w_{1},...,w_{n})
 
 \end_inset
 
- 
+
+\end_layout
+
+\begin_layout Standard
+We do not want to do resampling too often however, both because of the computati
+ons involved, and also because it will have an effect on variance on the
+ estimator which is the final product of the MCMC or SMC method.
+ Imagine running the method several times, the resampling steps may contribute
+ to different parts of the parameter space getting focus from run to run,
+ causing the variance to increase.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2700,7 +2709,19 @@ Effective Sample Size
 A question we need to answer is when we should do a resampling.
  To determine this we will look at a quantity called the Effective Sample
  Size (ESS) as the weights are updated.
- We take our definition from 
+ The concept of the ESS is defined to be the equivalent number of independent
+ samples from the actual target distribution our sample set from the SMC
+ method is 
+\begin_inset Quotes eld
+\end_inset
+
+worth.
+\begin_inset Quotes erd
+\end_inset
+
+ This concept can also be used in MCMC settings, not just SMC.
+ There are several measures for the ESS, and we take our definition from
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -2754,7 +2775,7 @@ n.
 \begin_inset Quotes erd
 \end_inset
 
- Looking at 
+ Looking at Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess"
@@ -2782,6 +2803,14 @@ reference "eq:ess"
 \end_inset
 
 , so it is not a perfect measure.
+ See for instance 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "1602.03572"
+
+\end_inset
+
+ for a discussion of this, and some alternative measures of ESS.
 \end_layout
 
 \begin_layout Standard
@@ -2997,16 +3026,6 @@ reference "eq:importance_sampling"
 \[
 \mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}
 \]
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-The definition in Liu had n - 1
-\end_layout
 
 \end_inset
 
@@ -3466,17 +3485,6 @@ We also need to make a choice for a distance function
  In other cases the Euclidean distance measure cannot be used directly on
  the samples, if the sample for instance represents a DNA sequence, which
  does not have a clear numerical representation.
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add some examples of what a sample can be (DNA sequence, result from a stochasti
-c process)
-\end_layout
-
-\end_inset
-
  Attention also has to be paid to the cost of evaluating 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
 \end_inset
