@@ -42,6 +42,11 @@
 
 \usepackage{algpseudocode}
 
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{shapes,snakes}
+
+\usepackage{tkz-graph}
 
 % \begin{document}
 
@@ -3573,16 +3578,6 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview of areas of research.
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add an example scenario where the likelihood cannot be calculated
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -3616,27 +3611,19 @@ g samples so that the defined distance between the statistics of the generated
 \end_layout
 
 \begin_layout Standard
-Finding proper statistics can be a difficult problem.
- In practice it may be that the statistics are chosen by a domain expert,
- say a evolutionary biologist when the problem revolves around the spread
- of genes in a population for instance, and it is not possible to derive
- sound theoretical properties.
- That is: Do we really approach the true distribution as the distance goes
- to 0?
-\end_layout
-
-\begin_layout Standard
-For some information about the problem in general and approaches that have
- been developed to tackle it, we refer to the overview article in 
+Finding proper statistics can be a difficult problem, and tied to the specific
+ application.
+ There is some however some research being done in finding good statistics
+ semi-automatically, we refer again to the overview article 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
 
 \end_inset
 
-.
- To give a little flavour of an approach, we mention that the one developed
- in 
+ for more information.
+ To give a little flavour of an approach that tries to generate statistics
+ semi-automatically, we mention that the one developed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
@@ -3679,12 +3666,40 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write a little bit more
+But the norm in practice is that the statistics are chosen by a domain expert,
+ say a evolutionary biologist when the problem revolves around the spread
+ of genes in a population for instance, and it is not possible to derive
+ sound theoretical properties.
+ We give a couple of examples used in pratice below.
+ In both cases the model is specified as a stochastic where it is not possible
+ to find theoretical expressions for the parameters one wishes to estimate,
+ and they are not directly observable from the process output either, so
+ ABC-methods are utilized.
 \end_layout
+
+\begin_layout Subsubsection
+Population estimation
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Toni187"
+
+\end_inset
+
+ provide several example of ABC-applications.
+ One is the problem of estimating rate parameters in a stochastic predator/prey
+ model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{alignat*}{1}
+a+X\to2X\;\; & \text{with rate \ensuremath{c_{1}}}\\
+X+Y\to2Y\;\; & \text{with rate \ensuremath{c_{2}}}\\
+Y\to\emptyset\;\; & \text{with rate \ensuremath{c_{3}}}
+\end{alignat*}
 
 \end_inset
 
@@ -3692,7 +3707,52 @@ Write a little bit more
 \end_layout
 
 \begin_layout Standard
-We give some concrete examples of summary statistics used in the following.
+Where 
+\begin_inset Formula $X$
+\end_inset
+
+ is the prey population, 
+\begin_inset Formula $Y$
+\end_inset
+
+ the predator population and where 
+\begin_inset Formula $a$
+\end_inset
+
+ is a fixed amount of resources available to the prey.
+ In the setup described a simulation is run which defines the observed data,
+ from this a subset is extracted, so the 
+\begin_inset Quotes eld
+\end_inset
+
+truth
+\begin_inset Quotes erd
+\end_inset
+
+ is a collection of 
+\begin_inset Formula $n$
+\end_inset
+
+ observations of the predator and prey populations at different times, which
+ we denote as 
+\begin_inset Formula $\{x_{i}^{(obs)},y_{i}^{(obs)}\},i=1,...,n$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+An ABC method is then used to try to find the rates used in the first simulation.
+ One summary statistic used was the sum of squared errors between the observed
+ data and the simulated data:
+\begin_inset Formula 
+\[
+d((\boldsymbol{x},\boldsymbol{y}),(\boldsymbol{x}^{(obs)},\boldsymbol{y}^{(obs)}))=\sum_{i}((x_{i}-x_{i}^{(obs)})^{2}+(y_{i}-y_{i}^{(obs)})^{2})
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -3704,8 +3764,8 @@ Walker et.
  al.
  
 \begin_inset CommandInset citation
-LatexCommand cite
-key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
+LatexCommand citet
+key "RePEc:eee:phsmap:v:389:y:2010:i:3:p:540-548"
 
 \end_inset
 
@@ -3718,6 +3778,114 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 s, the probability of an exposed individual becoming infectious, the probability
  of an infectious individual either recovering or expiring, and the mean
  number of connections for a node.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+State transitions in infection model.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}[node distance=2cm,auto,>=latex'] 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node[draw, circle] (a) {S}; 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node[draw, circle] (b) [right of=a] {P}; 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+path[->] (a) edge node[below] {$p_{1},p_{2}$} node [above] {$
+\backslash
+mu$}(b);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node[draw, circle] (c) [below of=b] {I};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+path[->] (b) edge  node {$r_0$} (c);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+node[draw, circle] (d) [right of=c] {R};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+path[->] (c) edge node {$r_1$} (d);
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3734,8 +3902,8 @@ MCMC in ABC
 \end_layout
 
 \begin_layout Standard
-To motivate the development of the a sequential Monte Carlo later, we will
- quickly show how MCMC can be used in an ABC setting.
+To motivate the development of the Sequential Monte Carlo method later,
+ we will quickly show how MCMC can be used in an ABC setting.
  In Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
