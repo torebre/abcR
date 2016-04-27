@@ -227,8 +227,8 @@ key "approx_bayes_comp"
 
 \end_inset
 
- for an overview of current research.
- In this report we focus on explining one computational strategy that there
+ for an overview.
+ In this report we focus on explaining one computational strategy that there
  are several variations on in the ABC literature: Use of what is called
  Sequential Monte Carlo (SMC) when obtaining samples from the approximation
  to the posterior.
@@ -789,17 +789,7 @@ Using the conjugacy property makes the posterior have a closed form, which
  The problem is that we cannot always use this property.
  It may be that the chosen prior and/or likelihood has a form where the
  posterior will be a non-standard distribution or not a closed expression.
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Add example?
-\end_layout
-
-\end_inset
-
-To evaluate the posterior in such cases we need to look at other techniques
+ To evaluate the posterior in such cases we need to look at other techniques
  where we instead compute an approximation to it.
 \end_layout
 
@@ -820,7 +810,7 @@ To get a feel for what the problem is, we proceed with a short discussion
 :
 \begin_inset Formula 
 \begin{equation}
-\mathrm{E}(h(\theta)|y)=\int h(\theta)p(\theta|y)d\theta\approx\frac{1}{N}\sum_{n=1}^{N}h(\theta_{n}^{s})\label{eq:expected_value}
+\mathrm{E}(h(\theta)|y)=\int h(\theta)p(\theta|y)d\theta\approx\frac{1}{N}\sum_{n=1}^{N}h(\hat{\theta}_{n})\label{eq:expected_value}
 \end{equation}
 
 \end_inset
@@ -866,7 +856,7 @@ reference "eq:expected_value"
  we allude to a way of achieving an approximation of the expected value
  without evaluating the integral.
  In the formula 
-\begin_inset Formula $\theta_{n}^{s}$
+\begin_inset Formula $\hat{\theta}_{n}$
 \end_inset
 
  denotes a simulated sample, that is: It is a draw from 
@@ -875,11 +865,11 @@ reference "eq:expected_value"
 
 ).
  Intuitively if we have a large collection of samples, 
-\begin_inset Formula $\theta^{s}$
+\begin_inset Formula $\hat{\boldsymbol{\theta}}=\{\hat{\theta}_{1},...,\hat{\theta}_{n}\}$
 \end_inset
 
 , and compute the average of 
-\begin_inset Formula $h(\theta^{s})$
+\begin_inset Formula $h(\hat{\boldsymbol{\theta}})$
 \end_inset
 
 , we expect to get an approximation to the expected value.
@@ -926,6 +916,17 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/sample_approximations.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -940,17 +941,6 @@ name "fig:Approximations-to-normal"
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/sample_approximations.png
-	scale 60
 
 \end_inset
 
@@ -1035,7 +1025,7 @@ key "gelman2013bayesian"
 
 \end_inset
 
- which provides an overview over both MCMC and other methods (see especially
+ which provides an overview of both MCMC and other methods (see especially
  chapter 13 of that text for non-MCMC methods).
 \end_layout
 
@@ -1681,25 +1671,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Metropolis-Hastings
-\begin_inset CommandInset label
-LatexCommand label
-name "alg:Metropolis-Hastings"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -1837,6 +1808,25 @@ textbf{return} $samples$
 
 \backslash
 end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Metropolis-Hastings
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Metropolis-Hastings"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -2107,6 +2097,17 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Graphics
+	filename figures/targetAndProposalIllustration.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -2119,13 +2120,6 @@ name "fig:Target-and-proposal"
 
 
 \end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/targetAndProposalIllustration.png
-	scale 60
 
 \end_inset
 
@@ -2629,6 +2623,45 @@ reference "sub:Sampling-importance-resampling"
 \end_inset
 
 , and so entails a low impact on the final result.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/weight_plot_resample0.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Illustration of weight degeneracy.
+ These plots come from an example we will revisit.
+ The graph on the left shows the weight of the particles, the middle one
+ a histogram based on a sampling from the weighted particles and the one
+ on the the left the evolution of effective sample size over the iterations.
+ The true distribution is superimposed on the histogram as a green line.
+ Note that only what appear to be two particles have non-zero weights, meaning
+ these are the only ones having any probability of being drawn in the sampling
+ at the end of the run.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2700,10 +2733,50 @@ K\sim\mathrm{Multin}(n,w_{1},...,w_{n})
 \begin_layout Standard
 We do not want to do resampling too often however, both because of the computati
 ons involved, and also because it will have an effect on variance on the
- estimator which is the final product of the MCMC or SMC method.
- Imagine running the method several times, the resampling steps may contribute
- to different parts of the parameter space getting focus from run to run,
- causing the variance to increase.
+ estimator which is the final product of the MCMC or SMC method: Imagine
+ running the method several times, the resampling steps may contribute to
+ different parts of the parameter space getting focus from run to run, causing
+ the variance to increase.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/weight_plot_resample05.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Here the resampling procedure has been implemented.
+ When the ESS drops below a given threshold a resampling is done.
+ More particles have non-zero weights, and the histogram shows the sample
+ distribution to lie closer to the true distribution.
+ Note the approximation is still not good because of the low number of particles
+ we have used here.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -3292,25 +3365,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Likelihood free sampling
-\end_layout
-
-\end_inset
-
-
-\begin_inset CommandInset label
-LatexCommand label
-name "likelihoo-free_alg1"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -3429,6 +3483,25 @@ EndWhile
 \backslash
 end{algorithmic}
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Likelihood free sampling
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "likelihoo-free_alg1"
 
 \end_inset
 
@@ -3784,18 +3857,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-State transitions in infection model.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -3883,6 +3944,18 @@ end{center}
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+State transitions in infection model.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
@@ -3927,25 +4000,6 @@ key "Marjoram23122003"
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Markov Chain Monte Carlo in an ABC setting
-\begin_inset CommandInset label
-LatexCommand label
-name "alg:Markov-Chain-Monte-in-ABC"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
 
 \begin_layout Plain Layout
 \begin_inset ERT
@@ -4208,6 +4262,25 @@ EndFunction
 
 \backslash
 end{algorithmic}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Markov Chain Monte Carlo in an ABC setting
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Markov-Chain-Monte-in-ABC"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -5590,25 +5663,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-SMC in ABC
-\begin_inset CommandInset label
-LatexCommand label
-name "alg:SMC-in-ABC"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -6094,6 +6148,25 @@ end{algorithmic}
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+SMC in ABC
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:SMC-in-ABC"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
@@ -6372,6 +6445,31 @@ status open
 
 \begin_layout Plain Layout
 \align center
+\begin_inset Graphics
+	filename figures/experiment1_histogram.png
+	scale 30
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/exp1_09_10000_histogram.png
+	scale 30
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/exp1_09_100000_histogram.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
 \begin_inset Caption
 
 \begin_layout Plain Layout
@@ -6390,27 +6488,6 @@ Histogram showing sample distribution of
 
  was the stopping criterion.
 \end_layout
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/experiment1_histogram.png
-	scale 30
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/exp1_09_10000_histogram.png
-	scale 30
-
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/exp1_09_100000_histogram.png
-	scale 30
 
 \end_inset
 
