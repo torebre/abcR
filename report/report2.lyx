@@ -279,8 +279,8 @@ To estimate the model parameters we use functions of the observed data.
 \end_inset
 
 .
- We want to choose statistcs that estimate the model parameters, which we
- denote 
+ We want to choose statistics that estimate the model parameters, which
+ we denote 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -291,16 +291,6 @@ To estimate the model parameters we use functions of the observed data.
 
  is a sample from a random vector, 
 \begin_inset Formula $\boldsymbol{Y}$
-\end_inset
-
-.
- If 
-\begin_inset Formula $\boldsymbol{y}$
-\end_inset
-
- only was a single number, we would call it a sample from a random variable
- 
-\begin_inset Formula $Y$
 \end_inset
 
 .
@@ -798,30 +788,20 @@ Approximating the posterior
 \end_layout
 
 \begin_layout Standard
-To get a feel for what the problem is, we proceed with a short discussion
- of some points.
+To get a feel for what the evaluation problem is, consider the following:
  We might have a closed expression for the probability density function,
  which means a formula with no inifinte series involved, for the distribution,
  but still not be able to easily compute statistics involving it.
- Consider the expected value of some function of a parameter 
+ Look at the equality of the expected value of some function of a parameter
+ 
 \begin_inset Formula $\theta$
 \end_inset
 
-:
+ shown below:
 \begin_inset Formula 
 \begin{equation}
-\mathrm{E}(h(\theta)|y)=\int h(\theta)p(\theta|y)d\theta\approx\frac{1}{N}\sum_{n=1}^{N}h(\hat{\theta}_{n})\label{eq:expected_value}
+\mathrm{E}(h(\theta)|y)=\int h(\theta)p(\theta|y)d\theta\label{eq:expected_value}
 \end{equation}
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check use of variables
-\end_layout
 
 \end_inset
 
@@ -829,32 +809,40 @@ Check use of variables
 \end_layout
 
 \begin_layout Standard
-It may very well be that we cannot compute the integral in 
+Assuming we cannot compute the integral in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:expected_value"
 
 \end_inset
 
-, and so cannot compute the expected value.
+), we cannot compute the expected value.
  In our one-dimensional example where there is only one parameter to estimate,
  this might not seem like a big problem to handle: The integral can be estimated
  to the required level of accuracy using some numerical procedure.
  However, in more real settings one can be confronted with much larger models
  with many unknown parameters, resulting in a much more complicated high-dimensi
 onal integral which will be more difficult to estimate.
-\end_layout
-
-\begin_layout Standard
-In Equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:expected_value"
+\begin_inset Formula 
+\begin{equation}
+\mathrm{E}(h(\theta)|y)\approx\frac{1}{N}\sum_{n=1}^{N}h(\hat{\theta}_{n})\label{eq:expected_value_approximation}
+\end{equation}
 
 \end_inset
 
- we allude to a way of achieving an approximation of the expected value
- without evaluating the integral.
+
+\end_layout
+
+\begin_layout Standard
+In (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expected_value_approximation"
+
+\end_inset
+
+) we show a method for approximating the expected value without evaluating
+ the integral.
  In the formula 
 \begin_inset Formula $\hat{\theta}_{n}$
 \end_inset
@@ -865,7 +853,7 @@ reference "eq:expected_value"
 
 ).
  Intuitively if we have a large collection of samples, 
-\begin_inset Formula $\hat{\boldsymbol{\theta}}=\{\hat{\theta}_{1},...,\hat{\theta}_{n}\}$
+\begin_inset Formula $\hat{\boldsymbol{\theta}}=\{\hat{\theta}_{1},...,\hat{\theta}_{N}\}$
 \end_inset
 
 , and compute the average of 
@@ -873,21 +861,33 @@ reference "eq:expected_value"
 \end_inset
 
 , we expect to get an approximation to the expected value.
-\begin_inset Note Greyedout
-status open
+ This method of approximating an integral is called Monte Carlo integration.
+ When the term Monte Carlo is used in a statistical method, it means that
+ there is some use of random sampling involved, in this the case drawing
+ from 
+\begin_inset Formula $p(\theta|y)$
+\end_inset
 
-\begin_layout Plain Layout
-Write a bit more
-\end_layout
+.
+ Monte Carlo integration provides an alternative to non-stochastic methods
+ for approximating an integral, such as quadrature methods.
+ Which method that is best is dependent on the problem at hand, we just
+ mention in passing that Monte Carlo in practice scales better to high-dimension
+al settings, which are often encountered in Bayesian analysis, than quadrature
+ methods, and is one explanation for their popularity, see chapter 6 of
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "givens2012computational"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
-We can carry this idea further: With sample draws we can get an estimate
- of any aspect of the distribution 
+We can carry this idea about using random sampling further: With sample
+ draws we can get an estimate of any aspect of the distribution 
 \begin_inset Formula $p(\theta|y)$
 \end_inset
 
@@ -905,7 +905,7 @@ reference "fig:Approximations-to-normal"
 \end_layout
 
 \begin_layout Standard
-If we now had a method of generating samples from an arbitrary distrubtion,
+If we now had a method of generating samples from an arbitrary distribution,
  it would be a very useful tool.
  In the next section we will describe the foundations of a popular set of
  methods that do just this and go under the collective term Markov Chain
@@ -954,8 +954,8 @@ name "fig:Approximations-to-normal"
 
 \begin_layout Standard
 MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
- they are not the only methods available for approximating a probability
- distribution.
+ they are not the only stochastic methods available for approximating a
+ probability distribution.
  We touch upon another method, importance sampling, later on since it is
  an ingredient in the SMC method which is our main focus.
  
@@ -964,7 +964,7 @@ MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
 \begin_layout Standard
 Another method is to try to approximate the distribution by using mixtures
  of more tractable ones, for instance normal distributions.
- Yet another strategy is to look at marginals of subsets of there parameters
+ Yet another strategy is to look at marginals of subsets of the parameters
  involved, try to approximate those and then combining them to approximate
  the full posterior.
  For instance:
@@ -983,7 +983,11 @@ Say
 \begin_inset Formula $\boldsymbol{\theta}=[\theta_{1},\theta_{2},\theta_{3}]$
 \end_inset
 
- represents three parameters, and assume
+ represents three parameters and 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+ some observed data, and assume
 \family roman
 \series medium
 \shape up
@@ -1008,8 +1012,14 @@ Say
 \end_inset
 
  can each be sufficiently approxmiated by some mixture of normal distributions.
- This also illustrates a point we will return to: Splitting the big problem
- of approximating 
+ We could then by drawing samples from different normal distributions, which
+ can easily be done, approximate 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y}$
+\end_inset
+
+).
+ This approach also illustrates a point we will return to: Splitting the
+ big problem of approximating 
 \begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
@@ -2402,13 +2412,15 @@ The constant
 \end_inset
 
  does not affect the overall shape of the sampling distribution, and we
- see that for large 
+ see that when 
 \begin_inset Formula $n$
 \end_inset
 
- we get a good approximation.
- In the next section we will extend the weight calculation step by splitting
- it into several smaller steps that can be computed recursively.
+ is large and the ratio 
+\begin_inset Formula $m/n$
+\end_inset
+
+, we get a good approximation to the distribution.
 \end_layout
 
 \begin_layout Subsection
@@ -2423,11 +2435,13 @@ name "sub:Sequential-Importance-Sampling"
 \end_layout
 
 \begin_layout Standard
-The expression for the weight in the previous section, 
+Expanding on the idea of creating a weighted sample set to do a resampling
+ from explained in the previous section, we see that the unnormalized weight,
+ 
 \begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
 \end_inset
 
-, can be rewritten as follows:
+, can be rewritten as:
 \end_layout
 
 \begin_layout Standard
@@ -2599,7 +2613,7 @@ In summary we are faced with two challenges when setting up the sequential
 \end_layout
 
 \begin_layout Subsubsection
-Weight degeneracy
+Vanishing weights
 \end_layout
 
 \begin_layout Standard
@@ -2614,15 +2628,9 @@ When updating the weights, their variance will increase, that is: They will
 \end_inset
 
 .
- A low weight means a low probability of drawing that particle in step 3
- in the SIR algorithm in section 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sub:Sampling-importance-resampling"
-
-\end_inset
-
-, and so entails a low impact on the final result.
+ A low weight means a low probability of drawing that particle in the final
+ resampling step of the algorithm, and so entails a low impact on the final
+ result.
 \begin_inset Float figure
 wide false
 sideways false
@@ -2770,10 +2778,6 @@ Here the resampling procedure has been implemented.
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -2798,15 +2802,15 @@ worth.
 \end_inset
 
  This concept can also be used in MCMC settings, not just SMC.
- There are several measures for the ESS, and we take our definition from
- 
+ There are several measures for the ESS, and we first look at widely used
+ definition from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
 
 \end_inset
 
-, where it is defined as such:
+:
 \begin_inset Formula 
 \begin{equation}
 \mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
@@ -3494,14 +3498,14 @@ end{algorithmic}
 
 \begin_layout Plain Layout
 Likelihood free sampling
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "alg:Likelihood-free-sampling"
 
 \end_inset
 
 
-\begin_inset CommandInset label
-LatexCommand label
-name "likelihoo-free_alg1"
+\end_layout
 
 \end_inset
 
@@ -3526,19 +3530,19 @@ Keeping the core idea, we can make a couple of changes to make the algorithm
 \end_inset
 
  are accepted: 
-\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\rho$
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})\leq\epsilon$
 \end_inset
 
 .
  This begs the question what 
-\begin_inset Formula $\rho$
+\begin_inset Formula $\epsilon$
 \end_inset
 
  should be, and how it affects the approximation.
  Intuitively smaller values yields better approximations, but increases
  computation time, since more samples are discarded.
  We will examine strategies to determine 
-\begin_inset Formula $\rho$
+\begin_inset Formula $\epsilon$
 \end_inset
 
  later.
@@ -3608,7 +3612,7 @@ If we cannot find a suitable distance measure that works directly on the
  This improves the efficiency of Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "likelihoo-free_alg1"
+reference "alg:Likelihood-free-sampling"
 
 \end_inset
 
@@ -3684,10 +3688,10 @@ g samples so that the defined distance between the statistics of the generated
 \end_layout
 
 \begin_layout Standard
-Finding proper statistics can be a difficult problem, and tied to the specific
- application.
- There is some however some research being done in finding good statistics
- semi-automatically, we refer again to the overview article 
+Finding proper statistics can be a difficult problem, and it is tied to
+ the specific application.
+ There is however some research being done in finding good statistics semi-autom
+atically, we refer again to the overview article 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
@@ -3696,7 +3700,8 @@ key "approx_bayes_comp"
 
  for more information.
  To give a little flavour of an approach that tries to generate statistics
- semi-automatically, we mention that the one developed in 
+ without being tied to a specific application, we mention the one developed
+ in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
@@ -3739,11 +3744,11 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \end_layout
 
 \begin_layout Standard
-But the norm in practice is that the statistics are chosen by a domain expert,
+But in practice the norm is that the statistics are chosen by a domain expert,
  say a evolutionary biologist when the problem revolves around the spread
  of genes in a population for instance, and it is not possible to derive
- sound theoretical properties.
- We give a couple of examples used in pratice below.
+ sound theoretical properties for convergence.
+ We give a couple of practical examples below.
  In both cases the model is specified as a stochastic where it is not possible
  to find theoretical expressions for the parameters one wishes to estimate,
  and they are not directly observable from the process output either, so
@@ -3992,7 +3997,6 @@ key "Marjoram23122003"
 \end_inset
 
  is outlined.
- 
 \end_layout
 
 \begin_layout Standard
@@ -4294,16 +4298,51 @@ name "alg:Markov-Chain-Monte-in-ABC"
 \end_layout
 
 \begin_layout Standard
+We recognize the Metropolis-Hastings step, but see that is has been modified
+ (like a cross between Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Metropolis-Hastings"
+
+\end_inset
+
+ and Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:Likelihood-free-sampling"
+
+\end_inset
+
+).
+ 
 \begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-Show MCMC method, and how SMC can be an alternative?
+Write more about target
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+In the algorithm 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ is fixed.
+ If it is too large, the approximation will be poor, is it is too low the
+ running time of algorithm will become long.
+ It is striking a balance between these two considerations, quality of approxima
+tion and running time, that is addressed by using SMC methods in ABC.
+ Instead of having 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ fixed and given at the start, it is decreased throughout the run of the
+ algorithm.
 \end_layout
 
 \begin_layout Section
@@ -4311,24 +4350,15 @@ Sequential Monte Carlo in an ABC setting
 \end_layout
 
 \begin_layout Standard
-Sequential Monte Carlo (SMC) methods provide an alternative to MCMC methods
- when generating samples from a distribution, and there exist several variations
- on how it is used within ABC, see for example 
+There exist several examples of how SMC methods are used within ABC, see
+ for example 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Peters2012,Toni187,adaptive_smc_for_abc"
 
 \end_inset
 
-.
- An SMC method decomposes the problem of generating a sample from the target
- distribution into a sequence of steps that are smaller and simpler than
- trying to generate a sample directly.
- It does this by first generating a number of samples from an approximation
- to the target distribution, termed particles, and then updating these by
- guiding them through the series of further approximations to the target
- distribution.
- We will in the following look at the algorithm developed in 
+, but we will in the following focus on the algorithm developed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
@@ -4343,14 +4373,16 @@ key "citeulike:637817"
 \end_inset
 
 .
-\end_layout
+ The output in the end is a set of weighted samples, which in turn can be
+ used to approximate a sample set from the target distribution in a manner
+ similar to what we described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Sampling-importance-resampling"
 
-\begin_layout Standard
-The output in the end is a set of weighted samples, which in turn can be
- used to approximate a sample set from the target distribution.
- The premise will be explained in detail, and we start with the concept
- of a weighted sample, which we illustrate by looking at the sampling importance
- resampling (SIR) method for generating samples from a distribution.
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -4358,14 +4390,14 @@ Sequential Markov chain sampler
 \end_layout
 
 \begin_layout Standard
-Recalling the nominator and denominator from 
+Recalling the nominator and denominator from (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:weight_decomposition"
 
 \end_inset
 
-, we see that the weight update iterations in the SMC method we described
+), we see that the weight update iterations in the SMC method we described
  operate on an increasing probability space: 
 \begin_inset Formula $x_{1},(x_{2}|x_{1}),(x_{3}|x_{1},x_{2}),...$
 \end_inset
@@ -4387,25 +4419,24 @@ key "citeulike:637817"
 
 \end_inset
 
+ instead operates on the same probability space through all the weight updates.
+ This will be a key point later, since our the sequence of approximations
+ we use in the ABC SMC method to be developed are defined on the same space,
+ so we need this property of the sampler.
  
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write why this is important
 \end_layout
 
-\end_inset
-
-instead operates on the same probability space through all the weight updates.
- Note that this means we cannot use the decomposition shown in 
+\begin_layout Standard
+Also note that since the SMC sampler uses the same probability space at
+ each step, we cannot use the decomposition shown in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:weight_decomposition"
 
 \end_inset
 
- right out of the box.
+) right out of the box, since it implies that the probability space increases
+ in dimension at each step.
 \end_layout
 
 \begin_layout Standard
@@ -4479,14 +4510,14 @@ g_{i}(\boldsymbol{x})=\int K(\boldsymbol{x}',\boldsymbol{x})g_{i-1}(\boldsymbol{
 
 \begin_layout Standard
 Note that we need this marginal distribution, since the decomposition in
- 
+ (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:weight_decomposition"
 
 \end_inset
 
- is unavailable to us.
+) is unavailable to us.
  The rationale behind the use of a kernel, is that as the target distribution
  evolves from one step to the next, it should be possible for us to use
  the particles at step 
@@ -4498,14 +4529,14 @@ reference "eq:weight_decomposition"
 \end_inset
 
 .
- However the integral in 
+ However the integral in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:kernel_update"
 
 \end_inset
 
- turns out to be impossible to compute in most cases.
+) turns out to be impossible to compute in most cases.
  
 \end_layout
 
@@ -4535,14 +4566,14 @@ Assuming we use the
 \begin_inset Formula $n$
 \end_inset
 
- pointwise evaluations of 
+ pointwise evaluations of (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:update_approximation"
 
 \end_inset
 
- for each of the 
+) for each of the 
 \begin_inset Formula $n$
 \end_inset
 
@@ -4563,14 +4594,14 @@ Use of backward kernel in weight update
 \end_layout
 
 \begin_layout Standard
-To avoid having to compute 
+To avoid having to compute (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:update_approximation"
 
 \end_inset
 
-, 
+), 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "citeulike:637817"
@@ -4591,17 +4622,14 @@ reference "sub:Sequential-Importance-Sampling"
 \begin_inset Formula $O(n)$
 \end_inset
 
- and provides asymptotically consistent estimates.
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write more
-\end_layout
+ and provides asymptotically consistent estimates 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "citeulike:637817"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
@@ -6494,10 +6522,6 @@ Histogram showing sample distribution of
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -6543,7 +6567,7 @@ target "https://github.com/torebre/abcProject"
 .
  The code may be downloaded as a zip-file through the web page, or if the
  user is familiar with the Git source code management system, he can clone
- the repository using the link found on the page.
+ the repository using the link found on that page.
 \end_layout
 
 \begin_layout Subsection

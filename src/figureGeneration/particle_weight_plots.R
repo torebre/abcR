@@ -27,7 +27,7 @@ GenerateWeightPlotAtEnd <- function(resample.ratio, picture.file.name) {
       particles <- toy.example.results[["all.particles"]][[index.to.use]]
       epsilon <- unlist(toy.example.results[["epsilons"]][index.to.use])
 
-      png(picture.file.name, width = 720, height = 480)
+      png(picture.file.name, width = 720, height = 240)
       par("mfrow" = c(1, 3))
 
       theta.colors <- rep(NA, length(thetas.weights))
@@ -36,7 +36,7 @@ GenerateWeightPlotAtEnd <- function(resample.ratio, picture.file.name) {
       }
 
       plot(y = thetas.weights, x = thetas, xlim = c(-3, 3), ylim = c(0, 1), pch = 16, cex = 1, col = theta.colors, ann = F)
-      title(xlab = latex2exp("$\\theta$"))
+      title(main = "Particle weights", xlab = latex2exp("$\\theta$"), ylab = "Normalized weight")
 
       # my.number.of.replicates <- length(particles[[1]])
       # my.number.of.particles <- length(particles) * my.number.of.replicates
@@ -89,7 +89,7 @@ PlotThetaHistogram <- function(thetas, use.thetas) {
     xlim = c(use.thetas[1], use.thetas[2]),
     ylim = c(0, 2.5)
   )
-  title(latex2exp::latex2exp("$\\theta$"))
+  title(main = "Sample distribution", xlab = latex2exp::latex2exp("$\\theta$"))
 
   curve(
     VectorizedPosterior2,
