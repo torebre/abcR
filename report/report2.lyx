@@ -2676,8 +2676,8 @@ Illustration of weight degeneracy.
 A strategy to better utilize the computational resources is to insert a
  resampling step in the incremental weight update process if a high proportion
  of the particles get stuck with low weights.
- Note that resampling is not the only method of dealing with degenerate
- weights in sequential Monte Carlo methods, see chapter 3 of 
+ Note that resampling is not the only method of dealing with vanishing weights
+ in sequential Monte Carlo methods, see chapter 3 of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -2739,9 +2739,14 @@ K\sim\mathrm{Multin}(n,w_{1},...,w_{n})
 \end_layout
 
 \begin_layout Standard
-We do not want to do resampling too often however, both because of the computati
-ons involved, and also because it will have an effect on variance on the
- estimator which is the final product of the MCMC or SMC method: Imagine
+After the resampling has been done, all the weights are set to be 
+\begin_inset Formula $\frac{1}{n}$
+\end_inset
+
+.
+ We do not want to do resampling too often however, both because of the
+ computations involved, and also because it will have an effect on variance
+ on the estimator which is the final product of the SMC method: Imagine
  running the method several times, the resampling steps may contribute to
  different parts of the parameter space getting focus from run to run, causing
  the variance to increase.
@@ -2769,8 +2774,12 @@ Here the resampling procedure has been implemented.
  When the ESS drops below a given threshold a resampling is done.
  More particles have non-zero weights, and the histogram shows the sample
  distribution to lie closer to the true distribution.
+ A resampling was done just before the weight plot and histogram was generated,
+ and explains why all the weights seem to be the same here.
+ Because normalized weighs are used all the particles have a weight close
+ to 0 at this point.
  Note the approximation is still not good because of the low number of particles
- we have used here.
+, 50, we have used here.
 \end_layout
 
 \end_inset
@@ -2802,15 +2811,15 @@ worth.
 \end_inset
 
  This concept can also be used in MCMC settings, not just SMC.
- There are several measures for the ESS, and we first look at widely used
- definition from 
+ There are several measures for the ESS, and we look at widely used definition
+ from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
 
 \end_inset
 
-:
+ that we will manipulate a bit:
 \begin_inset Formula 
 \begin{equation}
 \mathrm{ESS}(n)=\frac{n}{1+\mathrm{var}_{g}(w(\boldsymbol{X}))}\label{eq:ess}
@@ -2857,14 +2866,14 @@ n.
 \begin_inset Quotes erd
 \end_inset
 
- Looking at Equation 
+ Looking at (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess"
 
 \end_inset
 
- we see that the max value for 
+) we see that the max value for 
 \begin_inset Formula $\mathrm{ESS}(n)$
 \end_inset
 
@@ -2896,14 +2905,14 @@ key "1602.03572"
 \end_layout
 
 \begin_layout Standard
-We provide some justification for why 
+We now provide some justification for why (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess"
 
 \end_inset
 
- looks the way is does.
+) looks the way is does.
  The notion comes from a technical report 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3001,15 +3010,14 @@ Where
 \end_layout
 
 \begin_layout Standard
-The approximation in Equation 
+The approximation in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ratio_approximation"
 
 \end_inset
 
- is the main result of the technial report.
- 
+) is the main result of the technial report, and 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -3028,19 +3036,6 @@ key "liu2001monte"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check use of normalised weights
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Where 
 \begin_inset Formula $h(\cdot)$
 \end_inset
@@ -3050,7 +3045,7 @@ Where
 \end_inset
 
 , and for our purposes we can take it to be the identity function.
- The expression tells us that one sample from 
+ This expression is interpreted to mean that one sample from 
 \begin_inset Formula $p(\boldsymbol{X})$
 \end_inset
 
@@ -3067,14 +3062,14 @@ Where
 \begin_inset Formula $n$
 \end_inset
 
- and get 
+ and get (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess"
 
 \end_inset
 
-.
+).
  Note that in practice we need to estimate 
 \begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
 \end_inset
@@ -3093,21 +3088,24 @@ The justification of the above assumes that the weights,
 \begin_inset Formula $\mathrm{c}$
 \end_inset
 
- in 
+ in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:importance_sampling"
 
 \end_inset
 
-.
+).
  In that case we can use a different expression to give a measure of the
- variability of the normalised weights using the unnormalised weights, called
- the coefficient of variation:
+ variability instead of 
+\begin_inset Formula $\mathrm{var}(w(\boldsymbol{X})$
+\end_inset
+
+, called the coefficient of variation:
 \begin_inset Formula 
-\[
-\mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}
-\]
+\begin{equation}
+\mathrm{cv}^{2}(w(\boldsymbol{x}))=\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}\label{eq:coefficient_of_variation}
+\end{equation}
 
 \end_inset
 
@@ -3115,32 +3113,48 @@ reference "eq:importance_sampling"
 \end_layout
 
 \begin_layout Standard
-Inserting this into 
+Where 
+\begin_inset Formula $\bar{w}=\frac{1}{n}\sum_{i=1}^{n}w_{i}(\boldsymbol{x})$
+\end_inset
+
+ is the sample average.
+ Using this expression cancels the constant as we shall we.
+ Note that 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "liu2001monte"
+
+\end_inset
+
+ operates with 
+\begin_inset Formula $n-1$
+\end_inset
+
+ in the denominator.
+ Inserting (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:coefficient_of_variation"
+
+\end_inset
+
+) into (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess"
 
 \end_inset
 
- we get:
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-The following is wrong
-\end_layout
-
-\end_inset
-
-
+) we get:
 \begin_inset Formula 
 \begin{align}
 \frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\nonumber \\
- & \approx\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\frac{1}{n})^{2}}{n^{-1}}}\nonumber \\
- & =\frac{n}{1+\frac{1}{n}\sum_{i=1}^{n}(nw_{i}(\boldsymbol{x})-1)^{2}}\nonumber \\
- & =\frac{n}{1+n\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})^{2}-2n^{-1}w_{i}(\boldsymbol{x})+n^{-2})}\nonumber \\
- & =\frac{n}{1+n\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}-1}\nonumber \\
- & =\frac{1}{\sum_{i=1}^{n}w_{i}(\boldsymbol{x})^{2}}\label{eq:ess_expression}
+ & =\frac{n^{2}}{n+\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}}\nonumber \\
+ & =\frac{n^{2}}{n+\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}-\frac{2}{\bar{w}(\boldsymbol{x})}\sum_{i=1}^{n}w_{i}(\boldsymbol{x})+\sum_{i=1}^{n}\left(\frac{\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}}\nonumber \\
+ & =\frac{n^{2}}{n+n^{2}\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})}{\sum_{j=1}^{n}w_{j}(\boldsymbol{x})}\right)^{2}-2n\frac{\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}+n}\nonumber \\
+ & =\frac{n^{2}}{n+n^{2}\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}-2n+n}\nonumber \\
+ & =\frac{n^{2}}{n^{2}\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}}\nonumber \\
+ & =\frac{1}{\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}}\label{eq:normalized_ess}
 \end{align}
 
 \end_inset
@@ -3149,57 +3163,19 @@ The following is wrong
 \end_layout
 
 \begin_layout Standard
-The approximation in 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:ess_expression"
-
+Where 
+\begin_inset Formula $\underbar{w }_{i}(\boldsymbol{x})$
 \end_inset
 
- is justified as follows: 
-\begin_inset Formula 
-\begin{align*}
-\mathrm{E}(w(\boldsymbol{X})) & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}w(\boldsymbol{x})g(\boldsymbol{x})d\boldsymbol{x}\\
- & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}g(\boldsymbol{x})d\boldsymbol{x}\\
- & =\int_{\boldsymbol{x}\in\mathbb{R}^{m}}p(\boldsymbol{x})d\boldsymbol{x}\\
- & =1
-\end{align*}
-
+ denotes the normalized weight for particle 
+\begin_inset Formula $i$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write more
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Unclear what the weights expressions refer to here.
- Make clear
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Using this measure of ESS, we trigger a resampling when it drops below a
- given threshold to be specified later.
+.
+ This expression for the ESS is a common one in the literature, and is the
+ one we will use here as well.
+ A resampling step is triggered when it drops below a given threshold to
+ be specified later.
  The rationale being that the weights at that point have spread out so much,
  that we are wasting computations on particles that are in low probably
  regions of the probability space, and should instead concentrate more on
@@ -3337,7 +3313,7 @@ If we were able to draw samples from the likelihood function such that
  A simple algorithm for this is shown in Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "likelihoo-free_alg1"
+reference "alg:Likelihood-free-sampling"
 
 \end_inset
 
@@ -3355,7 +3331,7 @@ reference "likelihoo-free_alg1"
  Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "likelihoo-free_alg1"
+reference "alg:Likelihood-free-sampling"
 
 \end_inset
 
@@ -3672,7 +3648,7 @@ From the above we see that the approximation works when we choose sufficient
 \end_inset
 
 , it is a sufficient statistic, but in a practial problem it is unlikely
- we can use the sample directly in this way for reasons pointed to above.
+ we can use the sample directly in this way for the reasons pointed to above.
 \end_layout
 
 \begin_layout Standard
@@ -3766,7 +3742,7 @@ key "Toni187"
 
 \end_inset
 
- provide several example of ABC-applications.
+ provide several examples of ABC-applications.
  One is the problem of estimating rate parameters in a stochastic predator/prey
  model:
 \end_layout
