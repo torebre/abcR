@@ -2435,9 +2435,9 @@ name "sub:Sequential-Importance-Sampling"
 \end_layout
 
 \begin_layout Standard
-Expanding on the idea of creating a weighted sample set to do a resampling
- from explained in the previous section, we see that the unnormalized weight,
- 
+We now expand on the ideas from the previous section and show a method of
+ computing the weights recursively that will be become central later.
+ We see that an unnormalized weight, 
 \begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
 \end_inset
 
@@ -2456,7 +2456,16 @@ w(\boldsymbol{x})=\frac{p(x_{1})p(x_{2}|x_{1})p(x_{3}|x_{1},x_{2})...p(x_{k}|x_{
 \end_layout
 
 \begin_layout Standard
-If we define 
+Assuming 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ is a vector of 
+\begin_inset Formula $k$
+\end_inset
+
+ elements.
+ If we define 
 \begin_inset Formula $\boldsymbol{x}_{t}=(x_{1},...,x_{t})$
 \end_inset
 
@@ -2466,7 +2475,7 @@ If we define
 \begin_layout Standard
 \begin_inset Formula 
 \[
-w_{t}(\boldsymbol{x})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
+w_{t}(\boldsymbol{x}_{t})=w_{t-1}(\boldsymbol{x}_{t-1})\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}
 \]
 
 \end_inset
@@ -2479,32 +2488,13 @@ Where
 \begin_inset Formula $1\leq t\leq k$
 \end_inset
 
-, we define 
-\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{t})$
+, and we define 
+\begin_inset Formula $w(\boldsymbol{x})=w_{k}(\boldsymbol{x}_{k})$
 \end_inset
 
 .
- To ease the notation we define 
-\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(x_{t}|\boldsymbol{x}_{t-1})}{g(x_{t}|\boldsymbol{x}_{t-1})}$
-\end_inset
-
- and call it the weight update.
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check that the expression is correct
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Doing such a decomposition has some advantages when dealing with high-dimensiona
-l problems, where it is difficult to find a good proposal distribution
+ Doing such a decomposition has some advantages when dealing with high-dimension
+al problems where it is difficult to find a good proposal distribution
 \begin_inset CommandInset citation
 LatexCommand cite
 after "pp. 46-47"
@@ -2512,8 +2502,8 @@ key "liu2001monte"
 
 \end_inset
 
-: It lets us stop calculation of the weights early if we see it comes close
- to 0, and we can also make use of 
+: It lets us stop calculation of the weights early if we see some of them
+ becoming 0, and we can also make use of 
 \begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
 \end_inset
 
@@ -2525,7 +2515,7 @@ key "liu2001monte"
 \end_layout
 
 \begin_layout Standard
-There is a problem in that we need the marginal distributions, 
+There is however a problem in that we need the marginal distributions, 
 \begin_inset Formula $p(x_{1})$
 \end_inset
 
@@ -2535,13 +2525,37 @@ There is a problem in that we need the marginal distributions,
 
 ,..., to get expressions for the conditional distributions.
  To get the marginal distributions there is a need to integrate out variables.
- For instance:
+ For instance, we need 
+\begin_inset Formula $p(x_{k}|x_{1},...,x_{k-1})=p(x_{k}|\boldsymbol{x}_{k-1})p(\boldsymbol{x}_{k-1})$
+\end_inset
+
+ in the recursion and we have:
+\begin_inset Formula 
+\begin{equation}
+p(x_{k}|\boldsymbol{x}_{k-1})=\frac{p(\boldsymbol{x}_{k})}{p(\boldsymbol{x}_{k-1})}\label{eq:conditional_probability}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We are give the full distribution, 
+\begin_inset Formula $p(\boldsymbol{x}_{k})=p(\boldsymbol{x})$
+\end_inset
+
+, but to find 
+\begin_inset Formula $p(\boldsymbol{x}_{k-1})$
+\end_inset
+
+ we must integrate out variables:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x_{k}
+p(\boldsymbol{x}_{k-1})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{k}
 \]
 
 \end_inset
@@ -2550,10 +2564,11 @@ p(x_{1},x_{2})=\int...\int p(x_{1},x_{2},...,x_{k})\mathrm{d}x_{3}...\mathrm{d}x
 \end_layout
 
 \begin_layout Standard
-This may be difficult, or impossible, and to get around this problem we
- introduce another layer of complexity and look for a sequence of marginal
- distributions that are approximations to 
-\begin_inset Formula $p(\boldsymbol{x}_{t})$
+And similarly for the other elements in the recursion.
+ This integration may be difficult or impossible to perform, and to get
+ around this problem we introduce another layer of complexity and look for
+ a sequence of marginal distributions that are approximations to 
+\begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
 : 
@@ -2569,13 +2584,46 @@ This may be difficult, or impossible, and to get around this problem we
 \end_inset
 
 .
- The full joint distribution in the previous is not an approximation, but
- the actual 
+ Note that the last step in the sequence of approximations, is actually
+ not an approximation but the full joint distribution, 
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
 .
- So we can view the approximations as converging to the true distribution.
+ By rewriting the recursion like so (by using a calculation like in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:conditional_probability"
+
+\end_inset
+
+)):
+\begin_inset Formula 
+\begin{align*}
+w_{t}(\boldsymbol{x}_{t}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}(\boldsymbol{x}_{t})}{\hat{p}(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And using the fact that 
+\begin_inset Formula $\hat{p}(\boldsymbol{x}_{k})=p(\boldsymbol{x}_{k})$
+\end_inset
+
+, we see how the approximations can be used in the weight update: The approximat
+ions will cancel and in the final step we will have 
+\begin_inset Formula $w(\boldsymbol{x}_{k})=\frac{p(\boldsymbol{x}_{k})}{g(\boldsymbol{x}_{k})}$
+\end_inset
+
+ as required.
+ To ease the notation we define 
+\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(\boldsymbol{x}_{t})}{p(x_{t}|\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}$
+\end_inset
+
+ and call it the weight update.
  
 \end_layout
 
@@ -2598,11 +2646,11 @@ In summary we are faced with two challenges when setting up the sequential
 \noun off
 \color none
 
-\begin_inset Formula $\hat{p}(x_{t}|\boldsymbol{x}_{t-1})$
+\begin_inset Formula $\hat{p}(\boldsymbol{x}_{t})$
 \end_inset
 
- to the true target distribution 
-\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+ to the true marginal distributions 
+\begin_inset Formula $p(\boldsymbol{x}_{t})$
 \end_inset
 
 .
@@ -2613,7 +2661,7 @@ In summary we are faced with two challenges when setting up the sequential
 \end_layout
 
 \begin_layout Subsubsection
-Vanishing weights
+Weight degeneracy
 \end_layout
 
 \begin_layout Standard
