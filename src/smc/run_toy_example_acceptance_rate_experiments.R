@@ -1,4 +1,5 @@
-toy.example.configuration.2 <- smcToyExample(create.debug.variables = T)
+toy.example.configuration.2 <-
+  smcToyExample(create.debug.variables = T)
 
 toy.example.results.2 <-
   Smc(
@@ -11,7 +12,8 @@ toy.example.results.2 <-
     verbose = T
   )
 
-toy.example.configuration.3 <- smcToyExample(create.debug.variables = T)
+toy.example.configuration.3 <-
+  smcToyExample(create.debug.variables = T)
 toy.example.results.3 <-
   Smc(
     toy.example.configuration.3,
@@ -24,39 +26,44 @@ toy.example.results.3 <-
   )
 
 
+CreatePlotForReplicateExperiment <-
+  function(plot.prefix,
+           example.configuration,
+           example.results) {
+    debug.variables.environment <-
+      example.configuration[["GetDebugVariables"]]()
 
-debug.variables.environment <- toy.example.configuration.2[["GetDebugVariables"]]()
+    state.to.visualise <-
+      length(example.results[["effective.sample.sizes"]])
 
+    run.length <- state.to.visualise
 
-state.to.visualise <- length(toy.example.results.2[["effective.sample.sizes"]])
+    effective.sample.size <-
+      example.results[["effective.sample.sizes"]][state.to.visualise]
+    epsilon <- example.results[["epsilons"]][state.to.visualise]
+    thetas <-
+      unlist(example.results[["all.thetas"]][state.to.visualise])
+    weights <-
+      unlist(example.results[["all.weights"]][state.to.visualise])
+    particles <-
+      example.results[["all.particles"]][[state.to.visualise]]
 
-effective.sample.size <-
-  toy.example.results.2[["effective.sample.sizes"]][state.to.visualise]
-epsilon <- toy.example.results.2[["epsilons"]][state.to.visualise]
-thetas <- unlist(toy.example.results.2[["all.thetas"]][state.to.visualise])
-weights <- unlist(toy.example.results.2[["all.weights"]][state.to.visualise])
-particles <- toy.example.results.2[["all.particles"]][[state.to.visualise]]
+    use.thetas <- c(-3, 3)
 
-use.thetas <- c(-3, 3)
+    avg.acc.rate <- unlist(debug.variables.environment$avg.acc.rate)
 
+    png(paste(plot.prefix, ".png")) #, width = 480, height = 480 * 3/2)
+    par(mfrow = c(2, 2))
+    plot(avg.acc.rate, type = "l")
+    PlotHistogram(thetas, use.thetas)
+    PlotEpsilonTrace(example.results, state.to.visualise, use.run.length = run.length)
+    PlotEssTrace(example.results, state.to.visualise, use.run.length = run.length)
+    dev.off()
 
-png("experiment2_histogram.png") #, width = 480, height = 480 * 3/2)
-PlotHistogram(thetas, use.thetas)
-dev.off();
+    # PlotParticles(particles, weights, use.max = distance.max)
+    # CreateGifAnimation(toy.example.results.2, "toy_example_results_2.gif")
 
-# PlotParticles(particles, weights, use.max = distance.max)
-PlotEpsilonTrace(smc.resultoy.example.results.2, state.to.visualise, use.run.length = run.length)
-PlotEssTrace(toy.example.results.2, state.to.visualise, use.run.length = run.length)
+  }
 
-# CreateGifAnimation(toy.example.results.2, "toy_example_results_2.gif")
-
-
-
-plot(avg.acc.rate, type = "l", col = "red")
-lines(avg.acc.rate2, add = T, col = "blue")
-
-
-
-
-
+CreatePlotForReplicateExperiment("configuration3_5_replicates", toy.example.configuration.3, toy.example.results.3)
 
