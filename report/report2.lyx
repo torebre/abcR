@@ -670,23 +670,18 @@ on.
 
 , are independent.
  We can then write:
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \begin{align}
 p(\theta_{1}|\boldsymbol{y}) & \propto p(\boldsymbol{y}|\theta_{1})p(\theta_{1})\nonumber \\
  & =\frac{1}{\sqrt{2\pi}\theta_{2}}\exp\left(-\frac{1}{2}\sum_{i=1}^{n}\frac{(y_{i}-\theta_{1})^{2}}{\theta_{2}}\right)\frac{1}{\sqrt{2\pi}\sigma}\exp\left(-\frac{1}{2}\frac{(\theta_{1}-\mu)^{2}}{\sigma^{2}}\right)\nonumber \\
  & \propto\exp\left(-\frac{1}{2}\sum_{i=1}^{n}\frac{(y_{i}-\theta_{1})^{2}}{\theta_{2}}-\frac{1}{2}\frac{(\theta_{1}-\mu)^{2}}{\sigma^{2}}\right)\nonumber \\
- & \propto\exp\left(\left(\frac{n}{\theta_{2}^{2}}+\frac{1}{\sigma^{2}}\right)^{-1}\left(\frac{n}{\theta_{2}^{2}}\overline{y}+\frac{\mu}{\sigma^{2}}\right)^{2}+\theta_{1}^{2}\right)^{2}\label{eq:conjugate_prior}
+ & \propto\exp\left(-\frac{1}{2}\left(\frac{n}{\theta_{2}}+\frac{1}{\sigma^{2}}\right)\left(\left(\frac{n}{\theta_{2}}+\frac{1}{\sigma^{2}}\right)^{-1}\left(\frac{n}{\theta_{2}}\overline{y}+\frac{\mu}{\sigma^{2}}\right)-\theta_{1}\right)^{2}\right)\nonumber \\
+ & \text{set \ensuremath{\tau=}}\left(\frac{n}{\theta_{2}}+\frac{1}{\sigma^{2}}\right)^{-1}\nonumber \\
+ & \propto\exp\left(-\frac{1}{2}\tau^{-1}\left(\tau\left(\frac{n}{\theta_{2}}\overline{y}+\frac{\mu}{\sigma^{2}}\right)-\theta_{1}\right)^{2}\right)\label{eq:conjugate_prior2}
 \end{align}
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check if the variance term needs to be included
-\end_layout
 
 \end_inset
 
@@ -708,7 +703,7 @@ Going from the third to the fourth line above involves a bit of algebra,
 There are a couple of points of interest in Equation 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:conjugate_prior"
+reference "eq:conjugate_prior2"
 
 \end_inset
 
@@ -1045,8 +1040,8 @@ Markov Chain Monte Carlo
 
 \begin_layout Standard
 Even though the method we will focus on later is not an MCMC method, it
- does make use of some the underlying theory, so we quickly go through some
- of the basics that we will need to understand the later discussion.
+ does use some of the underlying theory, so we quickly go through some of
+ the basics that we will need to understand the later discussion.
  We do not give proofs for many of the results presented, and instead reference
  the reader to other texts, for instance 
 \begin_inset CommandInset citation
@@ -1251,7 +1246,7 @@ ion, and assuming the coin is fair it will have parameter
 \begin_inset Formula $P$
 \end_inset
 
- to determine what the next outcome should be.
+ to determine what the next outcome could be.
 \end_layout
 
 \begin_layout Standard
@@ -2041,8 +2036,8 @@ name "sub:Sampling-importance-resampling"
 
 \begin_layout Standard
 Here we illustrate a different method of obtaining samples from some distributio
-n, and one that is the basis for the method which is the main focus of this
- report.
+n, and one that is part of the basis for the method which is the main focus
+ of this report.
  Suppose we have a 
 \begin_inset Formula $k$
 \end_inset
@@ -2122,6 +2117,15 @@ status open
 
 \begin_layout Plain Layout
 Target and proposal distribution.
+ The probability density function 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ is multiplied by a constant to make it greater than 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ everywhere.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Target-and-proposal"
@@ -2421,6 +2425,48 @@ The constant
 \end_inset
 
 , we get a good approximation to the distribution.
+\end_layout
+
+\begin_layout Standard
+A potential problem that deserves mention is that it may be difficult to
+ ensure that 
+\begin_inset Formula $cg(\boldsymbol{x})$
+\end_inset
+
+ is greater than 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ everywhere, especially in the tails of distributions.
+ We get a visual impression of the problem by looking at the tails in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Target-and-proposal"
+
+\end_inset
+
+.
+ If 
+\begin_inset Formula $cg(\boldsymbol{x})$
+\end_inset
+
+ is close to 0 at some point, and less than 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, a draw from that point will receive a large weight, and the sampling will
+ be skewed away from the true target distribution.
+ One solution, apart from the one of trying a different proposal distribution,
+ is to do the final resampling step without replacement, to ensure excessive
+ duplication (see 6.3.1 of 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "givens2012computational"
+
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
