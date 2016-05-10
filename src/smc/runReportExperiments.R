@@ -23,7 +23,7 @@ curve(
 )
 
 
-RunExperiment1(alpha.to.use = 0.9, number.of.particles.to.use = 1000, file.name.prefix = "exp1_09_1000")
+RunExperiment1(alpha.to.use = 0.9, number.of.particles.to.use = 1000, file.name.prefix = "exp1_09_1000_test")
 RunExperiment1(alpha.to.use = 0.9, number.of.particles.to.use = 10000, file.name.prefix = "exp1_09_10000")
 RunExperiment1(alpha.to.use = 0.9, number.of.particles.to.use = 100000, file.name.prefix = "exp1_09_100000")
 

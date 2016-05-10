@@ -1,7 +1,7 @@
 #' MA(2) example.
 #'
 #' @export
-smcMovingAverageExample <- function(create.debug.variables = F) {
+smcMovingAverageExample <- function(use.raw.distance.function = T, create.debug.variables = F) {
   maExample <- structure(list(), class = "smcConfiguration")
   theta1.actual <- 0.6
   theta2.actual <- 0.2
@@ -17,17 +17,35 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
     })
   }
 
+
+  ComputeAutoCovariance <- function(my.sample, lag.length) {
+    sum(sapply((lag.length + 1):length(my.sample), function(x) {
+      my.sample[x] * my.sample[x - lag.length]
+    })) / length(my.sample)
+  }
+
   observed.series <- GenerateSample(c(theta1.actual, theta2.actual))
+  observed.seies.cov1 <- ComputeAutoCovariance(observed.series, 1)
+  observed.seies.cov2 <- ComputeAutoCovariance(observed.series, 2)
 
-  maExample[["GenerateRandomPrior"]] <- function() {
+
+  maExample[["GenerateRandomPrior"]] <- function(number.of.priors) {
     # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
-    theta1 <- runif(1, min = -2, max = 2)
 
-    while(T) {
-      theta2 <- runif(1, min = -1, max = 1)
-      if(theta1 + theta2 > -1 && theta1 - theta2 < 1)
-        return(c(theta1, theta2))
+    priors <- matrix(NA, nrow = 2, ncol = number.of.priors)
+
+    priors[1,] <- runif(number.of.priors, min = -2, max = 2)
+    for (i in 1:number.of.priors) {
+      while (T) {
+        theta2 <- runif(1, min = -1, max = 1)
+        if (priors[1, i] + theta2 > -1 &&
+            priors[1, i] - theta2 < 1) {
+        }
+        priors[2 , i] <- theta2
+        break
+      }
     }
+priors
   }
 
   EvaluateTheta <- function() {
@@ -36,20 +54,31 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
   }
 
   InternalDistanceFunction <- function(my.sample) {
-    abs(my.sample - observation)
+    if(use.raw.distance.function) {
+      return(sum((my.sample - observed.series)^2))
+    }
+    (ComputeAutoCovariance(my.sample, 1) - observed.seies.cov1)^2 +
+      (ComputeAutoCovariance(my.sample, 2) - observed.seies.cov2)^2
   }
 
   maExample[["DistanceFunction"]] <- InternalDistanceFunction
 
   EvaluateLikelihoodSum <-
     function(my.sample.vector, my.current.epsilon) {
-      sum(sapply(my.sample.vector, function(x) {
-        #       print(paste("x: ", x))
-        #       print(paste("Distance: ", DistanceFunction(x)))
-        #       print(paste("my.current.epsilon: ", my.current.epsilon))
+      number.of.rows <- dim(my.sample.vector)[1]
 
-        InternalDistanceFunction(x) < my.current.epsilon
-      }))
+      likelihood.sum <- 0
+      for(i in 1:number.of.rows) {
+        if(InternalDistanceFunction(my.sample.vector[i, ]) < my.current.epsilon) {
+        likelihood.sum <- likelihood.sum + 1
+        }
+      }
+
+      # sum(sapply(my.sample.vector[1:number.of.rows, ], function(x) {
+      #   InternalDistanceFunction(x) < my.current.epsilon
+      # }))
+
+      likelihood.sum
     }
 
   debug.variables <- new.env(parent = emptyenv())
@@ -62,40 +91,58 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
     debug.variables
   }
 
-
   maExample[["ForwardKernelSample"]] <- function(samples.old,
-                                                  theta.old,
-                                                  my.current.epsilon,
-                                                  my.weights) {
-    temp1 <- sapply(theta.old, function(x) { x[1] })
-    temp2 <- sapply(theta.old, function(x) { x[2] })
+                                                 theta.old,
+                                                 my.current.epsilon,
+                                                 my.weights) {
+    # print(paste("theta.old: ", theta.old))
+    # print(paste("dim theta.old: ", dim(theta.old)))
+
+    temp1 <- theta.old[1,]
+    temp2 <- theta.old[2,]
+
+    # print(paste("temp1: ", temp1))
+    # print(paste("temp2: ", temp2))
 
     empirical.variance1 <- var(temp1)
     empirical.variance2 <- var(temp2)
 
     my.number.of.particles <- length(samples.old)
-    my.number.of.replicates <- length(samples.old[[1]])[2]
+    my.number.of.replicates <- dim(samples.old[[1]])[1]
 
-    samples.new <- rep(samples.old)
-    theta.new <- rep(theta.old)
+    samples.new <- samples.old
+    theta.new <- theta.old
 
     accepted <- 0
     alive.particles <- 0
 
     for (j in 1:my.number.of.particles) {
-      theta.candidate <- c(rnorm(1, mean = theta.old[j, 1], sqrt(2 * empirical.variance1)),
-                           rnorm(1, mean = theta.old[j, 2], sqrt(2 * empirical.variance2)))
+      # print(
+      #   paste(
+      #     "theta.old[1, j]:",
+      #     theta.old[1, j],
+      #     "empirical.variance1:",
+      #     empirical.variance1
+      #   )
+      # )
+
+      theta.candidate <-
+        c(rnorm(1, mean = theta.old[1, j], sqrt(2 * empirical.variance1)),
+          rnorm(1, mean = theta.old[2, j], sqrt(2 * empirical.variance2)))
+
+      # if(create.debug.variables) {
+      #   debug.variables$empirical.variance[[length(debug.variables$avg.acc.rate) + 1]] <-
+      #     sqrt(2 * empirical.variance)
+      # }
 
 
-      if(create.debug.variables) {
-        debug.variables$empirical.variance[[length(debug.variables$avg.acc.rate) + 1]] <-
-          sqrt(2 * empirical.variance)
-      }
+      # print(paste("my.number.of.replicates2: ", my.number.of.replicates, "series.length2: ", series.length))
 
-      replicates.new <- matrix(nrow = my.number.of.replicates, ncol = series.length)
+      replicates.new <-
+        matrix(nrow = my.number.of.replicates, ncol = series.length)
 
       for (i in 1:my.number.of.replicates) {
-        replicates.new[i, ] <- GenerateSample(theta.candidate)
+        replicates.new[i,] <- GenerateSample(theta.candidate)
       }
 
       # The prior is uniform and the random walk is coming from
@@ -103,7 +150,6 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
       # Metropolis-Hastings ratio is the likelihood
 
       if (my.weights[j] == 0) {
-
         # Try to see what happens when the particles with no
         # weight are left alone
 
@@ -116,7 +162,7 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
       else {
         # New as nominator, old as denominator
         old.likelihood <-
-          EvaluateLikelihoodSum(samples.new[j], my.current.epsilon)
+          EvaluateLikelihoodSum(samples.new[[j]], my.current.epsilon)
 
         # auto.accept <- false
         if (old.likelihood == 0) {
@@ -126,11 +172,11 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
         metropolis.hastings.ratio <-
           EvaluateLikelihoodSum(replicates.new, my.current.epsilon) / old.likelihood
 
-        #       print(paste("New: ", EvaluateLikelihoodSum(replicates.new, my.current.epsilon)))
-        #       print(paste("Old: " ,EvaluateLikelihoodSum(samples.old[j], my.current.epsilon)))
+        # print(paste("New: ", EvaluateLikelihoodSum(replicates.new, my.current.epsilon)))
+        # print(paste("Old: " ,EvaluateLikelihoodSum(samples.old[[j]], my.current.epsilon)))
 
         if (runif(1) <= min(1, metropolis.hastings.ratio)) {
-          theta.new[j] <- theta.candidate
+          theta.new[, j] <- theta.candidate
           samples.new[[j]] <- replicates.new
 
           accepted <- accepted + 1
@@ -144,7 +190,7 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
 
     }
 
-    if(create.debug.variables) {
+    if (create.debug.variables) {
       debug.variables$accepted[[length(debug.variables$accepted) + 1]] <-
         accepted
       debug.variables$avg.acc.rate[[length(debug.variables$avg.acc.rate) + 1]] <-
@@ -156,21 +202,37 @@ smcMovingAverageExample <- function(create.debug.variables = F) {
     return(list(theta = theta.new, samples = samples.new))
   }
 
-
-    SampleFunctionInternal <- function(my.thetas, my.number.of.replicates) {
+  SampleFunctionInternal <-
+    function(my.thetas, my.number.of.replicates) {
       my.samples <- list()
-      for (i in 1:length(my.thetas)) {
-        my.replicates <- matrix(nrow = my.number.of.replicates, ncol = series.length)
+
+      for (i in 1:dim(my.thetas)[2]) {
+        my.replicates <-
+          matrix(nrow = my.number.of.replicates, ncol = series.length)
         for (j in 1:my.number.of.replicates) {
-          my.replicates[j, ] <- GenerateSample(my.thetas[[i]])
+          my.replicates[j,] <- GenerateSample(my.thetas[, i])
         }
         my.samples[[i]] <- my.replicates
       }
       return(my.samples)
     }
 
-    maExample[["SampleFunction"]] <- SampleFunctionInternal
+  maExample[["SampleFunction"]] <- SampleFunctionInternal
 
+
+  maExample[["ExtractSamples"]] <- function(sample.indices, particles) {
+    resampled.particles <- list()
+    counter <- 1
+    for(i in sample.indices) {
+      resampled.particles[[counter]] <- particles[[i]]
+      counter <- counter + 1
+    }
+    resampled.particles
+  }
+
+  maExample[["ExtractThetas"]] <- function(sample.indices, thetas) {
+    thetas[ , sample.indices]
+  }
 
   maExample
 }

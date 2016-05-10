@@ -3258,7 +3258,7 @@ reference "eq:ess"
 
 \begin_layout Standard
 Where 
-\begin_inset Formula $\underbar{w }_{i}(\boldsymbol{x})$
+\begin_inset Formula $\underbar{w}_{i}(\boldsymbol{x})$
 \end_inset
 
  denotes the normalized weight for particle 
@@ -5727,6 +5727,13 @@ Expression for variance of theta
 
 \begin_layout Subsection
 Algorithm
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Algorithm"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -6438,14 +6445,30 @@ Examples
 \end_layout
 
 \begin_layout Standard
-We provide an implementation of the algorithm of 
+We provide an implementation of the algorithm in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Algorithm"
+
+\end_inset
+
+in R, and illustrate it on two simple examples.
+ 
+\end_layout
+
+\begin_layout Subsection
+Toy example
+\end_layout
+
+\begin_layout Standard
+This example is used in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
 
 \end_inset
 
-in R, and illustrate it on a simple example used both there and in 
+, 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Beaumont12102009"
@@ -6460,14 +6483,7 @@ key "Sisson06022007"
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Subsection
-Toy example
-\end_layout
-
-\begin_layout Standard
-The distribution we wish to create a sample set from is given as follows,
+ The distribution we wish to create a sample set from is given as follows,
  first the likelihood is specified as:
 \end_layout
 
@@ -6597,6 +6613,106 @@ Histogram showing sample distribution of
 
 \end_layout
 
+\begin_layout Subsection
+Estimating coefficients of MA(2) process
+\end_layout
+
+\begin_layout Standard
+This example is used in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "approx_bayes_comp"
+
+\end_inset
+
+.
+ The problem is to estimate the parameters of an MA(2) stochastic process,
+ which is defined as:
+\begin_inset Formula 
+\[
+z_{t}=a_{t}-\theta_{1}a_{t-1}-\theta_{2}a_{t-2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where the 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $a_{t-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $a_{t-2}$
+\end_inset
+
+ is 
+\begin_inset Quotes eld
+\end_inset
+
+white noise.
+\begin_inset Quotes erd
+\end_inset
+
+ That is: A sequence of uncorrelated random variables with 
+\begin_inset Formula $\mathrm{E}(a_{t})=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathrm{Var}(a_{t})=\sigma_{a}^{2}$
+\end_inset
+
+.
+ In the example here they are standard normal random variables,
+\begin_inset Formula $\mathrm{N}(0,1)$
+\end_inset
+
+.
+ The parameters 
+\begin_inset Formula $\boldsymbol{\theta}=\left[\theta_{1},\theta_{2}\right]$
+\end_inset
+
+ are the ones we wish to estimate based on a realisation of the stochastic
+ process.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Write more
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The derivation of the likelihood is found in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Model_estimation"
+
+\end_inset
+
+.
+\begin_inset Formula 
+\[
+L(\boldsymbol{\theta},\sigma_{a}^{2}|\boldsymbol{w})=(\sigma_{a}^{2})^{-\frac{n}{2}}\left|\boldsymbol{\mathrm{D}}\right|^{-\frac{1}{2}}\exp\left(-\frac{1}{2\sigma_{a}^{2}}\sum_{t=1-q}^{n}\hat{a}_{t}^{2}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -6647,7 +6763,7 @@ Installing the package in R
 \begin_layout Standard
 The code in the repository is laid out in the form of an R-package.
  To use it the user must install the package.
- The easiest way to do this is by the devtools-package
+ The easiest way to do this is by the devtools-package,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "devtools"
