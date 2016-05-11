@@ -46,29 +46,43 @@ ComputeMALikelihood <- function(theta1, theta2, time.series.length) {
   L <- diag(1, nrow = time.series.length)
   diag(L[2:time.series.length, 1:(time.series.length - 1)]) <- -theta1
   diag(L[3:time.series.length, 1:(time.series.length - 2)]) <- -theta2
-
   F.mat <- rbind(B, matrix(0, nrow = time.series.length - 2, ncol = 2))
 
   # TODO This is a bit off because of the start of the range
   a.est <- rep(0, time.series.length)
   for(i in 3:time.series.length) {
-    a.est[i] <- (time.series[i] + theta1 * a.est[i - 1] + theta2 * a.est[i - 2])^2
+    a.est[i] <- time.series[i] + theta1 * a.est[i - 1] + theta2 * a.est[i - 2]
   }
 
   D <- diag(2) + t(F.mat) %*% solve(t(L)) %*% solve(L) %*% F.mat
-  sigma.squared^(-time.series.length/2) * det(D)^(-1/2) * exp(-(1/(2 * sigma.squared)) * sum(a.est))
+  sigma.squared^(-time.series.length/2) * det(D)^(-1/2) * exp(-(1/(2 * sigma.squared)) * sum(a.est^2))
 
   }
 
+theta1.range <- seq(-2, 2, 0.2)
+theta2.range <- seq(-1, 1, 0.2)
 
+likelihood.map <- matrix(NA, ncol = length(theta1.range), nrow = length(theta2.range))
 
+for(i in 1:length(theta1.range)) {
+  for(j in 1:length(theta2.range)) {
+   try(likelihood.map[j, i] <- ComputeMALikelihood(theta1.range[length(theta1.range) + 1 - i], theta2.range[length(theta2.range) + 1 - j], time.series.length))
+  }
+}
+
+# TODO Fix problems with directions
+filled.contour(theta1.range, theta2.range, t(likelihood.map))
 
 animation::saveGIF(
-  for(i in seq(1, run.length, by = 2)) {
-
+  for(i in seq(1, run.length, by = 10)) {
     thetas.at.step <- all.thetas[[i]]
-    plot(t(thetas.at.step), xlim = c(-2, 2), ylim = c(-1, 1), pch = 16, cex = 0.1, ann = F)
+    # plot(t(thetas.at.step), xlim = c(-2, 2), ylim = c(-1, 1), pch = 16, cex = 0.1, ann = F)
+
+
+    filled.contour(theta1.range, theta2.range, t(likelihood.map),
+                   plot.axes = points(t(thetas.at.step), pch = 19, cex = 0.1))
+
     title(main = "Likelihood", xlab = latex2exp("$\\theta_{1}$"), ylab = latex2exp("$\\theta_{2}$"))
-  }, movie.name = "likelihood_update", interval = 0.3)
+  }, movie.name = "/home/student/likelihood_update.gif", interval = 0.3)
 
 

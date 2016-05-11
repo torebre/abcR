@@ -13,7 +13,7 @@ smcMovingAverageExample <- function(use.raw.distance.function = T, create.debug.
     simulated.series <- rep(NA, series.length)
 
     sapply(1:series.length, function(x) {
-      mu.values[x] + my.theta[1] * mu.values[x + 1] + my.theta[2] * mu.values[x + 2]
+      mu.values[x] - my.theta[1] * mu.values[x + 1] - my.theta[2] * mu.values[x + 2]
     })
   }
 
