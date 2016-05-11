@@ -17,7 +17,6 @@ smcMovingAverageExample <- function(use.raw.distance.function = T, create.debug.
     })
   }
 
-
   ComputeAutoCovariance <- function(my.sample, lag.length) {
     sum(sapply((lag.length + 1):length(my.sample), function(x) {
       my.sample[x] * my.sample[x - lag.length]
@@ -28,6 +27,9 @@ smcMovingAverageExample <- function(use.raw.distance.function = T, create.debug.
   observed.seies.cov1 <- ComputeAutoCovariance(observed.series, 1)
   observed.seies.cov2 <- ComputeAutoCovariance(observed.series, 2)
 
+  maExample[["observed.series"]] <- observed.series
+
+  maExample[["GenerateSample"]] <- GenerateSample
 
   maExample[["GenerateRandomPrior"]] <- function(number.of.priors) {
     # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
