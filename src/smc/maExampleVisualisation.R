@@ -62,22 +62,22 @@ ComputeMALikelihood <- function(theta1, theta2, time.series.length) {
 theta1.range <- seq(-2, 2, 0.2)
 theta2.range <- seq(-1, 1, 0.2)
 
-likelihood.map <- matrix(NA, ncol = length(theta1.range), nrow = length(theta2.range))
+likelihood.map <- matrix(NA, nrow = length(theta1.range), ncol = length(theta2.range))
 
 for(i in 1:length(theta1.range)) {
   for(j in 1:length(theta2.range)) {
-   try(likelihood.map[j, i] <- ComputeMALikelihood(theta1.range[length(theta1.range) + 1 - i], theta2.range[length(theta2.range) + 1 - j], time.series.length))
+   # try(likelihood.map[j, i] <- ComputeMALikelihood(theta1.range[length(theta1.range) + 1 - i], theta2.range[length(theta2.range) + 1 - j], time.series.length))
+    try(likelihood.map[i, j] <- ComputeMALikelihood(theta1.range[i], theta2.range[j], time.series.length))
   }
 }
 
 # TODO Fix problems with directions
-filled.contour(theta1.range, theta2.range, t(likelihood.map))
+filled.contour(theta1.range, theta2.range, likelihood.map)
 
 animation::saveGIF(
   for(i in seq(1, run.length, by = 10)) {
     thetas.at.step <- all.thetas[[i]]
     # plot(t(thetas.at.step), xlim = c(-2, 2), ylim = c(-1, 1), pch = 16, cex = 0.1, ann = F)
-
 
     filled.contour(theta1.range, theta2.range, t(likelihood.map),
                    plot.axes = points(t(thetas.at.step), pch = 19, cex = 0.1))

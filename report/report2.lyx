@@ -2043,7 +2043,7 @@ n, and one that is part of the basis for the method which is the main focus
 \end_inset
 
 -dimensional random variable 
-\begin_inset Formula $\boldsymbol{X}$
+\begin_inset Formula $\boldsymbol{X'}$
 \end_inset
 
  coming from a distribution with probability density function 
@@ -2053,48 +2053,19 @@ n, and one that is part of the basis for the method which is the main focus
 , and that we are unable to generate samples from it, say because it is
  computationally intractable to do so.
  Suppose further that we have another density defined on the same probability
- space that we are able to generate samples from, and that this density
- has probability density function 
+ space that we are able to generate samples from, call a random variable
+ from this distribution 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ and its probability density function 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
- and the following holds:
-\begin_inset Formula 
-\begin{equation}
-\exists\mathrm{c}\text{ such that }\mathrm{c}g(\boldsymbol{x})\geq p(\boldsymbol{x}),\forall\boldsymbol{x}\label{eq:importance_sampling}
-\end{equation}
-
-\end_inset
-
-
+.
 \end_layout
 
 \begin_layout Standard
-In words: There must be a constant 
-\begin_inset Formula $\mathrm{c}$
-\end_inset
-
- such that 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- always is greater than 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
-.
- An illustration is provided in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Target-and-proposal"
-
-\end_inset
-
-.
- The blue curve is the probability density function of the distribution
- we can generate samples from, and the red curve form the one we cannot
- generate samples from.
- 
 \begin_inset Float figure
 wide false
 sideways false
@@ -2116,16 +2087,40 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Target and proposal distribution.
- The probability density function 
+Illustration of what could a be a target and proposal distribution.
+ The function 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
- is multiplied by a constant to make it greater than 
+ is the probability density function of the distribution 
+\begin_inset Formula $\mathrm{N}(2.3,0,4)$
+\end_inset
+
+, which is used for proposals.
+ The target density with probability density function 
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
- everywhere.
+ is 
+\begin_inset Formula $\mathrm{Beta}(2,5)$
+\end_inset
+
+ shifted by 
+\begin_inset Formula $-2$
+\end_inset
+
+.
+ To ensure good performance the distributions should be as similar to each
+ other as possible.
+ It is also important that the tails of 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+ should cover the tails of 
+\begin_inset Formula $f(\boldsymbol{x})$
+\end_inset
+
+.
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Target-and-proposal"
@@ -2146,38 +2141,322 @@ name "fig:Target-and-proposal"
 \end_layout
 
 \begin_layout Standard
-We can use this relationship to give the samples we draw from 
-\begin_inset Formula $g(\cdot)$
+We can use the relationship between the two distributions, to give the samples
+ we using 
+\begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
- a weight based on how probable this sample is under 
-\begin_inset Formula $p(\cdot)$
+, a weight based on how probable this sample is under 
+\begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
 , and then use these samples and weights to generate samples that approximate
  the distribution of 
-\begin_inset Formula $\boldsymbol{X}$
+\begin_inset Formula $\boldsymbol{X}'$
 \end_inset
 
 .
- Since we are drawing samples from 
-\begin_inset Formula $g(\cdot)$
+ Since we are drawing samples 
+\begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
- we call it the proposal distribution.
+ we call its corresponding distribution the proposal distribution.
  
 \end_layout
 
 \begin_layout Standard
 To see how this relationship lets us approximate the distribution of 
-\begin_inset Formula $\boldsymbol{X}$
+\begin_inset Formula $\boldsymbol{X}'$
 \end_inset
 
-, we start by defining the quantity known as the standardized importance
- weight as:
+, we start by defining a quantity known as the weight for a sample:
+\begin_inset Formula 
+\begin{equation}
+w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})}{g(\boldsymbol{x}_{i})}\label{eq:unnormalised_weights}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We also define 
+\begin_inset Formula $\boldsymbol{x}_{1},...,\boldsymbol{x}_{n}$
+\end_inset
+
+ to be draws from the distribution of 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+.
+ Now consider the following algorithm:
+\end_layout
+
+\begin_layout Enumerate
+Sample 
+\begin_inset Formula $\boldsymbol{x}_{1},...,\boldsymbol{x}_{n}$
+\end_inset
+
+ using 
+\begin_inset Formula $g(\boldsymbol{x})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Calculate the weights, 
+\begin_inset Formula $w(\boldsymbol{x}_{i})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Resample from the set 
+\begin_inset Formula $\boldsymbol{x}_{1},...,\boldsymbol{x}_{n}$
+\end_inset
+
+ 
+\begin_inset Formula $m$
+\end_inset
+
+ times with probabilities for drawing 
+\begin_inset Formula $\boldsymbol{x}_{i}$
+\end_inset
+
+ being proportional to the weight 
+\begin_inset Formula $w(\boldsymbol{x}_{i})$
+\end_inset
+
+.
+ Denote this resampled set as 
+\begin_inset Formula $\boldsymbol{\tilde{x}}_{1},...,\boldsymbol{\tilde{x}}_{m}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+A vector in the resampled set has a distribution such that 
+\begin_inset Formula $P(\tilde{\boldsymbol{X}}=\boldsymbol{x}_{i})=\frac{w(\boldsymbol{x}_{i})}{\sum_{j=1}^{n}w(\boldsymbol{x}_{j})}$
+\end_inset
+
+.
+ We now claim that when 
+\begin_inset Formula $n\to\infty$
+\end_inset
+
+ the random vector 
+\begin_inset Formula $\tilde{\boldsymbol{X}}$
+\end_inset
+
+ has a distribution density function that is equal to 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+.
+ Following a similar route as found in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "givens2012computational"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+after "pp. 293-295"
+key "ross2013simulation"
+
+\end_inset
+
+, we prove this by first noting that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\tilde{\boldsymbol{X}}\in A|\boldsymbol{X}_{1},...,\boldsymbol{X}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{X}_{i}\in A)w(\boldsymbol{X}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{X}_{i})}\\
+ & =\frac{\frac{1}{n}\sum_{i=1}^{n}I(\boldsymbol{X}_{i}\in A)w(\boldsymbol{X}_{i})}{\frac{1}{n}\sum_{i=1}^{n}w(\boldsymbol{X}_{i})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $A$
+\end_inset
+
+ is a set of vectors, and 
+\begin_inset Formula $I(\cdot)$
+\end_inset
+
+ an indicator function which is 1 if 
+\begin_inset Formula $\boldsymbol{x}\in A$
+\end_inset
+
+, and 0 otherwise.
+ By the strong law of large numbers we get for the nominator:
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{X}_{i}\in A)w(\boldsymbol{X}_{i})=\\
+ & =\mathrm{E}(I(\boldsymbol{X}\in A)w(\boldsymbol{X}))\\
+ & =\mathrm{E}(I(\boldsymbol{X}\in A)w(\boldsymbol{X})|I(\boldsymbol{X}\in A))P(I(\boldsymbol{X}\in A)\\
+ & =\mathrm{E}(w(\boldsymbol{X})|\boldsymbol{X}\in A)P(\boldsymbol{X}\in A)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the denominator we have:
+\begin_inset Formula 
+\begin{align*}
+\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{X}_{i}) & =\mathrm{E}(w(\boldsymbol{X}))\\
+ & =\mathrm{E}(\frac{p(\boldsymbol{X})}{g(\boldsymbol{X})})\\
+ & =\int\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}g(\boldsymbol{x})d\boldsymbol{x}\\
+ & =\int p(\boldsymbol{x})d\boldsymbol{x}\\
+ & =1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting these expressions into the fraction:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{alignat}{1}
+\lim_{n\to\infty}P(\tilde{\boldsymbol{X}}\in A|\boldsymbol{X}_{1},...,\boldsymbol{X}_{n}) & =\mathrm{E}(w(\boldsymbol{X})|\boldsymbol{X}\in A)P(\boldsymbol{X}\in A)\nonumber \\
+ & =\int_{\boldsymbol{x}\in A}\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}g(\boldsymbol{x})d\boldsymbol{x}\nonumber \\
+ & =\int_{\boldsymbol{x}\in A}p(\boldsymbol{x})d\boldsymbol{x}\label{eq:limit_fraction}
+\end{alignat}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using a theorem known as Lebesgue's dominated convergence theorem, we can
+ now write the following:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\tilde{\boldsymbol{X}}\in A) & =\\
+ & \text{by law of double expectation}\\
+\mathrm{E}(P(\tilde{\boldsymbol{X}}\in A)|\boldsymbol{X}_{1},...\boldsymbol{X}_{n}) & =\\
+ & \text{by dominated convergence theorem applied to (\ref{eq:limit_fraction})}\\
+\int_{\boldsymbol{x}\in A}p(\boldsymbol{x})d\boldsymbol{x}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What we have shown here is that the probability 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $P(\tilde{\boldsymbol{X}}\in A$
+\end_inset
+
+), which we approximate through 
+\begin_inset Formula $P(\tilde{\boldsymbol{X}}\in A|\boldsymbol{X}_{1},...,\boldsymbol{X}_{n})$
+\end_inset
+
+ for some fixed 
+\begin_inset Formula $n$
+\end_inset
+
+, is the same as 
+\begin_inset Formula $P(\boldsymbol{X}'\in A)$
+\end_inset
+
+, where 
+\begin_inset Formula $\boldsymbol{X}'$
+\end_inset
+
+ is the random vector with associated probability density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ if we let 
+\begin_inset Formula $n\to\infty$
+\end_inset
+
+.
+ In other words: Drawing samples from the distribution associated with
+\begin_inset Formula $\tilde{\boldsymbol{X}}$
+\end_inset
+
+, is the same as drawing samples from the target distribution when 
+\begin_inset Formula $n\to\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We see that when 
+\begin_inset Formula $n$
+\end_inset
+
+ is large and the ratio 
+\begin_inset Formula $m/n$
+\end_inset
+
+ small, we get a good approximation to the distribution.
+ The algorithm is known as the Sampling Importance Resampling (SIR) algorithm.
+\end_layout
+
+\begin_layout Standard
+In what follows we will encounter distributions where we only know the probabili
+ty density function up to a constant.
+ That is, we know that it has a form 
+\begin_inset Formula $\mathrm{c}f(\boldsymbol{x})$
+\end_inset
+
+, where we know 
+\begin_inset Formula $f(\boldsymbol{x})$
+\end_inset
+
+ but not 
+\begin_inset Formula $\mathrm{c}$
+\end_inset
+
+.
+ We can still use the SIR algorithm to generate samples from a distribution
+ that is proportional to the target distribution, but we then have to use
+ standardised weights:
 \begin_inset Formula 
 \[
-w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{m}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
+w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{n}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
 \]
 
 \end_inset
@@ -2192,271 +2471,23 @@ The reason why we standardise the weights, is that we then do not have to
 \end_inset
 
 , since it will cancel in the nominator and denominator.
- This is necessary if we only know the target, or proposal, distribution
- up to a constant.
- If we knew the constant, we could use the unnormalised weights, and then
- our draws would be from the exact target distribution, and not one that
- is only proportional to it.
+ The proof that the algorithm works in this case as well is similar to what
+ we already have shown.
 \end_layout
 
 \begin_layout Standard
-We also define 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- to be draws from the distribution of 
+A potential problem that is especially prone to appear in the tails of the
+ distributions, is that is if 
 \begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Use better notation
-\end_layout
-
-\end_inset
-
-.
- Now consider the following algorithm:
-\end_layout
-
-\begin_layout Enumerate
-Sample 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- from 
-\begin_inset Formula $g(\boldsymbol{x})$
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Enumerate
-Calculate the weights, 
-\begin_inset Formula $w(\boldsymbol{y}_{i})=\frac{p(\boldsymbol{y}_{i})}{g(\boldsymbol{y}_{i})}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-Resample from the set 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{n}$
-\end_inset
-
- 
-\begin_inset Formula $m$
-\end_inset
-
- times with probabilities for drawing 
-\begin_inset Formula $\boldsymbol{y}_{i}$
-\end_inset
-
- being proportional to the weight 
-\begin_inset Formula $w(\boldsymbol{y}_{i})$
-\end_inset
-
-.
- Denote this resampled set as 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-We now claim that the sample set 
-\begin_inset Formula $\boldsymbol{y}_{1},...,\boldsymbol{y}_{m}$
-\end_inset
-
- converges to the distribution for 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Use better notation
-\end_layout
-
-\end_inset
-
-as 
-\begin_inset Formula $m\to\infty$
-\end_inset
-
-.
- Following a similar route as found in 
-\begin_inset CommandInset citation
-LatexCommand cite
-after "pp. 293-295"
-key "ross2013simulation"
-
-\end_inset
-
- we prove this by first noting that:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\frac{\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}\\
- & =\frac{\frac{1}{n}\sum_{i=1}^{n}I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})}{\frac{1}{n}\sum_{i=1}^{n}w(\boldsymbol{Y}_{i})}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-By the strong law of large numbers we get for the nominator:
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check strong law of large numbers
-\end_layout
-
-\end_inset
-
-
-\begin_inset Formula 
-\begin{align*}
-\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n} & I(\boldsymbol{Y}_{i}\in A)w(\boldsymbol{Y}_{i})=\\
- & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y}))\\
- & =E(I(\boldsymbol{Y}\in A)w(\boldsymbol{Y})|I(\boldsymbol{Y}\in A))P(I(\boldsymbol{Y}\in A)\\
- & =E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-For the denominator we have:
-\begin_inset Formula 
-\begin{align*}
-\lim_{n\to\infty}\sum_{i=1}^{n}\frac{1}{n}w(\boldsymbol{Y}_{i}) & =E(w(\boldsymbol{Y}))\\
- & =E(\frac{p(\boldsymbol{Y})}{g(\boldsymbol{Y})})\\
- & =\int\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
- & =\int p(\boldsymbol{y})d\boldsymbol{y}\\
- & =\mathrm{c}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Where 
-\begin_inset Formula $\mathrm{c}$
-\end_inset
-
- is an unknown constant.
- Inserting these expressions into the fraction:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{alignat*}{1}
-\lim_{n\to\infty}P(\boldsymbol{X}\in A|\boldsymbol{Y}_{1},...,\boldsymbol{Y}_{n}) & =\mathrm{c}^{-1}E(w(\boldsymbol{Y})|\boldsymbol{Y}\in A)P(\boldsymbol{Y}\in A)\\
- & =\mathrm{c}^{-1}\int_{\boldsymbol{y}\in A}\frac{p(\boldsymbol{y})}{g(\boldsymbol{y})}g(\boldsymbol{y})d\boldsymbol{y}\\
- & =\mathrm{c}^{-1}\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
-\end{alignat*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-On the other hand we have by a theorem known as Lebesgue's dominated convergence
- theorem:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-\mathrm{c}P(\boldsymbol{X}\in A) & =\\
- & \text{by law of double expectation}\\
-\mathrm{c}E(P(\boldsymbol{X}\in A)|\boldsymbol{Y}_{1},...\boldsymbol{Y}_{n}) & =\\
- & \text{by dominated convergence theorem}\\
-\int_{\boldsymbol{y}\in A}p(\boldsymbol{y})d\boldsymbol{y}
-\end{align*}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check use of constant and theorem
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The constant 
-\begin_inset Formula $\mathrm{c}$
-\end_inset
-
- does not affect the overall shape of the sampling distribution, and we
- see that when 
-\begin_inset Formula $n$
-\end_inset
-
- is large and the ratio 
-\begin_inset Formula $m/n$
-\end_inset
-
-, we get a good approximation to the distribution.
-\end_layout
-
-\begin_layout Standard
-A potential problem that deserves mention is that it may be difficult to
- ensure that 
-\begin_inset Formula $cg(\boldsymbol{x})$
-\end_inset
-
- is greater than 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
- everywhere, especially in the tails of distributions.
- We get a visual impression of the problem by looking at the tails in Figure
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Target-and-proposal"
-
-\end_inset
-
-.
- If 
-\begin_inset Formula $cg(\boldsymbol{x})$
 \end_inset
 
  is close to 0 at some point, and less than 
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
-, a draw from that point will receive a large weight, and the sampling will
- be skewed away from the true target distribution.
+, a draw from that point will receive a very large weight, causing it to
+ be drawn too often in the resampling step, and thus our approximation to
+ the target distribution will be skewed away from the true target distribution.
  One solution, apart from the one of trying a different proposal distribution,
  is to do the final resampling step without replacement, to ensure excessive
  duplication (see 6.3.1 of 
@@ -2483,11 +2514,15 @@ name "sub:Sequential-Importance-Sampling"
 \begin_layout Standard
 We now expand on the ideas from the previous section and show a method of
  computing the weights recursively that will be become central later.
- We see that an unnormalized weight, 
+ Using unnormalized weights, 
 \begin_inset Formula $w(\boldsymbol{x})=\frac{p(\boldsymbol{x})}{g(\boldsymbol{x})}$
 \end_inset
 
-, can be rewritten as:
+, in the following discussion we see that 
+\begin_inset Formula $w(\boldsymbol{x})$
+\end_inset
+
+ can be rewritten as:
 \end_layout
 
 \begin_layout Standard
@@ -3245,7 +3280,6 @@ reference "eq:ess"
 \frac{n}{1+\mathrm{cv}^{2}(w(\boldsymbol{x}))} & =\frac{n}{1+\frac{\sum_{i=1}^{n}(w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x}))^{2}}{n\bar{w}(\boldsymbol{x})^{2}}}\nonumber \\
  & =\frac{n^{2}}{n+\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})-\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}}\nonumber \\
  & =\frac{n^{2}}{n+\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}-\frac{2}{\bar{w}(\boldsymbol{x})}\sum_{i=1}^{n}w_{i}(\boldsymbol{x})+\sum_{i=1}^{n}\left(\frac{\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}\right)^{2}}\nonumber \\
- & =\frac{n^{2}}{n+n^{2}\sum_{i=1}^{n}\left(\frac{w_{i}(\boldsymbol{x})}{\sum_{j=1}^{n}w_{j}(\boldsymbol{x})}\right)^{2}-2n\frac{\bar{w}(\boldsymbol{x})}{\bar{w}(\boldsymbol{x})}+n}\nonumber \\
  & =\frac{n^{2}}{n+n^{2}\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}-2n+n}\nonumber \\
  & =\frac{n^{2}}{n^{2}\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}}\nonumber \\
  & =\frac{1}{\sum_{i=1}^{n}\underbar{w}_{i}(\boldsymbol{x})^{2}}\label{eq:normalized_ess}
@@ -3313,15 +3347,42 @@ Approximate Bayesian Computation
 \end_layout
 
 \begin_layout Standard
-The likelihood function may be difficult to evaluate, for instance it may
- be computationally intractable to do so, or the function does not have
- an analytic form.
- In such settings what are termed likelihood-free methods can be employed
+Having described some problems that can arise in evaluating the posterior,
+ or in general any probability distribution, and two methods for obtaining
+ samples from it.
+ We now introduce another potential problem: The likelihood function may
+ be difficult to evaluate, for instance it may be computationally intractable
+ to do so, or the function does not have an analytic form.
+ 
+\end_layout
+
+\begin_layout Standard
+In such settings what are termed likelihood-free or ABC methods can be employed
  to draw inferences.
  The name refers to the fact that the methods do not explicitly evaluate
  the likelihood function, but instead approximate it using simulations.
- A requirement is then that we must at least be able to generate samples
- from the likelihood.
+ In the previous methods we described there is a requirement that given
+ a sample, we can evaluate its probability, and for the posterior this means
+ being able to evaluate the likelihood, and the prior.
+ The likelihood gets most of the attention here, since we have more freedom
+ when it comes to selecting a prior.
+ We could for instance use a non-informative prior if we had no good guesses
+ what it should look like, while the likelihood is tied to the actual observed
+ data.
+\end_layout
+
+\begin_layout Standard
+Likelihood-free methods are especially popular in fields like population
+ geneitcs, epidemology, biology and ecology, where it is often the case
+ that the model one wants to estimate parameters for is in the form of sone
+ stochastic process.
+ This means that given a set of parameters it is possible to run the model
+ and get a realisation, but it is not clear how to go backwards from a realisati
+on of the process to find the most probable parameter values.
+\end_layout
+
+\begin_layout Subsection
+The core idea
 \end_layout
 
 \begin_layout Standard
@@ -4059,7 +4120,7 @@ reference "alg:Markov-Chain-Monte-in-ABC"
 
 \end_inset
 
- a method described in 
+ an early method described in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Marjoram23122003"
@@ -4226,7 +4287,7 @@ theta}_ {new})$
 
 
 \backslash
-If{$Distance(
+If{$d(
 \backslash
 boldsymbol{x}, 
 \backslash
@@ -4384,17 +4445,16 @@ reference "alg:Likelihood-free-sampling"
 \end_inset
 
 ).
- 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write more about target
-\end_layout
-
+ The stationary distribution of the Markov chain is 
+\begin_inset Formula $p(\boldsymbol{\theta}|d(\boldsymbol{x},\boldsymbol{y})<\epsilon)$
 \end_inset
 
+, which we do not prove here, and this should be close to the posterior
+ 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
 
+ based on the points in the discussion earlier.
 \end_layout
 
 \begin_layout Standard
@@ -6277,6 +6337,10 @@ name "alg:SMC-in-ABC"
 
 \end_layout
 
+\begin_layout Standard
+Most of the running time will be spent on generating samples.
+\end_layout
+
 \begin_layout Subsubsection
 Resampling schedule
 \end_layout
@@ -6457,11 +6521,11 @@ in R, and illustrate it on two simple examples.
 \end_layout
 
 \begin_layout Subsection
-Toy example
+Estimating expected value in simple mixture model
 \end_layout
 
 \begin_layout Standard
-This example is used in 
+This example is used in both 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "adaptive_smc_for_abc"
@@ -6614,7 +6678,7 @@ Histogram showing sample distribution of
 \end_layout
 
 \begin_layout Subsection
-Estimating coefficients of MA(2) process
+Estimating the coefficients of an MA(2) process
 \end_layout
 
 \begin_layout Standard
@@ -6629,9 +6693,9 @@ key "approx_bayes_comp"
  The problem is to estimate the parameters of an MA(2) stochastic process,
  which is defined as:
 \begin_inset Formula 
-\[
-z_{t}=a_{t}-\theta_{1}a_{t-1}-\theta_{2}a_{t-2}
-\]
+\begin{equation}
+z_{t}=a_{t}-\theta_{1}a_{t-1}-\theta_{2}a_{t-2}\label{eq:ma_2_model}
+\end{equation}
 
 \end_inset
 
@@ -6682,12 +6746,28 @@ white noise.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Write more
+Like the previous example this is also for illustation purposes, and estimates
+ for the parameters can be provided without using ABC methods.
+ Given a time series a standard method to determine a suitable model is
+ to look at what is called the autocorrelation function computed for the
+ realisation.
+ Based on the shape of it a general model is choosen, and after the type
+ is chosen, the relation between the autocorrelation function and the model
+ parameters can be used to provide estimates for the latter.
 \end_layout
+
+\begin_layout Standard
+In fact for the MA(q) model we have a closed expression for the likelihood
+ which we can evaluate.
+ The likelihood of a process of order 
+\begin_inset Formula $q$
+\end_inset
+
+ is: 
+\begin_inset Formula 
+\[
+L(\boldsymbol{\theta},\sigma_{a}^{2}|\boldsymbol{z})=(\sigma_{a}^{2})^{-\frac{n}{2}}\left|\boldsymbol{\mathrm{D}}\right|^{-\frac{1}{2}}\exp\left(-\frac{1}{2\sigma_{a}^{2}}\sum_{t=1-q}^{n}\hat{a}_{t}^{2}\right)
+\]
 
 \end_inset
 
@@ -6695,22 +6775,170 @@ Write more
 \end_layout
 
 \begin_layout Standard
-The derivation of the likelihood is found in 
+The derivation can be found in 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Model_estimation"
 
 \end_inset
 
-.
+, and we only describe the terms here.
+ The matrix 
+\begin_inset Formula $\mathrm{\boldsymbol{D}}=\mathrm{\boldsymbol{I}}_{q}+\mathrm{\boldsymbol{F}}^{T}(\mathrm{\boldsymbol{L}}^{T})^{-1}\mathrm{\boldsymbol{L}}^{-1}\mathrm{\boldsymbol{F}}$
+\end_inset
+
+, where 
+\begin_inset Formula $\mathrm{\boldsymbol{I}}_{q}$
+\end_inset
+
+ is the identity matrix of size 
+\begin_inset Formula $q$
+\end_inset
+
+, 
+\begin_inset Formula $\mathrm{\boldsymbol{L}}$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ lower triangular matrix with ones on the main diagonal, 
+\begin_inset Formula $-\theta_{1}$
+\end_inset
+
+ on the first subdiagonal, 
+\begin_inset Formula $-\theta_{2}$
+\end_inset
+
+ on the second subdiagonal and so on.
+ The matrix 
+\begin_inset Formula $\mathrm{\boldsymbol{F}}=\left[\mathrm{\boldsymbol{B}}_{q}^{T},\boldsymbol{0}^{T}\right]^{T}$
+\end_inset
+
+ where:
 \begin_inset Formula 
 \[
-L(\boldsymbol{\theta},\sigma_{a}^{2}|\boldsymbol{w})=(\sigma_{a}^{2})^{-\frac{n}{2}}\left|\boldsymbol{\mathrm{D}}\right|^{-\frac{1}{2}}\exp\left(-\frac{1}{2\sigma_{a}^{2}}\sum_{t=1-q}^{n}\hat{a}_{t}^{2}\right)
+\mathrm{\boldsymbol{B}}_{q}=-\left[\begin{array}{cccc}
+\theta_{q} & \theta_{q-1} & \dots & \theta_{1}\\
+0 & \theta_{q} & \dots & \theta_{2}\\
+\vdots & \vdots &  & \vdots\\
+0 & 0 & \dots & \theta_{q}
+\end{array}\right]
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+And 
+\begin_inset Formula $\boldsymbol{0}$
+\end_inset
+
+ an 
+\begin_inset Formula $(n-2)\times q$
+\end_inset
+
+ matrix filled with zeros, thus 
+\begin_inset Formula $\mathrm{\boldsymbol{F}}$
+\end_inset
+
+ is an 
+\begin_inset Formula $n\times q$
+\end_inset
+
+ matrix.
+ The actual time series values is 
+\begin_inset Formula $\boldsymbol{z}$
+\end_inset
+
+, our observation, and 
+\begin_inset Formula $\hat{a}_{t}=z_{t}+\theta_{1}\hat{a}_{t-1}+\theta_{2}\hat{a}_{t-2}$
+\end_inset
+
+, the realisations of the 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+.
+ Note that because an element in the time series is directly dependent on
+ the two previous steps, because of the 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ma_2_model"
+
+\end_inset
+
+), we need to provide some starter values, 
+\begin_inset Formula $\hat{a}_{-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{a}_{-2}$
+\end_inset
+
+, to be able to compute 
+\begin_inset Formula $\hat{a}_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{a}_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We put some restrictions on the allowed values of 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+ to make the process what is called 
+\shape italic
+invertible
+\shape default
+.
+ This means that the value at time 
+\begin_inset Formula $t$
+\end_inset
+
+ is less impacted by values of 
+\begin_inset Formula $a_{t}$
+\end_inset
+
+ that are further back than it is by recent ones, which makes intuitive
+ sense.
+ We do not give a proof for this, and just state the conditions we put on
+ 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ to make the process invertible:
+\begin_inset Formula 
+\begin{align*}
+\theta_{1}+\theta_{2} & <1\\
+\theta_{2}-\theta_{1} & <1\\
+-1<\theta_{2} & <1
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The conditions are enforced through the prior, which we define to be uniform
+ on the set of allowed values.
 \end_layout
 
 \begin_layout Standard
