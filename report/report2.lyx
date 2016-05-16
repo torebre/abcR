@@ -697,6 +697,95 @@ Going from the third to the fourth line above involves a bit of algebra,
 
  can treated as constants, and thus removed when working with equations
  that only need to be proportional to each other.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/conjugate_distributions.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Illustration of conjugacy using the fact that the beta distribution is the
+ conjugate prior to the binomial distribution.
+ The leftmost figure shows a prior, 
+\begin_inset Formula $p(\theta)$
+\end_inset
+
+, coming from a 
+\begin_inset Formula $\mathrm{Beta}(\alpha,\beta)$
+\end_inset
+
+ distribution with parameters 
+\begin_inset Formula $\alpha=2$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta=4$
+\end_inset
+
+, and a likelihood, 
+\begin_inset Formula $p(x|\theta)$
+\end_inset
+
+, from a 
+\begin_inset Formula $\mathrm{Bin}(n,\theta)$
+\end_inset
+
+ distribution with parameters 
+\begin_inset Formula $n=10$
+\end_inset
+
+ and 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ Note that we treat 
+\begin_inset Formula $p(x|\theta)$
+\end_inset
+
+ as a function of 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
+ An observation is made, 
+\begin_inset Formula $y=3$
+\end_inset
+
+, and inserted into the expression for the likelihood.
+ The middle figure shows the product of the prior and likelihood divided
+ by the normalisation constant (easily found since we have simple expressions
+ for prior, likelihood and posterior).
+ This plot is seen to be identital to the one on the right which shows the
+ probability density function of a 
+\begin_inset Formula $\mathrm{Beta}(\alpha+y,\beta+n-y)$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4529,19 +4618,10 @@ reference "eq:weight_decomposition"
 
 ), we see that the weight update iterations in the SMC method we described
  operate on an increasing probability space: 
-\begin_inset Formula $x_{1},(x_{2}|x_{1}),(x_{3}|x_{1},x_{2}),...$
+\begin_inset Formula $[x_{1}],[x_{1},x_{2}],[x_{1},x_{2},x_{3}],\dots,\boldsymbol{x}$
 \end_inset
 
 .
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Unclear notation
-\end_layout
-
-\end_inset
-
  The SMC sampler developed in 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -5809,19 +5889,6 @@ reference "alg:SMC-in-ABC"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Transition to how this is implemented in the code example
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float algorithm
 wide false
 sideways false
@@ -6338,7 +6405,70 @@ name "alg:SMC-in-ABC"
 \end_layout
 
 \begin_layout Standard
-Most of the running time will be spent on generating samples.
+Most of the running time will typically be spent on generating samples.
+ If this step is slow the usefulness of the algorithm decreases, since it
+ will progress too slowly.
+ See 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Moores2014"
+
+\end_inset
+
+ for an example where this is a problem, and an attempt at a method to speed
+ up the generation of values of the summary statistic that is the target.
+ Also note that the generation of samples can be parallelized.
+\end_layout
+
+\begin_layout Subsubsection
+Tunable behaviour
+\end_layout
+
+\begin_layout Standard
+A number of aspects of Algorithm 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "alg:SMC-in-ABC"
+
+\end_inset
+
+ can be tuned:
+\end_layout
+
+\begin_layout Itemize
+The choice of kernel function that updates the particles.
+\end_layout
+
+\begin_layout Itemize
+In addition to the number of particles, 
+\begin_inset Formula $n$
+\end_inset
+
+, the number of replicates for each particle, 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ It is not obvious how different values affect the performance of the algorithm.
+ Ideally we would like both 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $m$
+\end_inset
+
+ to be large, but in pratice a trade-off has to be made to keep the computation
+ effort tractable.
+\end_layout
+
+\begin_layout Itemize
+The choice of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and the resampling strategy.
+ We describe this in more detail in the next section.
 \end_layout
 
 \begin_layout Subsubsection
@@ -6395,9 +6525,9 @@ Where
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\boldsymbol{w}_{n}=\boldsymbol{w}_{n-1}\frac{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n}}(\boldsymbol{x}_{n-1}^{(i)})}{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n-1}}(\boldsymbol{x}_{n-1}^{(i)})}
-\]
+\begin{equation}
+\boldsymbol{w}_{n}=\boldsymbol{w}_{n-1}\frac{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n}}(\boldsymbol{x}_{n-1}^{(i)})}{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n-1}}(\boldsymbol{x}_{n-1}^{(i)})}\label{eq:weight_update-1}
+\end{equation}
 
 \end_inset
 
@@ -6414,20 +6544,20 @@ Where each particle has
 \begin_inset Formula $\epsilon_{n}$
 \end_inset
 
- it is not continuous, so we cannot solve 
+ (
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:ess_update"
+reference "eq:weight_update-1"
 
 \end_inset
 
- by finding the derivative, and it is not certain that an exact solution
- exists for all 
+) is not continuous, so we cannot find the new weight by finding the derivative,
+ and it is not certain that an exact solution exists for all 
 \begin_inset Formula $\epsilon_{n}$
 \end_inset
 
-.
- So in practice an approximate solution is found using some numerical method.
+ either.
+ In practice an approximate solution is found using some numerical method.
  In our implementation the bisection method is used.
 \end_layout
 
@@ -7038,7 +7168,7 @@ devtools::install_github("torebre/abcProject", build_vignettes = TRUE)
 
 \begin_layout Standard
 If the code is installed with the build_vignettes flag set to true, it is
- possible to see a vignette describing the toy example:
+ possible to see a vignette describing the mixture model example:
 \end_layout
 
 \begin_layout Standard
