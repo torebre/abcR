@@ -10,7 +10,6 @@ smcMovingAverageExample <-
     theta2.actual <- 0.2
     series.length <- 100
 
-
     GenerateSample <- function(my.theta) {
       mu.values <- rnorm(series.length + 2, mean = 0, sd = 1)
       simulated.series <- rep(NA, series.length)
@@ -27,8 +26,8 @@ smcMovingAverageExample <-
     }
 
     observed.series <- GenerateSample(c(theta1.actual, theta2.actual))
-    observed.seies.cov1 <- ComputeAutoCovariance(observed.series, 1)
-    observed.seies.cov2 <- ComputeAutoCovariance(observed.series, 2)
+    observed.series.cov1 <- ComputeAutoCovariance(observed.series, 1)
+    observed.series.cov2 <- ComputeAutoCovariance(observed.series, 2)
 
     maExample[["observed.series"]] <- observed.series
 
@@ -38,8 +37,9 @@ smcMovingAverageExample <-
       # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
       priors <- matrix(NA, nrow = 2, ncol = number.of.priors)
 
-      priors[1, ] <- runif(number.of.priors, min = -2, max = 2)
+
       for (i in 1:number.of.priors) {
+        priors[1, i] <- runif(number.of.priors, min = -2, max = 2)
         while (T) {
           theta2 <- runif(1, min = -1, max = 1)
           if (priors[1, i] + theta2 > -1 &&
@@ -61,8 +61,8 @@ smcMovingAverageExample <-
       if (use.raw.distance.function) {
         return(sum((my.sample - observed.series) ^ 2))
       }
-      (ComputeAutoCovariance(my.sample, 1) - observed.seies.cov1) ^ 2 +
-        (ComputeAutoCovariance(my.sample, 2) - observed.seies.cov2) ^ 2
+      (ComputeAutoCovariance(my.sample, 1) - observed.series.cov1) ^ 2 +
+        (ComputeAutoCovariance(my.sample, 2) - observed.series.cov2) ^ 2
     }
 
     maExample[["DistanceFunction"]] <- InternalDistanceFunction
@@ -190,7 +190,6 @@ smcMovingAverageExample <-
       }
 
     maExample[["SampleFunction"]] <- SampleFunctionInternal
-
 
     maExample[["ExtractSamples"]] <-
       function(sample.indices, particles) {
