@@ -37,16 +37,14 @@ smcMovingAverageExample <-
       # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
       priors <- matrix(NA, nrow = 2, ncol = number.of.priors)
 
-
       for (i in 1:number.of.priors) {
-        priors[1, i] <- runif(number.of.priors, min = -2, max = 2)
-        while (T) {
-          theta2 <- runif(1, min = -1, max = 1)
-          if (priors[1, i] + theta2 > -1 &&
-              priors[1, i] - theta2 < 1) {
-            priors[2 , i] <- theta2
-            break
-          }
+        while(T) {
+        priors[1, i] <- runif(1, min = -2, max = 2)
+        priors[2, i] <- runif(1, min = -2, max = 2)
+        if (priors[1, i] + priors[2, i] > -1 &&
+            priors[1, i] - priors[2, i] < 1) {
+          break
+        }
         }
       }
       priors
@@ -119,6 +117,46 @@ smcMovingAverageExample <-
         theta.candidate <-
           c(rnorm(1, mean = theta.old[1, j], sqrt(2 * empirical.variance1)),
             rnorm(1, mean = theta.old[2, j], sqrt(2 * empirical.variance2)))
+
+        # Move inside rectangle if outside
+        if(theta.candidate[1] < -2) {
+          theta.candidate[1] <- theta.candidate[1] + 2
+        }
+        else if(theta.candidate[1] > 2) {
+          theta.candidate[1] <- theta.candidate[1] - 2
+        }
+
+        if(theta.candidate[2] < -1) {
+          theta.candidate[2] <- theta.candidate[2] + 1
+        }
+        else if(theta.candidate[2] > 1) {
+          theta.candidate[2] <- theta.candidate[2] - 1
+        }
+
+        # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
+        if(theta.candidate[1] + theta.candidate[2] < -1) {
+          # Outside valid region on the left side
+          if(theta.candidate[1] < theta.old[1, j]) {
+            theta.candidate[1] <- 2 + 2 * theta.old[2, j] + theta.candidate[1]
+          }
+
+          if(theta.candidate[2] < theta.old[2, j]) {
+            theta.candidate[2] <- 2 + theta.old[2, j] + theta.candidate[2]
+          }
+
+        }
+
+        if(theta.candidate[1] - theta.candidate[2] > 1) {
+          # Outside valid region on right side
+          if(theta.candidate[1] > theta.old[1, j]) {
+            theta.candidate[1] <- theta.candidate[2] - 2 - 2 * theta.old[2, j]
+          }
+
+          if(theta.candidate[2] < theta.old[2, j]) {
+            theta.candidate[2] <- theta.old[1, j] - theta.candidate[2]
+          }
+
+        }
 
         # if(create.debug.variables) {
         #   debug.variables$empirical.variance[[length(debug.variables$avg.acc.rate) + 1]] <-
