@@ -243,13 +243,16 @@ key "adaptive_smc_for_abc"
 \end_layout
 
 \begin_layout Standard
-We start with a quick look at the basics of Bayesian inference, and point
- out that there can often be a problem in evaluating the posterior probability.
+We start with a quick look at the basics of Bayesian inference in section
+ 2, and point out that there can often be a problem in evaluating the posterior
+ probability.
  From here we look at some strategies for approximating the posterior, before
  we move on to the situation where we cannot evaluate the likelihood function,
  and it is here ABC becomes an alternative.
- We then describe ABC in general, before looking at the mentioned SMC in
- ABC approach for obtaining samples.
+ We then describe ABC in general in section 3, before looking at an SMC
+ in ABC approach in section 4.
+ We end in section 5 by showing the algorithm implemented in two simple
+ example scenarios.
 \end_layout
 
 \begin_layout Section
@@ -373,16 +376,6 @@ There are two approaches to viewing
 \end_inset
 
 ?
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Insert figure
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -1381,18 +1374,15 @@ This is what we will expand on.
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
 
+, with probability mass/density function 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
 , we will define transition probabilities so that we can generate a sequence
- of samples that come from 
-\begin_inset Formula $\boldsymbol{\pi}_{t}$
-\end_inset
-
-, without actually doing any sampling from the distribution.
- Note that we will need to be able to evaluate the probability of a sample,
- 
-\begin_inset Formula $p_{\boldsymbol{\pi}}(\boldsymbol{x})$
-\end_inset
-
-, though.
+ of samples that come from it, without actually doing any sampling from
+ the distribution.
+ Note that we will need to be able to evaluate the probability of a sample
+ though.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1531,7 +1521,7 @@ So if we can find a
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
 
- without actually having to draw samples from the distribution.
+ without actually having to draw samples directly from the distribution.
  We start with a realisation from 
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
@@ -2544,9 +2534,9 @@ ty density function up to a constant.
  that is proportional to the target distribution, but we then have to use
  standardised weights:
 \begin_inset Formula 
-\[
-w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{n}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}
-\]
+\begin{equation}
+w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{n}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}\label{eq:standardised_weights}
+\end{equation}
 
 \end_inset
 
@@ -3029,7 +3019,7 @@ worth.
 \end_inset
 
  This concept can also be used in MCMC settings, not just SMC.
- There are several measures for the ESS, and we look at widely used definition
+ There are several measures for the ESS, and we look at a widely used definition
  from 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -3302,14 +3292,10 @@ The justification of the above assumes that the weights,
 \end_inset
 
 , refer to the unnormalised weights.
- This is a problem if we do not know the constant 
-\begin_inset Formula $\mathrm{c}$
-\end_inset
-
- in (
+ This is a problem if we use standardised weights as in (
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:importance_sampling"
+reference "eq:standardised_weights"
 
 \end_inset
 
@@ -3384,7 +3370,7 @@ Where
 \begin_inset Formula $\underbar{w}_{i}(\boldsymbol{x})$
 \end_inset
 
- denotes the normalized weight for particle 
+ denotes the standardised weight for particle 
 \begin_inset Formula $i$
 \end_inset
 
@@ -4617,7 +4603,7 @@ reference "eq:weight_decomposition"
 \end_inset
 
 ), we see that the weight update iterations in the SMC method we described
- operate on an increasing probability space: 
+ operate on an increasing probability space, for example: 
 \begin_inset Formula $[x_{1}],[x_{1},x_{2}],[x_{1},x_{2},x_{3}],\dots,\boldsymbol{x}$
 \end_inset
 
@@ -4858,7 +4844,7 @@ reference "sub:Sequential-Importance-Sampling"
 , and is defined as follows:
 \begin_inset Formula 
 \[
-\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=1}^{i-1}L_{i}(x_{t+1},x_{t})
+\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=1}^{i-1}L_{i}(\boldsymbol{x}_{t+1},\boldsymbol{x}_{t})
 \]
 
 \end_inset
@@ -4868,33 +4854,33 @@ reference "sub:Sequential-Importance-Sampling"
 
 \begin_layout Standard
 Where 
-\begin_inset Formula $L(x_{i+1},x_{i})$
+\begin_inset Formula $L(\boldsymbol{x}_{i+1},\boldsymbol{x}_{i})$
 \end_inset
 
  is a kernel that gives the probability going from 
-\begin_inset Formula $x_{i+1}$
+\begin_inset Formula $\boldsymbol{x}_{i+1}$
 \end_inset
 
  to 
-\begin_inset Formula $x_{i}$
+\begin_inset Formula $\boldsymbol{x}_{i}$
 \end_inset
 
 .
  We will return to what this kernel can look like later.
  For the proposal distribution we set up a similar sequence of kernels,
  but here with increasing indices: From 
-\begin_inset Formula $x_{i-1}$
+\begin_inset Formula $\boldsymbol{x}_{i-1}$
 \end_inset
 
  to 
-\begin_inset Formula $x_{i}$
+\begin_inset Formula $\boldsymbol{x}_{i}$
 \end_inset
 
 :
 \begin_inset Formula 
 \begin{align*}
-g_{i}(x_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},x_{i})\\
- & =\hat{p}_{i-2}(\boldsymbol{x}_{i-2})K_{i-2}(\boldsymbol{x}_{i-2},\boldsymbol{x}_{i-1})K_{i-1}(\boldsymbol{x}_{i-1},x_{i})\\
+g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})\\
+ & =\hat{p}_{i-2}(\boldsymbol{x}_{i-2})K_{i-2}(\boldsymbol{x}_{i-2},\boldsymbol{x}_{i-1})K_{i-1}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})\\
  & =\hat{p}_{1}(\boldsymbol{x}_{1})\prod_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})
 \end{align*}
 
@@ -4910,7 +4896,7 @@ Note that these approximations and proposals are not defined in terms of
 \end_inset
 
 , but conditional ones, 
-\begin_inset Formula $g_{i}(x_{i}|\boldsymbol{x}_{i-1})$
+\begin_inset Formula $g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})$
 \end_inset
 
 .
@@ -4923,7 +4909,7 @@ Looking at the weight update we get:
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align}
-u_{i}(x_{i}) & =\frac{\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})}{g_{i}(x_{i}|\boldsymbol{x}_{i-1})}\nonumber \\
+u_{i}(\boldsymbol{x}_{i}) & =\frac{\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})}{g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})}\nonumber \\
  & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(\boldsymbol{x}_{t+1},\boldsymbol{x}_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
  & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
  & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\label{eq:weight_update}
@@ -4960,9 +4946,9 @@ To anchor the recursion at the start we assume that we are able to sample
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-w_{2}(x_{2}) & =w_{1}(x_{1})u_{2}(x_{1})\\
- & =\frac{p_{1}(x_{1})}{p_{1}(x_{1})}\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}\\
- & =\frac{p_{2}(x_{2})L(x_{2},x_{1})}{p_{1}(x_{1})K(x_{1},x_{2})}
+w_{2}(\boldsymbol{x}_{2}) & =w_{1}(\boldsymbol{x}_{1})u_{2}(\boldsymbol{x}_{1})\\
+ & =\frac{p_{1}(\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})}\frac{p_{2}(\boldsymbol{x}_{2})L(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})K(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}\\
+ & =\frac{p_{2}(\boldsymbol{x}_{2})L(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})K(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}
 \end{align*}
 
 \end_inset
@@ -4978,7 +4964,7 @@ In general the weight at
  is:
 \begin_inset Formula 
 \[
-w_{i}(x_{i})=\frac{p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
+w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
 \]
 
 \end_inset
@@ -4989,18 +4975,18 @@ w_{i}(x_{i})=\frac{p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}{p_{1}(x_{1})\P
 \begin_layout Standard
 At every step we have a weighted sample from the approximation to the target
  distribution 
-\begin_inset Formula $\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})=p_{i}(x_{i})\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})$
+\begin_inset Formula $\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})$
 \end_inset
 
 .
  However, our goal is to have a weighted sample from 
-\begin_inset Formula $p_{i}(x_{i})$
+\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
 \end_inset
 
 , but viewing the expression for the weight on the equivalent form:
 \begin_inset Formula 
 \[
-w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(x_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},\boldsymbol{x}_{t-1})}}
+w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})}{\frac{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}}
 \]
 
 \end_inset
@@ -5010,11 +4996,11 @@ w_{i}(x_{i})=\frac{p_{i}(x_{i})}{\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(x_{t},\bolds
 
 \begin_layout Standard
 We recognize 
-\begin_inset Formula $p_{i}(x_{i})$
+\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
 \end_inset
 
  as the desired target distribution, and 
-\begin_inset Formula $\frac{p_{1}(x_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(x_{t},x_{t-1})}$
+\begin_inset Formula $\frac{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}$
 \end_inset
 
  as a proposal distribution.
@@ -5027,7 +5013,7 @@ We recognize
  the target distribution as a marginal:
 \begin_inset Formula 
 \[
-\int\hat{p}_{i}(x_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(x_{i})
+\int\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(\boldsymbol{x}_{i})
 \]
 
 \end_inset
@@ -5154,7 +5140,7 @@ A property of conditional expectations is:
 \end_inset
 
  is a function from 
-\begin_inset Formula $\mathbb{R}\to\mathbb{R}$
+\begin_inset Formula $\mathbb{R}^{n}\to\mathbb{R}^{n}$
 \end_inset
 
 .
@@ -7064,9 +7050,9 @@ invertible
 :
 \begin_inset Formula 
 \begin{align*}
-\theta_{1}+\theta_{2} & <1\\
-\theta_{2}-\theta_{1} & <1\\
--1<\theta_{2} & <1
+\theta_{1}+\theta_{2} & >-1\\
+\theta_{1}-\theta_{2} & <1\\
+-2<\theta_{1} & <2
 \end{align*}
 
 \end_inset
@@ -7102,21 +7088,34 @@ key "approx_bayes_comp"
 .
 \end_layout
 
-\begin_layout Subsubsection
-Using the raw distance as a statistic
-\end_layout
-
 \begin_layout Standard
-Given a generated time-series the distance to the observered series is computed
- as follows:
-\begin_inset Formula 
-\[
-d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
-\]
-
+Also in both cases the kernel update proceeds in a manner similar to the
+ previous example.
+ A random walk is done for 
+\begin_inset Formula $\theta_{1}$
 \end_inset
 
+ and 
+\begin_inset Formula $\theta_{2}$
+\end_inset
 
+ candidates, defined by a normal distribution 
+\begin_inset Formula $\mathrm{N}(0,\hat{\sigma}_{\theta}\text{²})$
+\end_inset
+
+, where 
+\begin_inset Formula $\hat{\sigma}_{\theta}^{2}$
+\end_inset
+
+ is twice the empirical variance of 
+\begin_inset Formula $\theta_{1}$
+\end_inset
+
+ or 
+\begin_inset Formula $\theta_{2}$
+\end_inset
+
+ for the current particles.
 \end_layout
 
 \begin_layout Subsubsection
@@ -7138,6 +7137,96 @@ d=\frac{1}{n}\left(\sum_{i=2}^{n}\left(x_{i}x_{i-1}\right)-\sum_{i=2}^{n}\left(y
 \begin_layout Standard
 Which is a measure of distance between the autocovariances of length 1 and
  2 between the generated and observed time series.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_aut_09.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The top figure shows the particles at the end of the run superimposed on
+ the likelihood plot.
+ The plot on the lower left shows the likelihood plot, and on the lower
+ right a heatmap showing the particle density is shown.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_aut_09_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Trace plot of 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+ and ESS.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Using the raw distance as a statistic
+\end_layout
+
+\begin_layout Standard
+Given a generated time-series the distance to the observered series is computed
+ as follows:
+\begin_inset Formula 
+\[
+d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

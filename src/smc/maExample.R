@@ -120,43 +120,53 @@ smcMovingAverageExample <-
 
         # Move inside rectangle if outside
         if(theta.candidate[1] < -2) {
-          theta.candidate[1] <- theta.candidate[1] + 2
+          theta.candidate[1] <- theta.candidate[1] + 4
         }
         else if(theta.candidate[1] > 2) {
-          theta.candidate[1] <- theta.candidate[1] - 2
+          theta.candidate[1] <- theta.candidate[1] - 4
         }
 
         if(theta.candidate[2] < -1) {
-          theta.candidate[2] <- theta.candidate[2] + 1
+          theta.candidate[2] <- theta.candidate[2] + 2
         }
         else if(theta.candidate[2] > 1) {
-          theta.candidate[2] <- theta.candidate[2] - 1
+          theta.candidate[2] <- theta.candidate[2] - 2
         }
 
-        # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
         if(theta.candidate[1] + theta.candidate[2] < -1) {
-          # Outside valid region on the left side
-          if(theta.candidate[1] < theta.old[1, j]) {
-            theta.candidate[1] <- 2 + 2 * theta.old[2, j] + theta.candidate[1]
-          }
-
-          if(theta.candidate[2] < theta.old[2, j]) {
-            theta.candidate[2] <- 2 + theta.old[2, j] + theta.candidate[2]
-          }
+            # Outside valid region on the left side
+          theta.candidate[2] <- -theta.candidate[2]
+          theta.candidate[1] <- theta.candidate[1] + 2
 
         }
-
-        if(theta.candidate[1] - theta.candidate[2] > 1) {
+        else if(theta.candidate[1] - theta.candidate[2] > 1) {
           # Outside valid region on right side
-          if(theta.candidate[1] > theta.old[1, j]) {
-            theta.candidate[1] <- theta.candidate[2] - 2 - 2 * theta.old[2, j]
-          }
-
-          if(theta.candidate[2] < theta.old[2, j]) {
-            theta.candidate[2] <- theta.old[1, j] - theta.candidate[2]
-          }
-
+          theta.candidate[2] <- -theta.candidate[2]
+          theta.candidate[1] <- theta.candidate[1] - 2
         }
+
+        # # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
+        # if(theta.candidate[1] + theta.candidate[2] < -1) {
+        #   # Outside valid region on the left side
+        #   if(theta.candidate[1] < theta.old[1, j]) {
+        #     theta.candidate[1] <- 2 + 2 * theta.old[2, j] + theta.candidate[1]
+        #   }
+        #   if(theta.candidate[2] < theta.old[2, j]) {
+        #     theta.candidate[2] <- 2 + theta.old[1, j] + theta.candidate[2]
+        #   }
+        #
+        # }
+        # else if(theta.candidate[1] - theta.candidate[2] > 1) {
+        #   # Outside valid region on right side
+        #   if(theta.candidate[1] > theta.old[1, j]) {
+        #     theta.candidate[1] <- theta.candidate[2] - 2 - 2 * theta.old[2, j]
+        #   }
+        #
+        #   if(theta.candidate[2] < theta.old[2, j]) {
+        #     theta.candidate[2] <- theta.old[1, j] - theta.candidate[2]
+        #   }
+        #
+        # }
 
         # if(create.debug.variables) {
         #   debug.variables$empirical.variance[[length(debug.variables$avg.acc.rate) + 1]] <-
