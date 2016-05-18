@@ -6727,19 +6727,6 @@ A single observation,
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-What to focus on here? How much should be done?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -6789,7 +6776,14 @@ Histogram showing sample distribution of
 \end_inset
 
  was the stopping criterion.
-\end_layout
+ There were no particle replicates (
+\begin_inset Formula $m=1$
+\end_inset
+
+).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:different_number_of_particles"
 
 \end_inset
 
@@ -6799,6 +6793,131 @@ Histogram showing sample distribution of
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:different_number_of_particles"
+
+\end_inset
+
+ the effect of increasing the number of particles is seen.
+ As is expected the approximation gets better as more particles are used.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/configuration1_replicates .png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/configuration2_replicates .png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/configuration3_replicates .png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Effect of varying 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ In this setup 10 000 particles were used, 
+\begin_inset Formula $\alpha=0.95$
+\end_inset
+
+ and the stopping criterion is 
+\begin_inset Formula $\epsilon=0.01$
+\end_inset
+
+.
+ In the top figure there were no replicates, the middle one 5 replicates
+ and in the bottom one 20.
+ In this simple example we do not see a large effect of varying 
+\begin_inset Formula $m$
+\end_inset
+
+.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:varying_m"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this simple example 
+\begin_inset Formula $m$
+\end_inset
+
+ does not play a large role.
+ Increasing 
+\begin_inset Formula $m$
+\end_inset
+
+ will give more weight to particles that are in regions with a lot of support.
+ In this case that means particles near the true expected value.
+\end_layout
+
+\begin_layout Standard
+Increasing 
+\begin_inset Formula $m$
+\end_inset
+
+ also makes the algorithm use fewer iterations to reach its stopping criterion.
+ It does not necessarily run faster though, since more samples need to be
+ generated at each step.
 \end_layout
 
 \begin_layout Subsection
@@ -7157,7 +7276,17 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The top figure shows the particles at the end of the run superimposed on
+In this run 1000 particles were used, there were no particle replicates,
+ 
+\begin_inset Formula $\alpha=0.9$
+\end_inset
+
+ and the stopping criterion is 
+\begin_inset Formula $\epsilon=0.01$
+\end_inset
+
+.
+ The top figure shows the particles at the end of the run superimposed on
  the likelihood plot.
  The plot on the lower left shows the likelihood plot, and on the lower
  right a heatmap showing the particle density is shown.
@@ -7196,6 +7325,195 @@ Trace plot of
 \end_inset
 
  and ESS.
+ They look quite like what we saw in the toy example, which is a good sign:
+ The algorithm is making steady progress until the stopping criterion is
+ reached.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As is seen in the figures, the results are quite good in this case, which
+ points to the autocovariance being a good statistic when trying to estimate
+ 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ from an MA(2) model.
+\end_layout
+
+\begin_layout Subsubsection
+Using the raw distance as a statistic
+\end_layout
+
+\begin_layout Standard
+Given a generated time-series the distance to the observered series is computed
+ as follows:
+\begin_inset Formula 
+\[
+d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_09.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Same setup as in the case where autovariances are used in the distance measure.
+ The final density plot looks suspicious.
+ It is not clear from lookin at the top plot, where each particles is represente
+d by a dot, but there is a very large concentration of particles within
+ a small area.
+ The density plot uses the same kernel and number of levels as in the the
+ other examples, and with those settings only the peak is visible.
+ In other words the variance is very small.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_09_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The algorithm here rapidly runs into problems moving the particles.
+ After iteration 200 there is no improvement until the max number of iterations
+ is reached (which is set to 1000 in this case).
+ Note the scale of 
+\begin_inset Formula $\epsilon_{n}$
+\end_inset
+
+.
+ It is difficult with this statistic to get 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ close to 0.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_99.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The setup is here the same as in the previous example, except that 
+\begin_inset Formula $\alpha=0.99$
+\end_inset
+
+.
+ This has the effect of giving the particles more opportunity to explore
+ the parameter space in regions that at first sight do not look promising.
+ We see this reflected in the density plot of the final set of particles,
+ it is much more spread out than in the previous example.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_099_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ and ESS trace plots look more like what was observed in the first example.
+ At about iteration 700 the algorithm runs into problems making progress.
+ None of the new particle candidates move into higher probability regions.
+ 
 \end_layout
 
 \end_inset
@@ -7212,17 +7530,16 @@ Trace plot of
 
 \end_layout
 
-\begin_layout Subsubsection
-Using the raw distance as a statistic
-\end_layout
-
 \begin_layout Standard
-Given a generated time-series the distance to the observered series is computed
- as follows:
-\begin_inset Formula 
-\[
-d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
-\]
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+FloatBarrier
+\end_layout
 
 \end_inset
 

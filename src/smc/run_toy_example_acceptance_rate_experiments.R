@@ -1,3 +1,18 @@
+toy.example.configuration <-
+  smcToyExample(create.debug.variables = T)
+
+toy.example.result <-
+  Smc(
+    toy.example.configuration,
+    max.iterations = 1000,
+    alpha = 0.95,
+    number.of.particles = 10000,
+    number.of.replicates = 1,
+    stop.epsilon = 0.01,
+    verbose = T
+  )
+
+
 toy.example.configuration.2 <-
   smcToyExample(create.debug.variables = T)
 
@@ -7,7 +22,7 @@ toy.example.results.2 <-
     max.iterations = 1000,
     alpha = 0.95,
     number.of.particles = 10000,
-    number.of.replicates = 1,
+    number.of.replicates = 5,
     stop.epsilon = 0.01,
     verbose = T
   )
@@ -17,10 +32,10 @@ toy.example.configuration.3 <-
 toy.example.results.3 <-
   Smc(
     toy.example.configuration.3,
-    max.iterations = 100000,
+    max.iterations = 1000,
     alpha = 0.95,
     number.of.particles = 10000,
-    number.of.replicates = 5,
+    number.of.replicates = 20,
     stop.epsilon = 0.01,
     verbose = T
   )
@@ -30,8 +45,7 @@ CreatePlotForReplicateExperiment <-
   function(plot.prefix,
            example.configuration,
            example.results) {
-    debug.variables.environment <-
-      example.configuration[["GetDebugVariables"]]()
+    debug.variables.environment <-example.configuration[["GetDebugVariables"]]()
 
     state.to.visualise <-
       length(example.results[["effective.sample.sizes"]])
@@ -52,10 +66,12 @@ CreatePlotForReplicateExperiment <-
 
     avg.acc.rate <- unlist(debug.variables.environment$avg.acc.rate)
 
-    png(paste(plot.prefix, ".png")) #, width = 480, height = 480 * 3/2)
-    par(mfrow = c(2, 2))
-    plot(avg.acc.rate, type = "l")
+    png(paste(plot.prefix, ".png"), width = 920, height = 240)
+    par(mfrow = c(1, 4))
     PlotHistogram(thetas, use.thetas)
+    plot(avg.acc.rate, type = "l", ann = F)
+    title(xlab = "n", ylab = "Average acc. rate")
+
     PlotEpsilonTrace(example.results, state.to.visualise, use.run.length = run.length)
     PlotEssTrace(example.results, state.to.visualise, use.run.length = run.length)
     dev.off()
@@ -65,5 +81,9 @@ CreatePlotForReplicateExperiment <-
 
   }
 
-CreatePlotForReplicateExperiment("configuration3_5_replicates", toy.example.configuration.3, toy.example.results.3)
+CreatePlotForReplicateExperiment("configuration1_replicates", toy.example.configuration, toy.example.result)
+CreatePlotForReplicateExperiment("configuration2_replicates", toy.example.configuration.2, toy.example.results.2)
+CreatePlotForReplicateExperiment("configuration3_replicates", toy.example.configuration.3, toy.example.results.3)
+
+# CreatePlotForReplicateExperiment("configuration3_5_replicates", toy.example.configuration.3, toy.example.results.3)
 
