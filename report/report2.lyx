@@ -3955,10 +3955,10 @@ But in practice the norm is that the statistics are chosen by a domain expert,
  of genes in a population for instance, and it is not possible to derive
  sound theoretical properties for convergence.
  We give a couple of practical examples below.
- In both cases the model is specified as a stochastic where it is not possible
- to find theoretical expressions for the parameters one wishes to estimate,
- and they are not directly observable from the process output either, so
- ABC-methods are utilized.
+ In both cases the model is specified as a stochastic process where it is
+ not possible to find theoretical expressions for the parameters one wishes
+ to estimate, and they are not directly observable from the process output
+ either, so ABC-methods are utilized.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5688,7 +5688,7 @@ The MH-ratio term is:
 \end_layout
 
 \begin_layout Standard
-We now the invariant density, 
+We know the invariant density, 
 \begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
 \end_inset
 
@@ -5801,12 +5801,12 @@ reference "eq:proportional_distributions"
 
 \end_inset
 
-, by replacing the MH-ratio with an equivalent one:
+, by replacing the MH-ratio with a proportional one:
 \begin_inset Formula 
 \begin{multline}
-\min\left(\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
+\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)\propto\\
 \text{insert expression from \ref{eq:proportional_distributions}}\\
-\min\left(\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
+\min\left(1,\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
 \min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)\label{eq:mh_ratio_without_likelihood}
 \end{multline}
 
