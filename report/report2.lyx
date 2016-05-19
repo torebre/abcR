@@ -7521,7 +7521,69 @@ The
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_09_5rep.png
+	scale 80
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Here 5 replicates are used.
+ More particles manage to stay alive, giving a more diffuse distribution.
+ Note that the algorithm was aborted after 100 iterations since it stopped
+ making progress.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/ma_raw_dist_09_5rep_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The algorithm quickly reaches a state were it is not able to make progress.
+ Note that it reaches this state more quickly than in the previous examples.
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -7544,6 +7606,67 @@ FloatBarrier
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+We have shown the use of an SMC algorithm in ABC, illustrated on two simple
+ examples.
+ The algorithm gave a good approximation to the posterior, provided that
+ a suitable set of statistics were chosen.
+ Choosing statistics is something of an art in practice, and not something
+ we have focused on here.
+ Some information about the performance of the statistics can be seen by
+ examining the 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ and ESS plots, in addition to running an experiment several times to see
+ if the results are consistent.
+\end_layout
+
+\begin_layout Standard
+The algorithm has a number of parameter/parts that can be set or changed
+ (for instance kernel, resampling strategy and values of 
+\begin_inset Formula $\alpha$
+\end_inset
+
+) allowing the user to apply domain specific adaptations.
+\end_layout
+
+\begin_layout Standard
+A potential with the algorithm is the number of samples that need to be
+ generated.
+ In more complex scenarios than the ones used for illustration here, this
+ can cause the running time of the algorithm to become excessively long.
+ Further work could be done to address this issue, again see 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Moores2014"
+
+\end_inset
+
+ for one possible remedy.
+\end_layout
+
+\begin_layout Standard
+The problem of finding appropriate statistics is orthogonal to the SMC algorithm
+ as it is presented here.
+ It could be interesting to implement ideas for finding statistics semiautomatic
+ally (
+\begin_inset CommandInset citation
+LatexCommand citet
+key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
+
+\end_inset
+
+) and see if it is possible for them to benefit from the way SMC algorithm
+ progresses: Start off with a large number of statistics, and then prune
+ the ones where it is difficult to reduce the distance to the observed data
+ as the algorithm iterates perhaps.
 \end_layout
 
 \begin_layout Standard
@@ -7595,8 +7718,8 @@ Installing the package in R
 
 \begin_layout Standard
 The code in the repository is laid out in the form of an R-package.
- To use it the user must install the package.
- The easiest way to do this is by the devtools-package,
+ To use it the user must install the package, and the easiest way to do
+ this is by using the devtools-package,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "devtools"
@@ -7688,6 +7811,41 @@ Check that the uninstall works
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Notes on implementation
+\end_layout
+
+\begin_layout Standard
+The part of the algorithm that is not tied to the specific problem domain
+ has been put in a separate structure (Smc) to ease reuse.
+ When applying the algorithm to a new problem domain the user must provide
+ an configuration object containing necessary functions as input to the
+ Smc-function.
+ This configuration object contains functions for how to measure the distance
+ between a particle and the observed data and how to generate a new proposals
+ of model parameters.
+ More information is found in the vignettes and help sections for the package.
+\end_layout
+
+\begin_layout Standard
+No particular attention has been paid to make the running time fast.
+ Two points that could be investigated with respect to this are:
+\end_layout
+
+\begin_layout Itemize
+Parallelize the sample generation.
+ This could be done in the general Smc-function.
+\end_layout
+
+\begin_layout Itemize
+Implement parts of the code in C/C++.
+ It is possible to include C/C++ code in various ways in R-packages, and
+ this can make the code run faster.
+ The sample generation can be targeted first for being rewritten in C/C++.
+ This is a domain specific function, so it will need to be done for each
+ problem the algorithm is applied to.
 \end_layout
 
 \begin_layout Standard
