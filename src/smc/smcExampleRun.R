@@ -1,7 +1,7 @@
 library(MASS)
 library(latex2exp)
 
-ma.configuration <- smcMovingAverageExample(use.raw.distance.function = F, create.debug.variables = T)
+ma.configuration <- smcMovingAverageExample(use.raw.distance.function = T, create.debug.variables = T)
 
 ma.example.results <-
   Smc(

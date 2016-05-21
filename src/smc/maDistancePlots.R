@@ -3,12 +3,22 @@
 
 DistanceFunctionRaw <- ma.configuration[["DistanceFunction"]]
 
+run.length <- length(ma.example.results[["all.particles"]])
 
-particle.vector <- ma.example.results[["all.particles"]][[1]]
-distances <- sapply(particle.vector, function(x) { DistanceFunctionRaw(unlist(x)) })
+ma.example.results[["effective.sample.sizes"]][900]
+ma.example.results[["all.weights"]][900]
+
+particle.vector <- ma.example.results[["all.particles"]][[900]]
+
+# distances <- sapply(particle.vector, function(x) { DistanceFunctionRaw(unlist(x)) })
+distances <- sapply(variable.env$particles, function(x) { DistanceFunctionRaw(unlist(x)) })
 plot(1:length(distances), distances, pch = 16, cex = 0.1)
-abline(h = ma.example.results[["epsilons"]][[1]])
 
+
+abline(h = ma.example.results[["epsilons"]][[900]], col = "red")
+abline(h = current.epsilon, col = "red")
+
+current.epsilon <- ma.example.results[["epsilons"]][[900]]
 
 
 animation::saveGIF(

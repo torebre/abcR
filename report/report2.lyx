@@ -1149,30 +1149,45 @@ on.
 \end_inset
 
  is a member of some countable set.
- For instance tossing a coin multiple times could be viewed as a stochastic
+ 
+\end_layout
+
+\begin_layout Standard
+For instance the weather each day could be viewed as realisations of a stochasit
  process.
  Let 
 \begin_inset Formula $t$
 \end_inset
 
- denote toss number, and let 
+ denote a 
+\begin_inset Quotes eld
+\end_inset
+
+day number,
+\begin_inset Quotes erd
+\end_inset
+
+ and let 
 \begin_inset Formula $X(t)$
 \end_inset
 
- be 1 if the coin turns up heads, and 0 if tails, at toss 
-\begin_inset Formula $t$
+ take on three values for simplicity: 
+\begin_inset Formula $\{S,O,R\}$
 \end_inset
 
-.
- Assuming the coin is fair we have 
-\begin_inset Formula $P(X(t))=\frac{1}{2}$
+, where 
+\begin_inset Formula $S$
 \end_inset
 
- for all 
-\begin_inset Formula $t$
+ denotes Sunny, 
+\begin_inset Formula $O$
 \end_inset
 
-.
+ Overcast and 
+\begin_inset Formula $R$
+\end_inset
+
+ Rain.
 \end_layout
 
 \begin_layout Standard
@@ -1189,15 +1204,10 @@ P(X(t)=x_{t}|P(X(t-1)_{t-1},P(X(t-2)_{t-2},...)= & P(X(t)=x_{t}|P(X(t-1)=x_{t-1}
 \end_layout
 
 \begin_layout Standard
-The state of the process given its history, depends only on the state at
- the previous step.
- If we assume that the toin tosses mentioned above are independent, this
- process fulfills the Markov property.
- Actually, it more than fulfills it since we have 
-\begin_inset Formula $P(X(t)=x_{t}|X(t-1)=x_{t-1})=P(X(t)=x_{t})$
-\end_inset
-
-.
+That is: The state of the process given its history, depends only on the
+ state at the previous step.
+ If we in our weather process assume that the weather today only depends
+ on the weather yesterday, it fulfills the Markov property.
 \end_layout
 
 \begin_layout Standard
@@ -1212,25 +1222,19 @@ We need to introduce some more terms related to Markov processes.
 \end_inset
 
 .
- For the coin toss example, we have two states, heads and tails, which we
- denote 
-\begin_inset Formula $H$
-\end_inset
+ For a discrete process, like our weather forecast, the transition probabilities
+ can be viewed as a matrix:
+\end_layout
 
- and 
-\begin_inset Formula $T$
-\end_inset
-
-, and the probability of going between the different states can be visualised
- simply in matrix form:
+\begin_layout Standard
 \begin_inset Formula 
-\[
-\begin{array}{ccc}
- & H & T\\
-H & \frac{1}{2} & \frac{1}{2}\\
-T & \frac{1}{2} & \frac{1}{2}
-\end{array}
-\]
+\begin{equation}
+\left[\begin{array}{ccc}
+\frac{1}{2} & \frac{2}{5} & \frac{1}{10}\\
+\frac{3}{10} & \frac{2}{5} & \frac{3}{10}\\
+\frac{1}{5} & \frac{3}{10} & \frac{1}{2}
+\end{array}\right]\label{eq:transition_probabilities-1}
+\end{equation}
 
 \end_inset
 
@@ -1238,138 +1242,89 @@ T & \frac{1}{2} & \frac{1}{2}
 \end_layout
 
 \begin_layout Standard
-Let the rows be the state at time 
+Interpret the rows to be the state at 
 \begin_inset Formula $t$
 \end_inset
 
-, and the columns the state at time 
+, and the columns to be the state at 
 \begin_inset Formula $t+1$
 \end_inset
 
-.
- To see the probability of going from 
-\begin_inset Formula $T$
-\end_inset
-
- to 
-\begin_inset Formula $H$
-\end_inset
-
-, look at the entry in row 2 and column1 for instance.
- Let us denote the matrix with the transition probabilities 
-\begin_inset Formula $P$
+, and the order of the states to be 
+\begin_inset Formula $\{S,O,R\}$
 \end_inset
 
 .
- Continuing with the coin toss example we can use 
-\begin_inset Formula $P$
+ We read the probability of going from say 
+\begin_inset Formula $S\to R$
 \end_inset
 
- to generate a sequence of possible outcomes of throws.
- Say that the first throw was heads, 
-\begin_inset Formula $H$
+ by reading the value at row 1 and column 3, which is 0.1.
+ Using the transition probabilities we can generate a random sequence of
+ states: Starting in 
+\begin_inset Formula $S$
+\end_inset
+
+ for example we choose either 
+\begin_inset Formula $\{S,O,R\}$
+\end_inset
+
+ with probabilities 
+\begin_inset Formula $\{\frac{1}{2},\frac{2}{5},\frac{1}{10}\}$
 \end_inset
 
 .
- From the 
+ If 
+\begin_inset Formula $R$
+\end_inset
+
+ was choosen, the next state will be either 
+\begin_inset Formula $\{S,O,R\}$
+\end_inset
+
+ with probabilities 
+\begin_inset Formula $\{\frac{1}{5},\frac{3}{10},\frac{1}{2}\}$
+\end_inset
+
+, and so the process continues.
+\end_layout
+
+\begin_layout Standard
+Now we ask the question: If we generate a long sequence of states in this
+ manner, do they appear to come from some distribution? We do not show it
+ here, but for a long sequence of states generated using (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:transition_probabilities-1"
+
+\end_inset
+
+), each of the states 
+\begin_inset Formula $\{S,O,R\}$
+\end_inset
+
+ will appear 
+\begin_inset Formula $\{\frac{21}{62},\frac{23}{62},\frac{18}{62}\}$
+\end_inset
+
+ of the time.
+ If anything we could say the states for a long sequence come from a distributio
+n with these probabilities for each state.
+\end_layout
+
+\begin_layout Standard
+This very simple example does contain a key idea that we will develop: Say
+ we did not know how to directly generate a sample set from the 
 \begin_inset Quotes eld
 \end_inset
 
-heads state
+weather distribution.
 \begin_inset Quotes erd
 \end_inset
 
- we see from the first row of 
-\begin_inset Formula $P$
-\end_inset
-
-, that there is an equal probability of going to either heads or tails.
- The next state can be determined by choosing it a random given the probabilitie
-s in the first row: There is a 
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
- probability of going to 
-\begin_inset Formula $H$
-\end_inset
-
-, and a 
-\begin_inset Formula $\frac{1}{2}$
-\end_inset
-
- probability of going to 
-\begin_inset Formula $T$
-\end_inset
-
-.
- Say the next state is tails, 
-\begin_inset Formula $T$
-\end_inset
-
-, now the process starts over again, but this time looking at the second
- row of 
-\begin_inset Formula $P$
-\end_inset
-
-.
- We can continue this process indefinitely, producing a large a sequence
- representing one string of outcomes.
-\end_layout
-
-\begin_layout Standard
-When we toss a coin we are in effect doing a sampling from a Bernoulli-distribut
-ion, and assuming the coin is fair it will have parameter 
-\begin_inset Formula $p=\frac{1}{2}$
-\end_inset
-
-.
- Notice that in the above however, we do not actually throw the coin, we
- look at 
-\begin_inset Formula $P$
-\end_inset
-
- to determine what the next outcome could be.
-\end_layout
-
-\begin_layout Standard
-Now we ask the question: Which probability distribution does a large sequence
- of our simulated coin tosses appear to come from? The probability of going
- to heads or tails is the same, so the large sequence of tosses appears
- to come from the Bernoulli distribution with 
-\begin_inset Formula $p=\frac{1}{2}$
-\end_inset
-
-.
- This is the same result we would get if we actually tossed the coin a large
- number of times.
-\end_layout
-
-\begin_layout Standard
-This very simple example does contain a key idea that we will develop: We
- have a random variable, in this case a coin toss, 
-\begin_inset Formula $X(t)$
-\end_inset
-
-, distributed accoring to a Bernoulli distribution, and we have the transition
- probabilities in 
-\begin_inset Formula $P$
-\end_inset
-
-.
- We were able to generate a sample set coming from the Bernoulli distribution
- by abstaining from sampling from 
-\begin_inset Formula $X(t)$
-\end_inset
-
-, only using the transition probabilities 
-\begin_inset Formula $P$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-This is what we will expand on.
+ We could instead generate a long sequence using the transition probabilities,
+ and get a sample set that way.
+ This is what we will expand on.
  Given some probability distribution, 
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
@@ -1378,11 +1333,10 @@ This is what we will expand on.
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
-, we will define transition probabilities so that we can generate a sequence
+, we define transition probabilities so that we can generate a sequence
  of samples that come from it, without actually doing any sampling from
  the distribution.
- Note that we will need to be able to evaluate the probability of a sample
- though.
+ We will need to be able to evaluate the probability of a sample though.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1396,48 +1350,74 @@ Before explaining how to set up
 
 , we need to explain the concept of stationary probabilities for a Markov
  process.
- Continuing with the coin example, we note that the system can be in one
- of two states: Either the last state was heads, or it was tails.
- Let us represent this state as a vector, calling it 
+ Continuing with the weather forecast example, say that we had been observing
+ the weather over a long period of time, so that distribution between 
+\begin_inset Formula $\{S,O,R\}$
+\end_inset
+
+ has reached the proportions specified in the previous section.
+ Let us define a state vector which contains the probability of each state,
+ call it 
 \begin_inset Formula $\boldsymbol{\pi}_{t}$
 \end_inset
 
+ and set it to 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\pi}_{t}=\left[\frac{21}{62},\frac{23}{62},\frac{18}{62}\right]$
+\end_inset
+
 .
- The state vector has two elements, indicating the probability of either
- heads or tails.
- We have 
-\begin_inset Formula $\sum_{i\in\{H,T\}}\boldsymbol{\pi}_{t}(i)=1$
-\end_inset
-
- since it is a probability distribution.
- Say that we observed the state of the system at time 
-\begin_inset Formula $t$
-\end_inset
-
-, and it was heads, the state is then 
-\begin_inset Formula $\boldsymbol{\pi}_{t}=\left[1,0\right]^{T}$
-\end_inset
-
+ The sum of the elements in the state vector has to equal one since the
+ system must be in one of the states
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
 .
  Using the transition matrix 
 \begin_inset Formula $P$
 \end_inset
 
- we can now determine the probability of the different states at later time
+ and state vector 
+\begin_inset Formula $\boldsymbol{\pi}_{t}$
+\end_inset
+
+ we can determine the probability of the different states at later time
  steps in the following manner:
 \begin_inset Formula 
 \begin{align*}
-P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
-\frac{1}{2} & \frac{1}{2}\\
-\frac{1}{2} & \frac{1}{2}
-\end{array}\right]\left[\begin{array}{c}
-1\\
-0
+\boldsymbol{\pi}_{t}P & =\left[\begin{array}{c}
+\frac{21}{62}\\
+\frac{23}{62}\\
+\frac{18}{62}
+\end{array}\right]^{T}\left[\begin{array}{ccc}
+\frac{1}{2} & \frac{2}{5} & \frac{1}{10}\\
+\frac{3}{10} & \frac{2}{5} & \frac{3}{10}\\
+\frac{1}{5} & \frac{3}{10} & \frac{1}{2}
 \end{array}\right]\\
  & =\left[\begin{array}{c}
-\frac{1}{2}\\
-\frac{1}{2}
-\end{array}\right]\\
+\frac{21}{62}\\
+\frac{23}{62}\\
+\frac{18}{62}
+\end{array}\right]^{T}\\
  & =\boldsymbol{\pi}_{t+1}
 \end{align*}
 
@@ -1447,8 +1427,8 @@ P\boldsymbol{\pi}_{t} & =\left[\begin{array}{cc}
 \end_layout
 
 \begin_layout Standard
-We do not give any proofs that this gives the correct distribution here,
- only appeal to intuition and refer to for instance to chaper 4 of 
+We do not give any proofs that this is how we determine future state distributio
+ns, only appeal to intuition and refer to for instance to chaper 4 of 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "ross2010probability"
@@ -1456,30 +1436,12 @@ key "ross2010probability"
 \end_inset
 
  for a more rigorous treatment.
- Now note the following:
-\begin_inset Formula 
-\begin{align*}
-P\boldsymbol{\pi}_{t+1} & =\left[\begin{array}{cc}
-\frac{1}{2} & \frac{1}{2}\\
-\frac{1}{2} & \frac{1}{2}
-\end{array}\right]\left[\begin{array}{c}
-\frac{1}{2}\\
-\frac{1}{2}
-\end{array}\right]\\
- & =\left[\begin{array}{c}
-\frac{1}{2}\\
-\frac{1}{2}
-\end{array}\right]\\
- & =\boldsymbol{\pi}_{t+2}=\boldsymbol{\pi}_{t+1}
-\end{align*}
-
+ The point to note is that if the system reaches a distribution between
+ the states according to 
+\begin_inset Formula $\boldsymbol{\pi}_{t}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-The distribution stays the same as we iterate.
+ as defined above, it stays in this distribution of states.
  Given a transition matrix, if we have a distribution, 
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
@@ -1499,7 +1461,7 @@ The distribution stays the same as we iterate.
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-P\boldsymbol{\pi}=\boldsymbol{\pi}\label{eq:stationary_distribution}
+\boldsymbol{\pi}P=\boldsymbol{\pi}\label{eq:stationary_distribution}
 \end{equation}
 
 \end_inset
@@ -1508,7 +1470,7 @@ P\boldsymbol{\pi}=\boldsymbol{\pi}\label{eq:stationary_distribution}
 \end_layout
 
 \begin_layout Standard
-So if we can find a 
+If we can find a 
 \begin_inset Formula $P$
 \end_inset
 
@@ -5380,7 +5342,7 @@ key "adaptive_smc_for_abc"
 \end_inset
 
  use an MCMC kernel for 
-\begin_inset Formula $K(x_{t},\boldsymbol{x}_{t+1})$
+\begin_inset Formula $K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})$
 \end_inset
 
  in the weight update step, but before describing it we need to introduce
@@ -5436,22 +5398,18 @@ p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})
 
 \begin_layout Standard
 The reason for introducing this as a proposal distribution is to reduce
- the variance of the Metropolis-Hastings ratio we will encounter in the
- next section, which in turn increases its performance
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-How is the performance increased?
-\end_layout
-
+ the variance of the Metropolis-Hastings ratio we will encounter later,
+ which in turn increases its performance.
+ In other words: More samples give a better approximation to the marginal
+ 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-The question is now whether this new proposal distribution is valid.
+The question is now how introducing more samples affects the distribution.
  We claim that the marginals for 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
@@ -5465,27 +5423,15 @@ The question is now whether this new proposal distribution is valid.
 \end_inset
 
 .
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Prove the claim?
-\end_layout
-
+ This can be seen by integrating out 
+\begin_inset Formula $\{\boldsymbol{x}\}_{1:m}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y}) & \propto p(\boldsymbol{y}|\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m})p(\{\boldsymbol{x}\}_{1:m}|\boldsymbol{\theta})p(\boldsymbol{\theta})
-\end{align*}
-
+ to retrieve the marginal for 
+\begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
-
+, but we do not show it explicitly here.
 \end_layout
 
 \begin_layout Subsubsection
@@ -5516,7 +5462,7 @@ To motivate the proposal distribution in the next section we need to establish
 \end_layout
 
 \begin_layout Standard
-To show the equivalence for the two distributions, we follow 
+To the proportionality of the marginals, we follow 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Beaumont1139"
@@ -5595,10 +5541,14 @@ p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})\prod_{i=2}^{m}p(\boldsymbol{x}_
 
 \begin_layout Standard
 Where 
-\begin_inset Formula $j\neq1$
+\begin_inset Formula $i\neq1$
 \end_inset
 
- we get:
+ we get (using 
+\begin_inset Formula $\boldsymbol{x}_{2}$
+\end_inset
+
+ as an example here):
 \begin_inset Formula 
 \begin{align*}
 p(\boldsymbol{\theta})\int p(\boldsymbol{x}_{2}|\boldsymbol{\theta})d\boldsymbol{x}_{2} & =\\
@@ -7387,7 +7337,7 @@ status open
 \begin_layout Plain Layout
 Same setup as in the case where autovariances are used in the distance measure.
  The final density plot looks suspicious.
- It is not clear from lookin at the top plot, where each particles is represente
+ It is not clear from looking at the top plot, where each particle is represente
 d by a dot, but there is a very large concentration of particles within
  a small area.
  The density plot uses the same kernel and number of levels as in the the
