@@ -8,7 +8,7 @@ ma.example.results <-
     ma.configuration,
     max.iterations = 1000,
     alpha = 0.9,
-    number.of.particles = 1000,
+    number.of.particles = 100,
     number.of.replicates = 1,
     stop.epsilon = 0.01,
     start.epsilon = 10000,
@@ -61,3 +61,16 @@ animation::saveGIF(
 
 
 
+i <- run.length
+thetas.at.step <- thetas[[run.length]]
+op <- par("mfrow" = c(1, 3))
+
+plot.new()
+my.filled.contour(theta1.range, theta2.range, likelihood.map,
+                  plot.axes = {points(t(thetas.at.step), pch = 19, cex = 0.1); axis(1); axis(2)}, xlim = c(-2, 2), ylim = c(-1, 1))
+title(xlab = latex2exp("$\\theta_{1}$"), ylab = latex2exp("$\\theta_{2}$"))
+
+PlotEpsilonTrace(ma.example.results, i, use.run.length = run.length, use.eps.max = 500)
+PlotEssTrace(ma.example.results, i, use.run.length = run.length)
+
+par(op)

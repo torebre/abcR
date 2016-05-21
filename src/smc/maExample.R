@@ -59,6 +59,7 @@ smcMovingAverageExample <-
       if (use.raw.distance.function) {
         return(sum((my.sample - observed.series) ^ 2))
       }
+      # unlisted.sample <- unlist(my.sample)
       (ComputeAutoCovariance(my.sample, 1) - observed.series.cov1) ^ 2 +
         (ComputeAutoCovariance(my.sample, 2) - observed.series.cov2) ^ 2
     }
@@ -144,37 +145,6 @@ smcMovingAverageExample <-
           theta.candidate[2] <- -theta.candidate[2]
           theta.candidate[1] <- theta.candidate[1] - 2
         }
-
-        # # -2 < theta1 < 2, theta1 + theta2 > -1, theta1 - theta2 < 1
-        # if(theta.candidate[1] + theta.candidate[2] < -1) {
-        #   # Outside valid region on the left side
-        #   if(theta.candidate[1] < theta.old[1, j]) {
-        #     theta.candidate[1] <- 2 + 2 * theta.old[2, j] + theta.candidate[1]
-        #   }
-        #   if(theta.candidate[2] < theta.old[2, j]) {
-        #     theta.candidate[2] <- 2 + theta.old[1, j] + theta.candidate[2]
-        #   }
-        #
-        # }
-        # else if(theta.candidate[1] - theta.candidate[2] > 1) {
-        #   # Outside valid region on right side
-        #   if(theta.candidate[1] > theta.old[1, j]) {
-        #     theta.candidate[1] <- theta.candidate[2] - 2 - 2 * theta.old[2, j]
-        #   }
-        #
-        #   if(theta.candidate[2] < theta.old[2, j]) {
-        #     theta.candidate[2] <- theta.old[1, j] - theta.candidate[2]
-        #   }
-        #
-        # }
-
-        # if(create.debug.variables) {
-        #   debug.variables$empirical.variance[[length(debug.variables$avg.acc.rate) + 1]] <-
-        #     sqrt(2 * empirical.variance)
-        # }
-
-
-        # print(paste("my.number.of.replicates2: ", my.number.of.replicates, "series.length2: ", series.length))
 
         replicates.new <-
           matrix(nrow = my.number.of.replicates, ncol = series.length)

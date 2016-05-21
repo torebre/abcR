@@ -5796,19 +5796,6 @@ reference "eq:mh_ratio_without_likelihood"
 ) that is used in the implementation of the algorithm.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Expression for variance of theta
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Algorithm
 \begin_inset CommandInset label
@@ -6451,6 +6438,68 @@ key "adaptive_smc_for_abc"
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/epsilon_candidate_plot_1000_09_toy_example.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+This plots shows an example of candidate values for 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ during iteration of the algorithm in the example we will see in section
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Estimating-expected-value"
+
+\end_inset
+
+.
+ The y-axis is showing 
+\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{n})-\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})$
+\end_inset
+
+, and the new value will be were this expression equals 0.
+ In this run 
+\begin_inset Formula $\alpha=0.9$
+\end_inset
+
+, and the vertical line in the plot marks the new value for 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+.
+ The old value of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ is about 4.39, and the new value about 3.61.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Where 
 \begin_inset Formula $\alpha\in(0,1)$
 \end_inset
@@ -6596,6 +6645,13 @@ in R, and illustrate it on two simple examples.
 
 \begin_layout Subsection
 Estimating expected value in simple mixture model
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Estimating-expected-value"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7169,7 +7225,7 @@ Also in both cases the kernel update proceeds in a manner similar to the
 \end_inset
 
  candidates, defined by a normal distribution 
-\begin_inset Formula $\mathrm{N}(0,\hat{\sigma}_{\theta}\text{²})$
+\begin_inset Formula $\mathrm{N}(0,\hat{\sigma}_{\theta}^{2})$
 \end_inset
 
 , where 
@@ -7305,8 +7361,8 @@ Using the raw distance as a statistic
 \end_layout
 
 \begin_layout Standard
-Given a generated time-series the distance to the observered series is computed
- as follows:
+Given a generated time-series the distance to the observered series is here
+ computed as follows:
 \begin_inset Formula 
 \[
 d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
@@ -7315,6 +7371,15 @@ d=\sum_{i=1}^{n}\left(x_{i}-y_{i}\right)^{2}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+This distance function will have magnitudes that are different from the
+ previous one, and we can intuitively see that it is very unlikely that
+ we will reach values close to 0.
+ For that to happen we would have to produce time series that almost identically
+ to the observed realisation, something which is very unlikely given the
+ randomness in the construction of a realisation.
 \end_layout
 
 \begin_layout Standard
@@ -7387,6 +7452,74 @@ The algorithm here rapidly runs into problems moving the particles.
 
  close to 0.
  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some explanation to what happens when the algorithm gets stuck may be in
+ order.
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/epsilon_candidate_plot.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/distance_to_epsilon.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+These figures are from a run with 100 particles, 
+\begin_inset Formula $\alpha=0.9$
+\end_inset
+
+ and where the raw distance function was used.
+ What has happened is that 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ has reached a point where all the proposals from the from the update kernel
+ has been rejected, in addition there are so many particles that lie up
+ close to the current value of 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ (see histogram on the right above) that moving it slightly would cause
+ a large change in 
+\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{n})-\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})$
+\end_inset
+
+, which can be seen from the figure on the left above.
+ What will happen here is that 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ will stay the same, and the weights too, and a new update step is run on
+ the same particles.
+ If some steps are accepted the algorithm can break out of this situation,
+ but it is unlikely it will make significant progress, and it can be aborted.
 \end_layout
 
 \end_inset
@@ -7668,8 +7801,8 @@ Installing the package in R
 
 \begin_layout Standard
 The code in the repository is laid out in the form of an R-package.
- To use it the user must install the package, and the easiest way to do
- this is by using the devtools-package,
+ To use it the user can install it as a package in his local R installation.
+ The easiest way to do this is by using the devtools-package,
 \begin_inset CommandInset citation
 LatexCommand cite
 key "devtools"
