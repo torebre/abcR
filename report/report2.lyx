@@ -2646,7 +2646,6 @@ There is however a problem in that we need the marginal distributions,
 \end_inset
 
 ,..., to get expressions for the conditional distributions.
- To get the marginal distributions there is a need to integrate out variables.
  For instance, we need 
 \begin_inset Formula $p(x_{k}|x_{1},...,x_{k-1})=p(x_{k}|\boldsymbol{x}_{k-1})p(\boldsymbol{x}_{k-1})$
 \end_inset
@@ -2719,10 +2718,11 @@ reference "eq:conditional_probability"
 
 \end_inset
 
-)):
+):
 \begin_inset Formula 
 \begin{align*}
-w_{t}(\boldsymbol{x}_{t}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}(\boldsymbol{x}_{t})}{\hat{p}(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}
+w_{t}(\boldsymbol{x}_{t}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}(\boldsymbol{x}_{t})}{\hat{p}(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}\\
+ & =w_{t-1}(\boldsymbol{x}_{t-1})u_{t}(\boldsymbol{x}_{t-1})
 \end{align*}
 
 \end_inset
@@ -2731,7 +2731,12 @@ w_{t}(\boldsymbol{x}_{t}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}(\boldsym
 \end_layout
 
 \begin_layout Standard
-And using the fact that 
+To ease the notation we have defined 
+\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{\hat{p}(\boldsymbol{x}_{t})}{\hat{p}(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}$
+\end_inset
+
+ and call it the weight update.
+ Using the fact that 
 \begin_inset Formula $\hat{p}(\boldsymbol{x}_{k})=p(\boldsymbol{x}_{k})$
 \end_inset
 
@@ -2741,11 +2746,6 @@ ions will cancel and in the final step we will have
 \end_inset
 
  as required.
- To ease the notation we define 
-\begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{p(\boldsymbol{x}_{t})}{p(x_{t}|\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}$
-\end_inset
-
- and call it the weight update.
  
 \end_layout
 
@@ -3832,8 +3832,7 @@ Choice of summary statistics
 \begin_layout Standard
 From the above we see that the approximation works when we choose sufficient
  statistics.
- However, in practical problems we are likely to be unable to find sufficient
- statistics.
+ However, in practical problems we are likely to be unable to find such.
  Note in passing that if we define our statistic to just be the sample itself,
  
 \begin_inset Formula $S(\boldsymbol{y})=\boldsymbol{y}$
@@ -3852,14 +3851,19 @@ g samples so that the defined distance between the statistics of the generated
 
 .
  We make an assumption that proper statistics have been chosen for the problem
- at hand, and will not have much to say about how this choice has been done.
+ at hand, and will not focus on the difficult problem of finding them.
+ We give some examples of statistics used in problems where ABC methods
+ have been employed below for illustration purposes.
 \end_layout
 
 \begin_layout Standard
-Finding proper statistics can be a difficult problem, and it is tied to
- the specific application.
- There is however some research being done in finding good statistics semi-autom
-atically, we refer again to the overview article 
+In practice the norm is that the statistics are chosen by a domain expert,
+ say a evolutionary biologist when the problem revolves around the spread
+ of genes in a population for instance, and it is not possible to derive
+ sound theoretical properties for convergence.
+ But we mention that research is being done in finding good statistics semi-auto
+matically independent of problem domain, we again refer to the overview
+ article 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
@@ -3867,9 +3871,12 @@ key "approx_bayes_comp"
 \end_inset
 
  for more information.
- To give a little flavour of an approach that tries to generate statistics
- without being tied to a specific application, we mention the one developed
- in 
+ 
+\end_layout
+
+\begin_layout Standard
+To give a flavour of an approach that tries to generate statistics without
+ being tied to a specific application, we mention the one developed in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
@@ -3877,8 +3884,9 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \end_inset
 
 , which also includes some general information about the problem of finding
- summary statistics, generates a large number of statistics on the simulated
- data, for instance one summary statistic may be: 
+ summary statistics.
+ The method generates a large number of statistics using the simulated data,
+ for instance one summary statistic may be: 
 \begin_inset Formula $S(\boldsymbol{x})=[\boldsymbol{x},\boldsymbol{x}^{2},\boldsymbol{x}^{3},\boldsymbol{x}^{4}]$
 \end_inset
 
@@ -3912,15 +3920,11 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \end_layout
 
 \begin_layout Standard
-But in practice the norm is that the statistics are chosen by a domain expert,
- say a evolutionary biologist when the problem revolves around the spread
- of genes in a population for instance, and it is not possible to derive
- sound theoretical properties for convergence.
- We give a couple of practical examples below.
+For statistics chosen by domain experts we give two examples.
  In both cases the model is specified as a stochastic process where it is
  not possible to find theoretical expressions for the parameters one wishes
  to estimate, and they are not directly observable from the process output
- either, so ABC-methods are utilized.
+ either, so ABC methods are utilized.
 \end_layout
 
 \begin_layout Subsubsection
@@ -3934,7 +3938,7 @@ key "Toni187"
 
 \end_inset
 
- provide several examples of ABC-applications.
+ provide several examples of ABC applications.
  One is the problem of estimating rate parameters in a stochastic predator/prey
  model:
 \end_layout
@@ -4001,27 +4005,28 @@ d((\boldsymbol{x},\boldsymbol{y}),(\boldsymbol{x}^{(obs)},\boldsymbol{y}^{(obs)}
 
 \end_layout
 
+\begin_layout Standard
+Which makes intuitive sense.
+\end_layout
+
 \begin_layout Subsubsection
 Parameter estimation in small world network disease models
 \end_layout
 
 \begin_layout Standard
-Walker et.
- al.
- 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "RePEc:eee:phsmap:v:389:y:2010:i:3:p:540-548"
 
 \end_inset
 
- used ABC-methods to estimate the parameters in what is called a small world
+ used ABC methods to estimate the parameters in what is called a small world
  network disease model fitted to data from the SARS virus outbreak in Hong
- Kong in 2013.
+ Kong in 2003.
  The model can be viewed as a network, with nodes representing individuals.
  The parameters of the model are the probabilities of an individual infecting
- a neighbour in the network, there are both short range and long range neighbour
-s, the probability of an exposed individual becoming infectious, the probability
+ a neighbour in the network, both short range and long range neighbours,
+ the probability of an exposed individual becoming infectious, the probability
  of an infectious individual either recovering or expiring, and the mean
  number of connections for a node.
 \begin_inset Float figure
@@ -4143,13 +4148,27 @@ Given a set of parameters the model can be run as stochastic process, and
  moving average from the reported data.
 \end_layout
 
+\begin_layout Standard
+In both these examples the chosen statistics try to capture the 
+\begin_inset Quotes eld
+\end_inset
+
+suffiency.
+\begin_inset Quotes erd
+\end_inset
+
+ That is: These statistics should capture as much of the information, albeit
+ by indirect observation, about the parameters we want to estimate as possible.
+\end_layout
+
 \begin_layout Subsection
 MCMC in ABC
 \end_layout
 
 \begin_layout Standard
-To motivate the development of the Sequential Monte Carlo method later,
- we will quickly show how MCMC can be used in an ABC setting.
+Turning to the computational aspect of ABC we motivate the development of
+ the SMC method which will be our focus by showing how MCMC can be used
+ in an ABC setting.
  In Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4157,7 +4176,7 @@ reference "alg:Markov-Chain-Monte-in-ABC"
 
 \end_inset
 
- an early method described in 
+ an early ABC MCMC method described in 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Marjoram23122003"
@@ -4165,6 +4184,8 @@ key "Marjoram23122003"
 \end_inset
 
  is outlined.
+ The use of MCMC in ABC predates the use SMC, and the popularity of MCMC
+ method provide a yardstick to measure other methods against.
 \end_layout
 
 \begin_layout Standard
@@ -4482,16 +4503,29 @@ reference "alg:Likelihood-free-sampling"
 \end_inset
 
 ).
- The stationary distribution of the Markov chain is 
-\begin_inset Formula $p(\boldsymbol{\theta}|d(\boldsymbol{x},\boldsymbol{y})<\epsilon)$
+ We state without proving it here that the stationary distribution of the
+ Markov chain is 
+\begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{x}_{\epsilon})$
 \end_inset
 
-, which we do not prove here, and this should be close to the posterior
- 
+, where 
+\begin_inset Formula $\boldsymbol{x}_{\epsilon}$
+\end_inset
+
+ denotes all 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ such that 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon$
+\end_inset
+
+.
+ This disitribution should be close to the posterior 
 \begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
- based on the points in the discussion earlier.
+ based on the points discussed earlier.
 \end_layout
 
 \begin_layout Standard
@@ -4552,6 +4586,25 @@ reference "sub:Sampling-importance-resampling"
 .
 \end_layout
 
+\begin_layout Standard
+In the following section we describe the SMC sampler which defines how to
+ apply the weight updates, then in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:smc_sampler_in_abc"
+
+\end_inset
+
+ show how the sampler is adapted for an ABC scenario, and in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:Algorithm"
+
+\end_inset
+
+ we give an overview of the implementation of the algorithm.
+\end_layout
+
 \begin_layout Subsection
 Sequential Markov chain sampler
 \end_layout
@@ -4578,34 +4631,14 @@ key "citeulike:637817"
 \end_inset
 
  instead operates on the same probability space through all the weight updates.
- This will be a key point later, since our the sequence of approximations
- we use in the ABC SMC method to be developed are defined on the same space,
- so we need this property of the sampler.
- 
+ This will be a key point later, since the sequence of approximations we
+ use in the ABC SMC method to be developed are defined on the same space,
+ so we need this property.
 \end_layout
 
 \begin_layout Standard
-Also note that since the SMC sampler uses the same probability space at
- each step, we cannot use the decomposition shown in (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:weight_decomposition"
-
-\end_inset
-
-) right out of the box, since it implies that the probability space increases
- in dimension at each step.
-\end_layout
-
-\begin_layout Standard
-Nevertheless, we still want to decompose the problem of drawing samples
- from 
-\begin_inset Formula $p(\boldsymbol{x})$
-\end_inset
-
- somehow.
- To do this we again start by defining a sequence of better and better approxima
-te distributions to 
+The SMC sampler defines a sequence of better and better approximate distribution
+s to 
 \begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
@@ -4626,39 +4659,21 @@ key "citeulike:637817"
 
 \end_inset
 
- uses a Markov kernel to establish the proposal distribution at step 
+ uses a Markov kernel, 
+\begin_inset Formula $K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})$
+\end_inset
+
+ to establish the proposal distribution at step 
 \begin_inset Formula $i$
 \end_inset
 
 :
-\begin_inset Formula 
-\[
-g_{i}(\boldsymbol{x}|\boldsymbol{x}')=K(\boldsymbol{x}',\boldsymbol{x})
-\]
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
-Where 
-\begin_inset Formula $\boldsymbol{x}'$
-\end_inset
-
- is distributed according to 
-\begin_inset Formula $g_{i-1}(\boldsymbol{x}')$
-\end_inset
-
-.
- The marginal distribution 
-\begin_inset Formula $g_{i}(\boldsymbol{x})$
-\end_inset
-
- is given as:
 \begin_inset Formula 
 \begin{equation}
-g_{i}(\boldsymbol{x})=\int K(\boldsymbol{x}',\boldsymbol{x})g_{i-1}(\boldsymbol{x}\text{'})d\boldsymbol{x}'\label{eq:kernel_update}
+g_{i}(\boldsymbol{x}_{i})=\int K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})g_{i-1}(\boldsymbol{x}_{i-1})d\boldsymbol{x}'\label{eq:kernel_update}
 \end{equation}
 
 \end_inset
@@ -4667,8 +4682,7 @@ g_{i}(\boldsymbol{x})=\int K(\boldsymbol{x}',\boldsymbol{x})g_{i-1}(\boldsymbol{
 \end_layout
 
 \begin_layout Standard
-Note that we need this marginal distribution, since the decomposition in
- (
+We need this marginal distribution because the decomposition in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:weight_decomposition"
@@ -4695,18 +4709,14 @@ reference "eq:kernel_update"
 \end_inset
 
 ) turns out to be impossible to compute in most cases.
- 
-\end_layout
-
-\begin_layout Standard
-One approach to get around this is to approximate 
+ One approach to get around computing the integral is to approximate 
 \begin_inset Formula $g_{i}(\boldsymbol{x})$
 \end_inset
 
  pointwise:
 \begin_inset Formula 
 \begin{equation}
-g_{i}(\boldsymbol{x})\approx g_{i}^{n}(\boldsymbol{x})=\frac{1}{n}\sum_{j=1}^{n}K(\boldsymbol{X}_{i-1}^{(j)},\boldsymbol{x})\label{eq:update_approximation}
+g_{i}(\boldsymbol{x})\approx\frac{1}{n}\sum_{j=1}^{n}K(\boldsymbol{x}_{i-1}^{(j)},\boldsymbol{x})g_{i-1}(\boldsymbol{x}_{i-1}^{(j)})\label{eq:update_approximation}
 \end{equation}
 
 \end_inset
@@ -4719,8 +4729,8 @@ Assuming we use the
 \begin_inset Formula $n$
 \end_inset
 
- particles we are evolving in when doing the weight update above, we need
- to perform 
+ particles we are evolving when doing the weight update above, we need to
+ perform 
 \begin_inset Formula $n$
 \end_inset
 
@@ -4780,23 +4790,16 @@ reference "sub:Sequential-Importance-Sampling"
 \begin_inset Formula $O(n)$
 \end_inset
 
- and provides asymptotically consistent estimates 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "citeulike:637817"
-
-\end_inset
-
-.
+ and provides asymptotically consistent estimates as described in the article.
 \end_layout
 
 \begin_layout Standard
-The backward kernel is introduced as a part of an approximation to the approxima
-tion 
+The backward kernel is introduced as a part of an approximation to the sequence
+ of distributions, 
 \begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
 \end_inset
 
- as was described in 
+, as was described in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sub:Sequential-Importance-Sampling"
@@ -4806,7 +4809,7 @@ reference "sub:Sequential-Importance-Sampling"
 , and is defined as follows:
 \begin_inset Formula 
 \[
-\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})=p_{i}(\boldsymbol{x}_{i})\Pi_{t=1}^{i-1}L_{i}(\boldsymbol{x}_{t+1},\boldsymbol{x}_{t})
+\hat{p}_{i}(\boldsymbol{x}_{i})=p_{i}(\boldsymbol{x}_{i})L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})
 \]
 
 \end_inset
@@ -4841,9 +4844,7 @@ Where
 :
 \begin_inset Formula 
 \begin{align*}
-g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})\\
- & =\hat{p}_{i-2}(\boldsymbol{x}_{i-2})K_{i-2}(\boldsymbol{x}_{i-2},\boldsymbol{x}_{i-1})K_{i-1}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})\\
- & =\hat{p}_{1}(\boldsymbol{x}_{1})\prod_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})
+\tilde{g}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1}) & =p_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})
 \end{align*}
 
 \end_inset
@@ -4852,40 +4853,15 @@ g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1}) & =\hat{p}_{i-1}(\boldsymbol{x}_{
 \end_layout
 
 \begin_layout Standard
-Note that these approximations and proposals are not defined in terms of
- marginal distributions, 
-\begin_inset Formula $g_{i}(\boldsymbol{x}_{i})$
-\end_inset
-
-, but conditional ones, 
-\begin_inset Formula $g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Looking at the weight update we get:
+The expression for the weight update then becomes:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{align}
-u_{i}(\boldsymbol{x}_{i}) & =\frac{\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})}{g_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})}\nonumber \\
- & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{i=1}^{t-1}L_{i}(\boldsymbol{x}_{t+1},\boldsymbol{x}_{t})}{\hat{p}_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
- & =\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{p_{i-1}(\boldsymbol{x}_{t})\Pi_{i=1}^{t-1}K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\nonumber \\
- & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\label{eq:weight_update}
-\end{align}
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check indices
-\end_layout
+\begin{align*}
+u_{i}(\boldsymbol{x}_{i}) & =\frac{\hat{p}_{i}(\boldsymbol{x}_{i})}{\tilde{g}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})}\\
+ & =\frac{p_{i}(\boldsymbol{x}_{i})L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}
+\end{align*}
 
 \end_inset
 
@@ -4902,16 +4878,17 @@ To anchor the recursion at the start we assume that we are able to sample
 \begin_inset Formula $\hat{p}_{1}(\boldsymbol{x}_{1})=p_{1}(\boldsymbol{x}_{1})$
 \end_inset
 
-:
+.
+ The weight at next step then becomes:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{align*}
-w_{2}(\boldsymbol{x}_{2}) & =w_{1}(\boldsymbol{x}_{1})u_{2}(\boldsymbol{x}_{1})\\
- & =\frac{p_{1}(\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})}\frac{p_{2}(\boldsymbol{x}_{2})L(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})K(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}\\
- & =\frac{p_{2}(\boldsymbol{x}_{2})L(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})K(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}
-\end{align*}
+\begin{align}
+w_{2}(\boldsymbol{x}_{2}) & =w_{1}(\boldsymbol{x}_{1})u_{2}(\boldsymbol{x}_{1})\nonumber \\
+ & =\frac{p_{1}(\boldsymbol{x}_{1})}{g_{1}(\boldsymbol{x}_{1})}\frac{p_{2}(\boldsymbol{x}_{2})L_{1}(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{p_{1}(\boldsymbol{x}_{1})K_{2}(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}\label{eq:weight_update_step}\\
+ & =\frac{p_{2}(\boldsymbol{x}_{2})L_{1}(\boldsymbol{x}_{2},\boldsymbol{x}_{1})}{g_{1}(\boldsymbol{x}_{1})K_{2}(\boldsymbol{x}_{1},\boldsymbol{x}_{2})}\nonumber 
+\end{align}
 
 \end_inset
 
@@ -4926,7 +4903,7 @@ In general the weight at
  is:
 \begin_inset Formula 
 \[
-w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
+w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})\Pi_{t=2}^{i}L(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}{g_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}
 \]
 
 \end_inset
@@ -4948,7 +4925,7 @@ At every step we have a weighted sample from the approximation to the target
 , but viewing the expression for the weight on the equivalent form:
 \begin_inset Formula 
 \[
-w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})}{\frac{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}}
+w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})}{\frac{g_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}}
 \]
 
 \end_inset
@@ -4962,7 +4939,7 @@ We recognize
 \end_inset
 
  as the desired target distribution, and 
-\begin_inset Formula $\frac{p_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}$
+\begin_inset Formula $\frac{g_{1}(\boldsymbol{x}_{1})\Pi_{t=1}^{i-1}K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})}{\Pi_{t=2}^{i}L_{t}(\boldsymbol{x}_{t},\boldsymbol{x}_{t-1})}$
 \end_inset
 
  as a proposal distribution.
@@ -4970,9 +4947,8 @@ We recognize
 \begin_inset Formula $\hat{p}_{i}(\boldsymbol{x}_{i})$
 \end_inset
 
-, to the target distribution had the form it did, and a requirement for
- an approximation distribution to function in this setup is that it has
- the target distribution as a marginal:
+has the form it does, and a requirement for an approximation distribution
+ to function in this setup is that it has the target distribution as a marginal:
 \begin_inset Formula 
 \[
 \int\hat{p}_{i}(\boldsymbol{x}_{i}|\boldsymbol{x}_{i-1})d\boldsymbol{x}_{i-1}=p_{i}(\boldsymbol{x}_{i})
@@ -4998,7 +4974,16 @@ This requirement is necessary to be able to recover the target distibution,
 \end_layout
 
 \begin_layout Standard
-With these kernels the problem of generating a weight sample can be written
+Where 
+\begin_inset Formula $\boldsymbol{X}$
+\end_inset
+
+ here denotes the domain of 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+.
+ With these kernels the problem of generating a weight sample can be written
  in the recursive form we described in 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -5010,7 +4995,7 @@ reference "sub:Sequential-Importance-Sampling"
 \end_layout
 
 \begin_layout Subsubsection
-Choice of backward kernel
+Optimal backward kernel
 \end_layout
 
 \begin_layout Standard
@@ -5030,18 +5015,8 @@ key "citeulike:637817"
  by:
 \begin_inset Formula 
 \begin{equation}
-L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}\label{eq:optimal_backward_kernel}
+L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})=\frac{g_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}\label{eq:optimal_backward_kernel}
 \end{equation}
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check indices
-\end_layout
 
 \end_inset
 
@@ -5053,7 +5028,11 @@ To prove it consider the conditional variance formula applied to
 \begin_inset Formula $w_{i}(\boldsymbol{X}_{1:i})$
 \end_inset
 
-:
+, where 
+\begin_inset Formula $\boldsymbol{X}_{1:i}$
+\end_inset
+
+ denotes the sequence of updates:
 \begin_inset Formula 
 \[
 \mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i}))=\mathrm{E}(\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))+\mathrm{Var}(\mathrm{E}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))
@@ -5114,7 +5093,7 @@ A property of conditional expectations is:
  Applying this, we have for the expectation in the second term:
 \begin_inset Formula 
 \[
-\mathrm{E}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})=w_{i}(\boldsymbol{X}_{i})=\frac{\hat{p}_{i}(\boldsymbol{X}_{i})}{g_{i}(\boldsymbol{X}_{i})}
+\mathrm{E}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})=\mathrm{E}(w_{i}(\boldsymbol{X}_{i})|\boldsymbol{X}_{i})=w_{i}(\boldsymbol{X}_{i})=\frac{p_{i}(\boldsymbol{X}_{i})}{g_{i}(\boldsymbol{X}_{i})}
 \]
 
 \end_inset
@@ -5124,40 +5103,14 @@ A property of conditional expectations is:
 
 \begin_layout Standard
 Note that this expression does not depend on 
-\begin_inset Formula $L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})$
+\begin_inset Formula $L_{i-1}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})$
 \end_inset
 
 , so the choice of backward kernel does not influence this term.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check that these distributions have been defined as used here
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check that the correct distributions are used here
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now we turn our attention t 
+Now we turn our attention to 
 \begin_inset Formula $\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})$
 \end_inset
 
@@ -5169,17 +5122,10 @@ reference "eq:optimal_backward_kernel"
 
 \end_inset
 
- into the expression for the weight update in Equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:weight_update"
-
-\end_inset
-
- we get:
+ into the expression for the weight update we get:
 \begin_inset Formula 
 \[
-\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\frac{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{p_{i}(\boldsymbol{x}_{i})}=1
+\frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\frac{g_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})g_{i-1}(\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})g_{i}(\boldsymbol{x}_{i})}
 \]
 
 \end_inset
@@ -5188,12 +5134,28 @@ reference "eq:weight_update"
 \end_layout
 
 \begin_layout Standard
-Which is a constant, and so has 0 variance.
- Since this holds for all the weight updates, it also does for 
-\begin_inset Formula $w_{i}(\boldsymbol{X}_{1:i})$
+This is the weight update, and the first weight is 
+\begin_inset Formula $\frac{p_{1}(\boldsymbol{x}_{1})}{g_{1}(\boldsymbol{x}_{1})}$
 \end_inset
 
-, and we have 
+, and terms will cancel in the update, so we are finally left with 
+\begin_inset Formula $w_{i}(\boldsymbol{x}_{i})=\frac{p_{i}(\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}$
+\end_inset
+
+ .
+ This implies:
+\begin_inset Formula 
+\[
+\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i})=\mathrm{Var(w_{i}(\boldsymbol{X}_{i})|\boldsymbol{X}_{i})=0}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And so we have 
 \begin_inset Formula $\mathrm{E}(\mathrm{Var}(w_{i}(\boldsymbol{X}_{1:i})|\boldsymbol{X}_{i}))=0$
 \end_inset
 
@@ -5201,22 +5163,26 @@ Which is a constant, and so has 0 variance.
 \end_layout
 
 \begin_layout Standard
-To compute the optimal kernel we need to compute the distributions 
-\begin_inset Formula $p_{i-1}(\boldsymbol{x}_{i-1})$
+To compute the optimal kernel we need to compute the marginal distributions
+ belonging to the various 
+\begin_inset Formula $g_{i}(\boldsymbol{x}_{i})$
 \end_inset
 
- and 
-\begin_inset Formula $p_{i}(\boldsymbol{x}_{i})$
-\end_inset
-
- which we often cannot do in practice.
- We are thus left to chose a suboptimal kernel, and we will return the question
- of how to chose one later when we describe the actual implementation of
- the SMC sampler.
+, and as have touched on earlier this often cannot be done in practice.
+ We are thus left to choose a suboptimal kernel, and we will return the
+ question of how to chose one later when we describe the actual implementation
+ of the SMC sampler.
 \end_layout
 
 \begin_layout Subsection
 SMC sampler in ABC
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:smc_sampler_in_abc"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5275,11 +5241,11 @@ reference "eq:abc_sampling_distribution"
 \begin_inset Formula $\boldsymbol{x}\to\boldsymbol{y}$
 \end_inset
 
-, and hopefully as a consequence 
+, and, hopefully, as a consequence 
 \begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}|\boldsymbol{y})$
 \end_inset
 
- will converge to a distribution that is proportionalto 
+ will converge to a distribution that is proportional to 
 \begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
@@ -5342,7 +5308,7 @@ key "adaptive_smc_for_abc"
 \end_inset
 
  use an MCMC kernel for 
-\begin_inset Formula $K(\boldsymbol{x}_{t},\boldsymbol{x}_{t+1})$
+\begin_inset Formula $K(\boldsymbol{x}_{i},\boldsymbol{x}_{i+1})$
 \end_inset
 
  in the weight update step, but before describing it we need to introduce
@@ -5351,7 +5317,7 @@ key "adaptive_smc_for_abc"
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
 
-, and parameter value 
+ and parameter value 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -5398,10 +5364,9 @@ p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})
 
 \begin_layout Standard
 The reason for introducing this as a proposal distribution is to reduce
- the variance of the Metropolis-Hastings ratio we will encounter later,
- which in turn increases its performance.
- In other words: More samples give a better approximation to the marginal
- 
+ the variance of the Metropolis-Hastings ratio we will encounter in the
+ MCMC kernel, which in turn increases its performance.
+ In other words: More samples give a better approximation 
 \begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
@@ -5434,6 +5399,25 @@ The question is now how introducing more samples affects the distribution.
 , but we do not show it explicitly here.
 \end_layout
 
+\begin_layout Standard
+A note about the notation in the following: We continue to use subscripts
+ to denote the sample generated at a step in the algorithm, so 
+\begin_inset Formula $\boldsymbol{x}_{i}$
+\end_inset
+
+ refers to a variable generated at step 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ Since we now also are dealing with mulitple variables at each step, we
+ introduce superscripts to distinguish them: 
+\begin_inset Formula $\boldsymbol{x}_{i}^{(j)}$
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Subsubsection
 Proposal density with equal marginal likelihood for 
 \begin_inset Formula $\boldsymbol{\theta}$
@@ -5443,13 +5427,13 @@ Proposal density with equal marginal likelihood for
 \end_layout
 
 \begin_layout Standard
-To motivate the proposal distribution in the next section we need to establish
+To justify the weight update step in the next section we need to establish
  a result: That 
 \begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
 \end_inset
 
  and 
-\begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
+\begin_inset Formula $(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
 \end_inset
 
  have the same marginals, up to a constant, for 
@@ -5457,8 +5441,20 @@ To motivate the proposal distribution in the next section we need to establish
 \end_inset
 
 .
- Remember that it is this marginal distribution that we are interested in,
- since it is an approximation to the posterior.
+ Remember that it is this marginal distribution of 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+, 
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})$
+\end_inset
+
+ with the 
+\begin_inset Formula $\{\boldsymbol{x}\}_{1:m}$
+\end_inset
+
+ integrated out that we are interested in, since it is an approximation
+ to the posterior.
 \end_layout
 
 \begin_layout Standard
@@ -5470,7 +5466,7 @@ key "Beaumont1139"
 \end_inset
 
  and start by calculating the marginal for 
-\begin_inset Formula $(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
+\begin_inset Formula $(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})$
 \end_inset
 
 , by in
@@ -5486,7 +5482,7 @@ key "Beaumont1139"
 \noun off
 \color none
 tegrating out all the 
-\begin_inset Formula $\boldsymbol{x}_{i}$
+\begin_inset Formula $\boldsymbol{x}^{(j)}$
 \end_inset
 
 's:
@@ -5495,7 +5491,7 @@ tegrating out all the
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-\int...\int & \sum_{i=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}
+\int...\int & \sum_{j=1}^{m}I_{\epsilon,y}(\boldsymbol{x}^{(j)})\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}^{(1)}...d\boldsymbol{x}^{(m)}
 \end{align*}
 
 \end_inset
@@ -5505,14 +5501,14 @@ tegrating out all the
 
 \begin_layout Standard
 Let us extract 
-\begin_inset Formula $i=1$
+\begin_inset Formula $j=1$
 \end_inset
 
  from the sum above and look at the expression:
 \begin_inset Formula 
 \begin{align*}
-\int...\int & I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}=\\
- & p(\boldsymbol{\theta})\int...\int I_{\epsilon,y}(\boldsymbol{x}_{1})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}
+\int...\int & I_{\epsilon,y}(\boldsymbol{x}^{(j)})\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}^{(1)}...d\boldsymbol{x}^{(m)}=\\
+ & p(\boldsymbol{\theta})\int...\int I_{\epsilon,y}(\boldsymbol{x}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})d\boldsymbol{x}^{(1)}...d\boldsymbol{x}^{(m)}
 \end{align*}
 
 \end_inset
@@ -5522,16 +5518,16 @@ Let us extract
 
 \begin_layout Standard
 For the part of the integral where 
-\begin_inset Formula $i=1$
+\begin_inset Formula $j=1$
 \end_inset
 
  we get:
 \begin_inset Formula 
 \begin{align*}
-p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}_{1})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})d\boldsymbol{x}_{1} & =\\
-p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}_{1})p(\boldsymbol{x}_{1}|\boldsymbol{\theta})d\boldsymbol{x}_{1}\prod_{i=2}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}) & =\\
+p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}^{(1)})\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})d\boldsymbol{x}^{(1)} & =\\
+p(\boldsymbol{\theta})\int I_{\epsilon,y}(\boldsymbol{x}^{(1)})p(\boldsymbol{x}^{(1)}|\boldsymbol{\theta})d\boldsymbol{x}^{(1)}\prod_{j=2}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta}) & =\\
 \text{by the definition of our likelihood} & \text{}\\
-p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})\prod_{i=2}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})
+p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})\prod_{j=2}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})
 \end{align*}
 
 \end_inset
@@ -5541,11 +5537,11 @@ p_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})\prod_{i=2}^{m}p(\boldsymbol{x}_
 
 \begin_layout Standard
 Where 
-\begin_inset Formula $i\neq1$
+\begin_inset Formula $j\neq1$
 \end_inset
 
  we get (using 
-\begin_inset Formula $\boldsymbol{x}_{2}$
+\begin_inset Formula $\boldsymbol{x}^{(2)}$
 \end_inset
 
  as an example here):
@@ -5564,7 +5560,7 @@ p(\boldsymbol{\theta})\int p(\boldsymbol{x}_{2}|\boldsymbol{\theta})d\boldsymbol
 Putting it all together we have:
 \begin_inset Formula 
 \begin{align*}
-\int...\int & \sum_{i=1}^{m}I_{\epsilon,y}(\boldsymbol{x}_{i})\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}_{1}...d\boldsymbol{x}_{m}=\\
+\int...\int & \sum_{j=1}^{m}I_{\epsilon,y}(\boldsymbol{x}^{(j)})\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta})p(\boldsymbol{\theta})d\boldsymbol{x}^{(1)}...d\boldsymbol{x}^{(m)}=\\
  & \mathrm{c}_{2}mp_{\epsilon}(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})\propto\\
  & p_{\epsilon}(\boldsymbol{\theta}|\boldsymbol{y})
 \end{align*}
@@ -5585,7 +5581,7 @@ So viewing it from the perspective of the marginal of
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})\propto(\frac{1}{m}\sum_{i=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}))(\prod_{i=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}))p(\boldsymbol{\theta})\label{eq:proportional_distributions}
+p_{\epsilon}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})\propto(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})\label{eq:proportional_distributions}
 \end{equation}
 
 \end_inset
@@ -5598,7 +5594,129 @@ And our proposition is proved.
 \end_layout
 
 \begin_layout Subsubsection
-Choice of kernel
+Choice of backward kernel
+\end_layout
+
+\begin_layout Standard
+We now turn our attention to the backward kernel, and once we have specfied
+ that we have an expression for the weight update step.
+ When describing the kernels earlier we used 
+\begin_inset Formula $\boldsymbol{x}_{i}$
+\end_inset
+
+ to describe a sample/particle, but now what we call a particle will be
+ a tuple 
+\begin_inset Formula $\{\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}\}$
+\end_inset
+
+, a vector of parameter values and one or more samples.
+ Since we are using 
+\begin_inset Formula $\boldsymbol{x}$
+\end_inset
+
+ as the sample part of the particle, we denote this new tuple by 
+\begin_inset Formula $\boldsymbol{z}$
+\end_inset
+
+ to avoid confusion.
+ In the following then 
+\begin_inset Formula $p_{i}(\boldsymbol{z}_{i})=p_{\epsilon_{i}}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The general form of the weight update for a particle is as we saw in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight_update_step"
+
+\end_inset
+
+):
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w_{i}(\boldsymbol{z}_{i})=w_{i-1}(\boldsymbol{z}_{i-1})\frac{p_{i}(\boldsymbol{z}_{i})L_{i}(\boldsymbol{z}_{i},\boldsymbol{z}_{i-1})}{p_{i-1}(\boldsymbol{z}_{i-1})K(\boldsymbol{z}_{i-1},\boldsymbol{z}_{i})}\label{eq:abc_weight_update}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But as we cannot typically use an optimal backward kernel 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "adaptive_smc_for_abc"
+
+\end_inset
+
+, and us, now use another idea developed in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "citeulike:637817"
+
+\end_inset
+
+, where an MCMC kernel with invariant distribution 
+\begin_inset Formula $p_{i}(\boldsymbol{z}_{i})$
+\end_inset
+
+ is used as an approximation to the optimal backward kernel.
+ We do not give details of this approximation, and instead refer to the
+ referenced articles.
+ The backward kernel has the following form:
+\begin_inset Formula 
+\[
+L(\boldsymbol{z}_{i},\boldsymbol{z}_{i-1})=\frac{p_{i}(\boldsymbol{z}_{i-1})K(\boldsymbol{z}_{i-1},\boldsymbol{z}_{i})}{p_{i}(\boldsymbol{z}_{i})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting this into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:abc_weight_update"
+
+\end_inset
+
+) we get:
+\begin_inset Formula 
+\begin{align*}
+w_{i}(\boldsymbol{z}_{i}) & =w_{i-1}(\boldsymbol{z}_{i-1})\frac{p_{i}(\boldsymbol{z}_{i-1})}{p_{i-1}(\boldsymbol{z}_{i-1})}\\
+ & \text{by using (\ref{eq:proportional_distributions})}\\
+ & \propto w_{i-1}(\boldsymbol{z}_{i-1})\frac{\sum_{j=1}^{m}I_{\epsilon_{i},\boldsymbol{y}}(\boldsymbol{x}_{i-1}^{(j)})}{\sum_{j=1}^{m}I_{\epsilon_{i-1},\boldsymbol{y}}(\boldsymbol{x}_{i-1}^{(j)})}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is weight update step as it is used in the implementation.
+ We still have left to specify 
+\begin_inset Formula $K(\boldsymbol{z}_{i},\boldsymbol{z}_{i+1})$
+\end_inset
+
+ however, which needs to be an MCMC kernel with invariant density 
+\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\{\boldsymbol{x}\}_{1:m}|\boldsymbol{y})$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Specification of particle update kernel
 \end_layout
 
 \begin_layout Standard
@@ -5611,11 +5729,12 @@ key "adaptive_smc_for_abc"
 
  the kernel uses a Metropolis-Hastings (MH) step to achieve the desired
  invariant density.
- To show the form of the kernel we start by defining a proposal distribution:
+ To show the form of the kernel update step we start by defining a proposal
+ distribution:
 \begin_inset Formula 
-\[
-q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})
-\]
+\begin{equation}
+q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i+1})\label{eq:proposal_density}
+\end{equation}
 
 \end_inset
 
@@ -5623,13 +5742,36 @@ q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsy
 \end_layout
 
 \begin_layout Standard
-The MH-ratio term is:
+The distribution 
+\begin_inset Formula $q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})$
+\end_inset
+
+ provides proposals for the parameter values, and it is indexed by 
+\begin_inset Formula $i$
+\end_inset
+
+ to make clear that its form is allowed to change when 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ changes.
+ The actual distribution used.
+ We have removed the index 
+\begin_inset Formula $i$
+\end_inset
+
+ on 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ in the following to avoid unnecessary clutter in the following.
+ The MH-ratio is defined as:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\alpha(i,i+1)=\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}\right)\label{eq:mh-ratio}
+\alpha(i,i+1)=\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)\label{eq:mh-ratio}
 \end{equation}
 
 \end_inset
@@ -5639,24 +5781,32 @@ The MH-ratio term is:
 
 \begin_layout Standard
 We know the invariant density, 
-\begin_inset Formula $p_{\epsilon_{i}}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
+\begin_inset Formula $p_{\epsilon}(\boldsymbol{\theta},\boldsymbol{x}_{1:m}|\boldsymbol{y})$
 \end_inset
 
-, and the proposal density, and from those we can determine what the Markov
- chain update probability must look like: 
+, and the proposal density (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:proposal_density"
+
+\end_inset
+
+), and from those we can determine what the Markov chain update probability
+ must look like: 
 \begin_inset Formula 
 \[
-P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)
+P(i,i+1)=q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i+1})\alpha(i,i+1)
 \]
 
 \end_inset
 
-We check our suggestion for the update probability by showing that the detailed
- balance equation is fulfilled:
+Using this we can check that the suggestion for the update probability gives
+ the wanted invariant density, by showing that the detailed balance equation
+ is fulfilled:
 \begin_inset Formula 
-\[
-p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)
-\]
+\begin{equation}
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})P(i,i+1)=p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})P(i+1,i)\label{eq:balance_equation}
+\end{equation}
 
 \end_inset
 
@@ -5674,8 +5824,8 @@ Expanding
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & \alpha(i,i+1)=\\
-p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\alpha(i+1,i)
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}) & \alpha(i,i+1)=\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})\alpha(i+1,i)
 \end{align*}
 
 \end_inset
@@ -5684,30 +5834,27 @@ p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbo
 \end_layout
 
 \begin_layout Standard
-If 
+Look at the case where 
 \begin_inset Formula $\alpha(i,i+1)=1$
 \end_inset
 
 , then 
-\begin_inset Formula $\alpha(i+1,i)=\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})}<1$
+\begin_inset Formula $\alpha(i+1,i)=\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}<1$
 \end_inset
 
-, 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Also check when it is equal to 1
-\end_layout
+, and we have by inserting into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:balance_equation"
 
 \end_inset
 
- and we have:
+):
 \begin_inset Formula 
 \begin{align*}
-p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1}) & =\\
-p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}|\boldsymbol{\theta}_{i})} & =\\
-p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}|\boldsymbol{\theta}_{i+1})
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}) & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})\frac{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})} & =\\
+p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})
 \end{align*}
 
 \end_inset
@@ -5716,25 +5863,16 @@ p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbo
 \end_layout
 
 \begin_layout Standard
-Similarly when 
+Showing that balance equation is fulfilled in this case.
+ Using the same calculation the other way we can show it holds when 
 \begin_inset Formula $\alpha(i+1,i)=1$
 \end_inset
 
-.
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write more about conditions
-\end_layout
-
-\end_inset
-
-
+ as well.
 \end_layout
 
 \begin_layout Subsubsection
-Metropolis-Hastings ratio without likelihood
+Metropolis-Hastings ratio with likelihood
 \end_layout
 
 \begin_layout Standard
@@ -5744,25 +5882,31 @@ The likelihood function,
 
 , appears in the Metropolis-Hastings ratio above, but we cannot evaluate
  it.
- It is here we can use the result in Equation 
+ It is here we can use the result in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:proportional_distributions"
 
 \end_inset
 
-, by replacing the MH-ratio with a proportional one:
+), by replacing the MH-ratio with one using the proportional distributions:
 \begin_inset Formula 
 \begin{multline}
-\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)\propto\\
+\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)\propto\\
 \text{insert expression from \ref{eq:proportional_distributions}}\\
-\min\left(1,\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i+1}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
-\min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon_{i},y}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)\label{eq:mh_ratio_without_likelihood}
+\min\left(1,\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
+\min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)\label{eq:mh_ratio_without_likelihood}
 \end{multline}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+It is this equation for the MH update that is used in the implementation
+ of the algorithm.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -5772,7 +5916,7 @@ Intuitively we can see what the ratio is doing: If more of the samples generated
 \end_inset
 
  lie within 
-\begin_inset Formula $\epsilon_{i}$
+\begin_inset Formula $\epsilon$
 \end_inset
 
  of 
@@ -5786,14 +5930,9 @@ Intuitively we can see what the ratio is doing: If more of the samples generated
 , the update will be accepted.
  If fewer particles lie within this radius, there is less of a chance of
  the update being accepted.
- It is this equation for the MH update (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:mh_ratio_without_likelihood"
-
-\end_inset
-
-) that is used in the implementation of the algorithm.
+ If we only use one sample each particle in the algorithm, the acceptance
+ ratio is always either 0 or 1.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -5846,7 +5985,7 @@ epsilon_{stop},
 \backslash
 alpha,
 \backslash
-beta,N$
+beta,N,M$
 \end_layout
 
 \begin_layout Plain Layout
@@ -5879,7 +6018,7 @@ State $
 \backslash
 boldsymbol{
 \backslash
-theta}_{n} 
+theta} 
 \backslash
 leftarrow$ $N$ samples from $p(
 \backslash
@@ -5892,15 +6031,21 @@ theta})$
 
 
 \backslash
-State $particles 
+State $
 \backslash
-leftarrow $ $N$ samples from $p(
+boldsymbol{x} 
+\backslash
+leftarrow$ $M$ samples from $p(
 \backslash
 boldsymbol{x}|
 \backslash
 boldsymbol{
 \backslash
-theta})$
+theta})$ for each of the $N$ values of $
+\backslash
+boldsymbol{
+\backslash
+theta}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -5909,7 +6054,7 @@ theta})$
 \backslash
 State $
 \backslash
-boldsymbol{W}_{n}
+boldsymbol{w}
 \backslash
 leftarrow [
 \backslash
@@ -5937,13 +6082,81 @@ epsilon_{stop}$}
 \backslash
 State $
 \backslash
+epsilon_{prev} 
+\backslash
+leftarrow 
+\backslash
+epsilon$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
 epsilon 
 \backslash
-leftarrow FindNextEpsilon(
+leftarrow 
+\backslash
+mathrm{FindNextEpsilon}(
 \backslash
 epsilon,
 \backslash
-boldsymbol{W}_{n})$
+boldsymbol{w})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Update and normalize weights based on new value for $
+\backslash
+epsilon$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{w} 
+\backslash
+propto 
+\backslash
+boldsymbol{w}_{prev}
+\backslash
+frac{
+\backslash
+sum_{j=1}^{m}I_{
+\backslash
+epsilon,
+\backslash
+boldsymbol{y}}(
+\backslash
+boldsymbol{x}_{prev}^{(j)})}{
+\backslash
+sum_{j=1}^{m}I_{
+\backslash
+epsilon_{prev},
+\backslash
+boldsymbol{y}}(
+\backslash
+boldsymbol{x}_{prev}^{(j)})}$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $ess 
+\backslash
+leftarrow 
+\backslash
+mathrm{ESS}(
+\backslash
+boldsymbol{w})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -5963,13 +6176,38 @@ State $(
 \backslash
 boldsymbol{
 \backslash
-theta}, particles) 
+theta}, 
+\backslash
+boldsymbol{x}) 
 \backslash
 leftarrow 
 \backslash
-mathrm{Resample}$
+mathrm{Resample}(
+\backslash
+boldsymbol{
+\backslash
+theta}, 
+\backslash
+boldsymbol{x}, 
+\backslash
+boldsymbol{w})$
 \backslash
 Comment{Resampling}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State $
+\backslash
+boldsymbol{w}
+\backslash
+leftarrow [
+\backslash
+frac{1}{N},...,
+\backslash
+frac{1}{N}]$
 \end_layout
 
 \begin_layout Plain Layout
@@ -5983,9 +6221,39 @@ EndIf
 
 
 \backslash
-For{$i
+State $(
 \backslash
-leftarrow[1,..,N]$}
+boldsymbol{
+\backslash
+theta}, 
+\backslash
+boldsymbol{x})
+\backslash
+leftarrow 
+\backslash
+mathrm{Mutate}(
+\backslash
+epsilon, 
+\backslash
+boldsymbol{x},  
+\backslash
+boldsymbol{
+\backslash
+theta})$
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+EndWhile
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Do a final resampling
 \end_layout
 
 \begin_layout Plain Layout
@@ -5996,31 +6264,41 @@ State $(
 \backslash
 boldsymbol{
 \backslash
-theta}_{n}^{(i)}, particles^{(i)})
+theta}, 
+\backslash
+boldsymbol{x}) 
 \backslash
 leftarrow 
 \backslash
-mathrm{Mutate}(
-\backslash
-epsilon, particles^{(i)}, W_{n-1}^{(i)}, 
+mathrm{Resample}(
 \backslash
 boldsymbol{
 \backslash
-theta}^{(i)})$
+theta}, 
+\backslash
+boldsymbol{x}, 
+\backslash
+boldsymbol{w})$
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-EndFor
+State Return a sample set
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-EndWhile
+State 
+\backslash
+textbf{return} $
+\backslash
+boldsymbol{
+\backslash
+theta}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6036,7 +6314,7 @@ newline
 \backslash
 Function{ESS}{$
 \backslash
-boldsymbol{W_{n}}$}
+boldsymbol{w}$}
 \end_layout
 
 \begin_layout Plain Layout
@@ -6047,7 +6325,7 @@ State
 \backslash
 textbf{return} $(
 \backslash
-sum_{i=1}^{N}W_{n}^{(i)})^{-1}$
+sum_{i=1}^{N}(w^{(i)})^{2})^{-1}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6072,7 +6350,18 @@ Function{FindNextEpsilon}{$
 \backslash
 epsilon_{n-1},
 \backslash
-boldsymbol{w_{n-1}}$} 
+boldsymbol{w_{n-1}}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State The weights $
+\backslash
+boldsymbol{w}_{n}$ are computed for different values of $
+\backslash
+epsilon_{n}$ when solving the equation below
 \end_layout
 
 \begin_layout Plain Layout
@@ -6081,19 +6370,11 @@ boldsymbol{w_{n-1}}$}
 \backslash
 State Solve $ESS(
 \backslash
-frac{I_{
-\backslash
-epsilon_{n}}(
-\backslash
-boldsymbol{x}_{k})}{I_{
-\backslash
-epsilon_{n-1}}(
-\backslash
-boldsymbol{x}_{k})})=
+boldsymbol{w}_{n})=
 \backslash
 alpha ESS(
 \backslash
-boldsymbol{w_{n-1}})$ for $
+boldsymbol{w}_{n-1})$ for $
 \backslash
 epsilon_{n}$
 \end_layout
@@ -6129,13 +6410,28 @@ newline
 \backslash
 Function{Mutate}{$
 \backslash
-epsilon,particle,
+epsilon,
 \backslash
-boldsymbol{w},
+boldsymbol{x}_{old},
 \backslash
 boldsymbol{
 \backslash
 theta}_{old}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+State Note that the $q(
+\backslash
+boldsymbol{
+\backslash
+theta}|
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})$ distribution is allowed to change between calls to mutate
 \end_layout
 
 \begin_layout Plain Layout
@@ -6163,9 +6459,11 @@ theta}_{old})$
 
 
 \backslash
-State $particle_{new} 
+State $
 \backslash
-leftarrow$ Sample from $p(
+boldsymbol{x}_{new} 
+\backslash
+leftarrow$ Sample $m$ samples from $p(
 \backslash
 boldsymbol{x}|
 \backslash
@@ -6180,15 +6478,55 @@ theta}_{new})$
 \backslash
 State $r 
 \backslash
-leftarrow 
+leftarrow  
 \backslash
 min(1,
 \backslash
-frac{I_{
+frac{
 \backslash
-epsilon_{n}}(particle_{new})}{I_{
+sum_{j=1}^{m}
 \backslash
-epsilon_{n}}(particle)})$
+mathrm{I}_{
+\backslash
+epsilon,
+\backslash
+boldsymbol{y}}(
+\backslash
+boldsymbol{x}_{new}^{(j)})q(
+\backslash
+boldsymbol{
+\backslash
+theta}_{new},
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})p(
+\backslash
+boldsymbol{
+\backslash
+theta}_{new})}{
+\backslash
+sum_{j=1}^{m}
+\backslash
+mathrm{I}_{
+\backslash
+epsilon,
+\backslash
+boldsymbol{y}}(
+\backslash
+boldsymbol{x}_{old}^{(j)})q(
+\backslash
+boldsymbol{
+\backslash
+theta}_{old},
+\backslash
+boldsymbol{
+\backslash
+theta}_{new})p(
+\backslash
+boldsymbol{
+\backslash
+theta}_{old})}$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6210,7 +6548,9 @@ textbf{return} $(
 \backslash
 boldsymbol{
 \backslash
-theta},particle)$
+theta}_{old},
+\backslash
+boldsymbol{x}_{old})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6230,7 +6570,9 @@ textbf{return} $(
 \backslash
 boldsymbol{
 \backslash
-theta}_{new},particle_{new})$
+theta}_{new},
+\backslash
+boldsymbol{x}_{new})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6262,16 +6604,18 @@ Function{Resample}{$
 \backslash
 boldsymbol{
 \backslash
-theta}, particles, 
+theta}, 
 \backslash
-boldsymbol{w}$, N}
+boldsymbol{x}, 
+\backslash
+boldsymbol{w}$}
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-State Sample indices from a multinomial distribution $f(x_{1},...x_{N};N,w_{1},...,w_{
+State Sample indices from a multinomial distribution $f(y_{1},...y_{N};N,w_{1},...,w_{
 N})$
 \end_layout
 
@@ -6285,11 +6629,15 @@ textbf{return} $(
 \backslash
 theta_{1}^{(1)},...,
 \backslash
-theta_{1}^{(x_{1})},...,
+theta_{1}^{(y_{1})},...,
 \backslash
 theta_{N}^{(1)},...,
 \backslash
-theta_{N}^{(x_{N})},particles_{1}^{(1)},...,particles_{N}^{(x_{N})})$
+theta_{N}^{(y_{N})},
+\backslash
+boldsymbol{x}_{1}^{(1)},...,
+\backslash
+boldsymbol{x}_{N}^{(y_{N})})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -6429,7 +6777,7 @@ key "adaptive_smc_for_abc"
 :
 \begin_inset Formula 
 \begin{equation}
-\mathrm{ESS}(\boldsymbol{w}_{n})=\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})\label{eq:ess_update}
+\mathrm{ESS}(\boldsymbol{w}_{i})=\alpha\mathrm{ESS}(\boldsymbol{w}_{i-1})\label{eq:ess_update}
 \end{equation}
 
 \end_inset
@@ -6459,7 +6807,7 @@ This plots shows an example of candidate values for
 \begin_inset Formula $\epsilon$
 \end_inset
 
- during iteration of the algorithm in the example we will see in section
+ during an iteration of the algorithm in the example we will see in section
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6469,10 +6817,10 @@ reference "sub:Estimating-expected-value"
 
 .
  The y-axis is showing 
-\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{n})-\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})$
+\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{i})-\alpha\mathrm{ESS}(\boldsymbol{w}_{i-1})$
 \end_inset
 
-, and the new value will be were this expression equals 0.
+, and the new value will be where this expression equals 0.
  In this run 
 \begin_inset Formula $\alpha=0.9$
 \end_inset
@@ -6505,26 +6853,6 @@ Where
 \end_inset
 
  is some given constant that will be explained later.
- The dependency on 
-\begin_inset Formula $\epsilon_{n}$
-\end_inset
-
- shows up if we expand the expression for how we calculate 
-\begin_inset Formula $\boldsymbol{w}_{n}$
-\end_inset
-
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\boldsymbol{w}_{n}=\boldsymbol{w}_{n-1}\frac{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n}}(\boldsymbol{x}_{n-1}^{(i)})}{\sum_{i=1}^{m}\mathrm{I}_{\epsilon_{n-1}}(\boldsymbol{x}_{n-1}^{(i)})}\label{eq:weight_update-1}
-\end{equation}
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -6534,19 +6862,19 @@ Where each particle has
 
  replicates.
  As a function of 
-\begin_inset Formula $\epsilon_{n}$
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
  (
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "eq:weight_update-1"
+reference "eq:ess_update"
 
 \end_inset
 
 ) is not continuous, so we cannot find the new weight by finding the derivative,
  and it is not certain that an exact solution exists for all 
-\begin_inset Formula $\epsilon_{n}$
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
  either.
@@ -6563,25 +6891,27 @@ reference "eq:ess_update"
 \end_inset
 
  is to find a 
-\begin_inset Formula $\epsilon_{n}$
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
  so that we make reasonable progress towards 0.
  Remember that we would like 
-\begin_inset Formula $\epsilon_{n}\to0$
+\begin_inset Formula $\epsilon_{i}\to0$
 \end_inset
 
  as 
-\begin_inset Formula $n$
+\begin_inset Formula $i$
 \end_inset
 
  increases to get a better and better approximation to the distribution.
  The other concern when updating 
-\begin_inset Formula $\epsilon_{n}$
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
- is to avoid taking a too big step so that algorithm collapses.
- We see that all the weights can collapse to 0 if the step is too big.
+ is to avoid taking a too big step so that too many particles get their
+ weight set to 0, causing frequent resampling an causing poor exploration
+ of the probability space, leading to a poor approximation to the target
+ distribution.
 \end_layout
 
 \begin_layout Standard
@@ -6594,21 +6924,29 @@ To control the update schedule, the parameter
 \begin_inset Formula $\alpha$
 \end_inset
 
- favours taking large steps, which means rapid progress towards 0, and hence
- quicker overall computation, but at the danger of the algorithm collapsing,
- and even if it does not, the final approximation may be bad.
+ (
+\begin_inset Formula $\approx0$
+\end_inset
+
+) favours taking large steps, which means rapid progress towards 0, and
+ hence quicker overall computation, but at the danger of the final approximation
+ being bad.
  A large 
 \begin_inset Formula $\alpha$
 \end_inset
 
- works in the opposition direction: The final approximation is good, with
+ (
+\begin_inset Formula $\approx1$
+\end_inset
+
+)works in the opposition direction: The final approximation is good, with
  the caveat that the statistics we have chosen actually gives a good approximati
 on to the distribution when 
-\begin_inset Formula $\epsilon_{n}\to0$
+\begin_inset Formula $\epsilon\to0$
 \end_inset
 
 .
- The downside is that the approximation progresses more slowly.
+ The downside is that the algorithm progresses more slowly.
 \end_layout
 
 \begin_layout Standard
@@ -7878,7 +8216,7 @@ status open
 
 \begin_layout Plain Layout
 
-devtools::devtools::uninstall("abcProject")
+devtools::uninstall("abcProject")
 \end_layout
 
 \end_inset
