@@ -418,17 +418,7 @@ A different approach is to view
 \begin_inset Formula $\boldsymbol{\theta}_{1}\neq\boldsymbol{\theta}$
 \end_inset
 
-, resulting in probability 1 or 0 respectively
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Make more clear
-\end_layout
-
-\end_inset
-
-.
+, resulting in probability 1 or 0 respectively.
 \end_layout
 
 \begin_layout Standard
@@ -1259,7 +1249,11 @@ Interpret the rows to be the state at
 \begin_inset Formula $S\to R$
 \end_inset
 
- by reading the value at row 1 and column 3, which is 0.1.
+ by reading the value at row 1 and column 3, which is 
+\begin_inset Formula $\frac{1}{10}$
+\end_inset
+
+.
  Using the transition probabilities we can generate a random sequence of
  states: Starting in 
 \begin_inset Formula $S$
@@ -3410,8 +3404,8 @@ In such settings what are termed likelihood-free or ABC methods can be employed
 
 \begin_layout Standard
 Likelihood-free methods are especially popular in fields like population
- geneitcs, epidemology, biology and ecology, where it is often the case
- that the model one wants to estimate parameters for is in the form of sone
+ genetics, epidemology, biology and ecology, where it is often the case
+ that the model one wants to estimate parameters for is in the form of some
  stochastic process.
  This means that given a set of parameters it is possible to run the model
  and get a realisation, but it is not clear how to go backwards from a realisati
@@ -3812,17 +3806,32 @@ p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymb
 \end_layout
 
 \begin_layout Standard
-Several strategies have been developed for dealing with the difficulties
- in ABC: Finding suitable statistics automatically and improving the efficiency,
- being two areas where work has been done.
- See 
+Several strategies have been developed for dealing with the two main difficultie
+s in ABC: Finding suitable statistics automatically and improving the efficiency
+, see 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
 
 \end_inset
 
- for an overview of areas of research.
+ for an overview.
+ In the following we will focus on an method of improving the efficiency,
+ and only give a short description of the problem of finding statistics
+ to use.
+ We make an assumption that proper statistics have already been chosen for
+ the problem at hand.
+ We give some examples of statistics used in problems where ABC methods
+ have been employed below for illustration purposes.
+\end_layout
+
+\begin_layout Standard
+Before moving on we also note that we will assume our observed data to be
+ without error, if it was not it would introduce more complexity since 
+\begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})$
+\end_inset
+
+ would then be viewed as having a probability distribution.
 \end_layout
 
 \begin_layout Subsection
@@ -3840,20 +3849,6 @@ From the above we see that the approximation works when we choose sufficient
 
 , it is a sufficient statistic, but in a practial problem it is unlikely
  we can use the sample directly in this way for the reasons pointed to above.
-\end_layout
-
-\begin_layout Standard
-Our main focus in this report is however on a computational method for generatin
-g samples so that the defined distance between the statistics of the generated
- samples and the observed samples tend to 0 as we progress: 
-\begin_inset Formula $d(S(\boldsymbol{x}),S(\boldsymbol{y}))\to0$
-\end_inset
-
-.
- We make an assumption that proper statistics have been chosen for the problem
- at hand, and will not focus on the difficult problem of finding them.
- We give some examples of statistics used in problems where ABC methods
- have been employed below for illustration purposes.
 \end_layout
 
 \begin_layout Standard
@@ -4166,9 +4161,9 @@ MCMC in ABC
 \end_layout
 
 \begin_layout Standard
-Turning to the computational aspect of ABC we motivate the development of
- the SMC method which will be our focus by showing how MCMC can be used
- in an ABC setting.
+Turning to the computational aspect, we motivate the development of the
+ SMC method which will be our focus by showing how MCMC can be used in an
+ ABC setting.
  In Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7071,6 +7066,29 @@ A single observation,
 \end_layout
 
 \begin_layout Standard
+The proposal distribution 
+\begin_inset Formula $q(\theta_{i},\theta_{i+1})$
+\end_inset
+
+ in the kernel update is a random walk using an 
+\begin_inset Formula $\mathrm{N}(\theta_{i},\sigma_{\theta_{i}}^{2})$
+\end_inset
+
+ distribution, where 
+\begin_inset Formula $\sigma_{\theta_{i}}^{2}$
+\end_inset
+
+ set to be twice the empirical variance of the 
+\begin_inset Formula $\theta$
+\end_inset
+
+-values for all the particles.
+ This variance term was also used in the other articles, and we provide
+ no rigourous arguments for its use here, just pointing out it gives good
+ results in practice.
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -7612,7 +7630,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/ma_aut_09.png
-	scale 80
+	scale 60
 
 \end_inset
 
@@ -7634,6 +7652,13 @@ In this run 1000 particles were used, there were no particle replicates,
  the likelihood plot.
  The plot on the lower left shows the likelihood plot, and on the lower
  right a heatmap showing the particle density is shown.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:autocovariance_dist_ma_plot1"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7672,6 +7697,13 @@ Trace plot of
  They look quite like what we saw in the toy example, which is a good sign:
  The algorithm is making steady progress until the stopping criterion is
  reached.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:autocovariance_dist_ma_plot2"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -7730,7 +7762,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/ma_raw_dist_09.png
-	scale 80
+	scale 60
 
 \end_inset
 
@@ -7880,7 +7912,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/ma_raw_dist_99.png
-	scale 80
+	scale 60
 
 \end_inset
 
@@ -7957,7 +7989,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename figures/ma_raw_dist_09_5rep.png
-	scale 80
+	scale 60
 
 \end_inset
 
@@ -8264,7 +8296,7 @@ Parallelize the sample generation.
 Implement parts of the code in C/C++.
  It is possible to include C/C++ code in various ways in R-packages, and
  this can make the code run faster.
- The sample generation can be targeted first for being rewritten in C/C++.
+ The sample generation can be targeted first for being rewritten is.
  This is a domain specific function, so it will need to be done for each
  problem the algorithm is applied to.
 \end_layout
