@@ -228,9 +228,9 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview.
- In this report we focus on explaining one computational strategy that there
- are several variations on in the ABC literature: Use of what is called
- Sequential Monte Carlo (SMC) when obtaining samples from the approximation
+ In this report we focus on one computational strategy that there are several
+ variations on in the ABC literature: Use of what is called a Sequential
+ Monte Carlo (SMC) method when obtaining samples from the approximation
  to the posterior.
  More specifically we will focus on the work done in 
 \begin_inset CommandInset citation
@@ -244,19 +244,52 @@ key "adaptive_smc_for_abc"
 
 \begin_layout Standard
 We start with a quick look at the basics of Bayesian inference in section
- 2, and point out that there can often be a problem in evaluating the posterior
- probability.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Bayesian-inference"
+
+\end_inset
+
+, and point out that there is often a problem in evaluating the posterior
+ probability for various reasons.
  From here we look at some strategies for approximating the posterior, before
- we move on to the situation where we cannot evaluate the likelihood function,
- and it is here ABC becomes an alternative.
- We then describe ABC in general in section 3, before looking at an SMC
- in ABC approach in section 4.
- We end in section 5 by showing the algorithm implemented in two simple
- example scenarios.
+ we move on to the situation where we cannot evaluate the likelihood, and
+ it is here ABC becomes an alternative.
+ We then describe ABC in general in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Approximate-Bayesian-Computation"
+
+\end_inset
+
+, before looking at an SMC in ABC approach in section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Sequential-Monte-Carlo"
+
+\end_inset
+
+, and describing an algorithm implementation.
+ In section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Examples"
+
+\end_inset
+
+ we run the algorithm on two simple example scenarios.
 \end_layout
 
 \begin_layout Section
 Bayesian inference
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Bayesian-inference"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -265,8 +298,7 @@ We start with a quick overview of the basics of Bayesian inference to better
 \end_layout
 
 \begin_layout Standard
-Our main goal here is to fit a model we have specified to some dataset,
- 
+Our goal is to fit a model we have specified to some dataset, 
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
@@ -277,7 +309,7 @@ Our main goal here is to fit a model we have specified to some dataset,
 
 \begin_layout Standard
 To estimate the model parameters we use functions of the observed data.
- We call a such functions of the data statistics, and will denote it 
+ We call such functions of the data statistics, and will denote them 
 \begin_inset Formula $S(\boldsymbol{y})$
 \end_inset
 
@@ -318,19 +350,20 @@ To make it more concrete,
 \begin_inset Formula $\boldsymbol{y}$
 \end_inset
 
- could be the heights of 50 people, and then the random variable 
-\begin_inset Formula $\boldsymbol{X}$
+ could be the measured heights of 50 people chosen at random in a population.
+ The random variable 
+\begin_inset Formula $\boldsymbol{Y}$
 \end_inset
 
- would be a function from the sample space, which here would the set of
- all permutations of 50 people in the population, into 
+ would be a function from the sample space, which here would be the set
+ of all permutations of 50 people in the population, into 
 \begin_inset Formula $\mathbb{R}^{50}$
 \end_inset
 
 .
  A statistic of interest could be the average height of the population,
  and to estimate it we could define 
-\begin_inset Formula $\hat{\theta}=\frac{1}{50}\sum_{i=1}^{50}Y_{i}$
+\begin_inset Formula $\hat{\theta}=\frac{1}{50}\sum_{i=1}^{50}y_{i}$
 \end_inset
 
 , where 
@@ -341,11 +374,11 @@ To make it more concrete,
 \begin_inset Formula $\theta$
 \end_inset
 
-, using the smaller sample set.
+, using the smaller sample set of 50 people.
 \end_layout
 
 \begin_layout Standard
-There are two approaches to viewing 
+There are two approaches to viewing the parameters in a model 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -389,7 +422,7 @@ A different approach is to view
 \end_inset
 
  is allowed to take on values from a set, but that some values may be more
- likely than others.
+ likely than others, that is: It has a probability distribution.
  This changes the form of the answer we give to our goal from that of the
  frequentist approach.
  We now answer questions of the type: How likely is 
@@ -410,15 +443,7 @@ A different approach is to view
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
- is fixed, and either 
-\begin_inset Formula $\boldsymbol{\theta}_{1}=\boldsymbol{\theta}$
-\end_inset
-
- or 
-\begin_inset Formula $\boldsymbol{\theta}_{1}\neq\boldsymbol{\theta}$
-\end_inset
-
-, resulting in probability 1 or 0 respectively.
+ is fixed.
 \end_layout
 
 \begin_layout Standard
@@ -569,7 +594,7 @@ There are expressions for the two terms on the right side:
 \begin_inset Formula $p(\boldsymbol{\theta}|\boldsymbol{y})$
 \end_inset
 
- is not always on such a nice form.
+ does not always have such a nice form.
 \end_layout
 
 \begin_layout Subsection
@@ -609,7 +634,7 @@ Concentrating on the
 \begin_layout Standard
 The expression for the likelihood is also formulated as a probability distributi
 on.
- Keeping with the height example we can propose: 
+ Fot the height example: 
 \begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})\sim\mathrm{N}(\theta_{1},\theta_{2})$
 \end_inset
 
@@ -652,7 +677,7 @@ on.
 \end_inset
 
 , are independent.
- We can then write:
+ We then have the following expression for the posterior:
 \end_layout
 
 \begin_layout Standard
@@ -684,10 +709,6 @@ Going from the third to the fourth line above involves a bit of algebra,
 wide false
 sideways false
 status open
-
-\begin_layout Plain Layout
-
-\end_layout
 
 \begin_layout Plain Layout
 \align center
@@ -759,6 +780,13 @@ Illustration of conjugacy using the fact that the beta distribution is the
 \end_inset
 
 .
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Illustration-of-conjugacy"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -772,14 +800,14 @@ Illustration of conjugacy using the fact that the beta distribution is the
 \end_layout
 
 \begin_layout Standard
-There are a couple of points of interest in Equation 
+There are a couple of points of interest in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:conjugate_prior2"
 
 \end_inset
 
-.
+).
  One is that the final expression does not involve the actual data points
  in 
 \begin_inset Formula $\boldsymbol{y}$
@@ -837,12 +865,19 @@ The other point is that the final expression has the form of the probability
 d to be a normal distribution, so we say that the normal prior distribution
  is a conjugate family for normal likelihood.
  Several such couplings exist, for instance the beta prior distribution
- is a conjugate family for the binomial likelihood.
+ is a conjugate family for the binomial likelihood as shown in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Illustration-of-conjugacy"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
 Using the conjugacy property makes the posterior have a closed form, which
- makes it easy to work with.
+ is easy to work with.
  The problem is that we cannot always use this property.
  It may be that the chosen prior and/or likelihood has a form where the
  posterior will be a non-standard distribution or not a closed expression.
@@ -892,7 +927,7 @@ reference "eq:expected_value"
 onal integral which will be more difficult to estimate.
 \begin_inset Formula 
 \begin{equation}
-\mathrm{E}(h(\theta)|y)\approx\frac{1}{N}\sum_{n=1}^{N}h(\hat{\theta}_{n})\label{eq:expected_value_approximation}
+\mathrm{E}(h(\theta)|y)\approx\frac{1}{N}\sum_{n=1}^{N}h(\hat{\theta}(n))\label{eq:expected_value_approximation}
 \end{equation}
 
 \end_inset
@@ -911,7 +946,7 @@ reference "eq:expected_value_approximation"
 ) we show a method for approximating the expected value without evaluating
  the integral.
  In the formula 
-\begin_inset Formula $\hat{\theta}_{n}$
+\begin_inset Formula $\hat{\theta}(n)$
 \end_inset
 
  denotes a simulated sample, that is: It is a draw from 
@@ -920,7 +955,7 @@ reference "eq:expected_value_approximation"
 
 ).
  Intuitively if we have a large collection of samples, 
-\begin_inset Formula $\hat{\boldsymbol{\theta}}=\{\hat{\theta}_{1},...,\hat{\theta}_{N}\}$
+\begin_inset Formula $\hat{\boldsymbol{\theta}}=\{\hat{\theta}(1),...,\hat{\theta}(N)\}$
 \end_inset
 
 , and compute the average of 
@@ -949,7 +984,7 @@ key "givens2012computational"
 
 \end_inset
 
-.
+ for more information.
 \end_layout
 
 \begin_layout Standard
@@ -998,7 +1033,7 @@ status open
 
 \begin_layout Plain Layout
 Approximations to a normal distribution using samples.
- The solid lines show the true distribution, and the bars are a histogram
+ The solid lines show the true distribution, and the bars are histograms
  of the samples.
 \begin_inset CommandInset label
 LatexCommand label
@@ -1024,7 +1059,7 @@ MCMC methods are ubiquitous in Bayesian computation, but it is worth remembering
  they are not the only stochastic methods available for approximating a
  probability distribution.
  We touch upon another method, importance sampling, later on since it is
- an ingredient in the SMC method which is our main focus.
+ an ingredient in the SMC method which will be our main focus.
  
 \end_layout
 
@@ -1122,15 +1157,14 @@ key "gamerman2006markov"
 
 \end_inset
 
-, for more detailed discussions.
+.
 \end_layout
 
 \begin_layout Standard
 The core idea of an MCMC method is to use what is called a Markov chain,
  which is a form of stochastic process, to generate samples from some distributi
 on.
- To start us off we define what a stochastic process is: A stochastic process
- is a collection of indexed random variables, 
+ A stochastic process is a collection of indexed random variables, 
 \begin_inset Formula $X(t)$
 \end_inset
 
@@ -1143,8 +1177,8 @@ on.
 \end_layout
 
 \begin_layout Standard
-For instance the weather each day could be viewed as realisations of a stochasit
- process.
+For instance the weather each day could be viewed as realisations of a stochasti
+c process.
  Let 
 \begin_inset Formula $t$
 \end_inset
@@ -1207,7 +1241,7 @@ We need to introduce some more terms related to Markov processes.
 \begin_inset Formula $t$
 \end_inset
 
- to to next state at step 
+ to the next state at step 
 \begin_inset Formula $t+1$
 \end_inset
 
@@ -1219,7 +1253,7 @@ We need to introduce some more terms related to Markov processes.
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\left[\begin{array}{ccc}
+\mathrm{P}=\left[\begin{array}{ccc}
 \frac{1}{2} & \frac{2}{5} & \frac{1}{10}\\
 \frac{3}{10} & \frac{2}{5} & \frac{3}{10}\\
 \frac{1}{5} & \frac{3}{10} & \frac{1}{2}
@@ -1304,6 +1338,9 @@ reference "eq:transition_probabilities-1"
  of the time.
  If anything we could say the states for a long sequence come from a distributio
 n with these probabilities for each state.
+ That the distribution of time in each state settle down to some fixed proportio
+n is a key feature that we require for MCMC methods to work, and we will
+ say a bit more about later.
 \end_layout
 
 \begin_layout Standard
@@ -1328,8 +1365,12 @@ weather distribution.
 \end_inset
 
 , we define transition probabilities so that we can generate a sequence
- of samples that come from it, without actually doing any sampling from
- the distribution.
+ of samples that come from it, without actually doing any sampling directly
+ from the distribution, just going from state to state using 
+\begin_inset Formula $\mathrm{P}$
+\end_inset
+
+.
  We will need to be able to evaluate the probability of a sample though.
 \end_layout
 
@@ -1339,11 +1380,11 @@ Stationary probability of a Markov process
 
 \begin_layout Standard
 Before explaining how to set up 
-\begin_inset Formula $P$
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
-, we need to explain the concept of stationary probabilities for a Markov
- process.
+ for an arbitrary distribution, we need to explain the concept of stationary
+ probabilities for a Markov process.
  Continuing with the weather forecast example, say that we had been observing
  the weather over a long period of time, so that distribution between 
 \begin_inset Formula $\{S,O,R\}$
@@ -1368,7 +1409,7 @@ Before explaining how to set up
 \noun off
 \color none
 
-\begin_inset Formula $\boldsymbol{\pi}_{t}=\left[\frac{21}{62},\frac{23}{62},\frac{18}{62}\right]$
+\begin_inset Formula $\left[\frac{21}{62},\frac{23}{62},\frac{18}{62}\right]$
 \end_inset
 
 .
@@ -1387,7 +1428,7 @@ Before explaining how to set up
 \color inherit
 .
  Using the transition matrix 
-\begin_inset Formula $P$
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
  and state vector 
@@ -1398,7 +1439,7 @@ Before explaining how to set up
  steps in the following manner:
 \begin_inset Formula 
 \begin{align*}
-\boldsymbol{\pi}_{t}P & =\left[\begin{array}{c}
+\boldsymbol{\pi}_{t}\mathrm{P} & =\left[\begin{array}{c}
 \frac{21}{62}\\
 \frac{23}{62}\\
 \frac{18}{62}
@@ -1412,7 +1453,7 @@ Before explaining how to set up
 \frac{23}{62}\\
 \frac{18}{62}
 \end{array}\right]^{T}\\
- & =\boldsymbol{\pi}_{t+1}
+ & =\boldsymbol{\pi}_{t}
 \end{align*}
 
 \end_inset
@@ -1436,12 +1477,12 @@ key "ross2010probability"
 \end_inset
 
  as defined above, it stays in this distribution of states.
- Given a transition matrix, if we have a distribution, 
-\begin_inset Formula $\boldsymbol{\pi}$
+ Given a transition matrix, if we have a distribution of states, 
+\begin_inset Formula $\boldsymbol{\pi}(t)$
 \end_inset
 
 , that does not change as change as we multiply with 
-\begin_inset Formula $P$
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
 , we say that the distribution is stationary.
@@ -1449,13 +1490,13 @@ key "ross2010probability"
 \begin_inset Formula $t$
 \end_inset
 
- subscript and just write:
+ index and just write:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\boldsymbol{\pi}P=\boldsymbol{\pi}\label{eq:stationary_distribution}
+\boldsymbol{\pi}\mathrm{P}=\boldsymbol{\pi}\label{eq:stationary_distribution}
 \end{equation}
 
 \end_inset
@@ -1465,35 +1506,24 @@ key "ross2010probability"
 
 \begin_layout Standard
 If we can find a 
-\begin_inset Formula $P$
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
  such that the distribution we want to sample from, 
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
 
-, is the stationary distribution of a Markov chain, we have a way to generate
- samples from 
-\begin_inset Formula $\boldsymbol{\pi}$
+, is the stationary distribution of a Markov chain, and if we assume that
+ a long series of realisations, 
+\begin_inset Formula $S\to R\to R\to...$
 \end_inset
 
- without actually having to draw samples directly from the distribution.
- We start with a realisation from 
+, will be distributed according to the the stationary distribution, we have
+ a way to generate samples without doing any direct sampling from 
 \begin_inset Formula $\boldsymbol{\pi}$
-\end_inset
-
- and then choose the next realisation using 
-\begin_inset Formula $P$
 \end_inset
 
 .
- The probability distribution for the next realisation will be 
-\begin_inset Formula $\boldsymbol{\pi}$
-\end_inset
-
- because of the stationarity.
- This is what we described in the previous section.
- 
 \end_layout
 
 \begin_layout Subsubsection
@@ -1503,22 +1533,22 @@ Metropolis-Hastings algorithm
 \begin_layout Standard
 We now proceed to describe the construction a transition matrix that will
  allow us to obtain samples from an arbitrary distribution.
- This will result in what is called the Metropolis-Hastings algorithm.
+ This will result in what is called the Metropolis-Hastings (MH) algorithm.
  We stick to the discrete case for the time being, and later describe how
- the results carry over to the situation when we want to sample from a coninuous
- distribution.
+ the results carry over to the situation when we want to sample from a continuou
+s distribution.
 \end_layout
 
 \begin_layout Standard
-The elements of the transition matrix are given as:
+The elements of the transition matrix are defined as:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-P(i,j)=\begin{cases}
-Q(i,j)\alpha(i,j) & i\neq j\\
-Q(i,i)+\sum_{k\neq i}Q(i,k)(1-\alpha(i,k)) & i=j
+\mathrm{P}(i,j)=\begin{cases}
+\mathrm{Q}(i,j)\alpha(i,j) & i\neq j\\
+\mathrm{Q}(i,i)+\sum_{k\neq i}\mathrm{Q}(i,k)(1-\alpha(i,k)) & i=j
 \end{cases}\label{eq:transition_probabilities}
 \end{equation}
 
@@ -1529,7 +1559,7 @@ Q(i,i)+\sum_{k\neq i}Q(i,k)(1-\alpha(i,k)) & i=j
 
 \begin_layout Standard
 Where 
-\begin_inset Formula $Q$
+\begin_inset Formula $\mathrm{Q}$
 \end_inset
 
  is a matrix, and 
@@ -1547,7 +1577,7 @@ Where
 
 .
  We need to impose some conditions on 
-\begin_inset Formula $Q$
+\begin_inset Formula $\mathrm{Q}$
 \end_inset
 
 : It needs to be an irreducible transition matrix.
@@ -1561,7 +1591,7 @@ Where
 
  in some number of steps.
  This is written as 
-\begin_inset Formula $P^{n}(i,j)>0$
+\begin_inset Formula $\mathrm{P}^{n}(i,j)>0$
 \end_inset
 
  for some 
@@ -1579,7 +1609,7 @@ We now define
 :
 \begin_inset Formula 
 \[
-\alpha(i,j)=\min\left(\frac{Q(j,i)\boldsymbol{\pi}(j)}{Q(i,j)\boldsymbol{\pi}(i)},1\right)
+\alpha(i,j)=\min\left(\frac{\mathrm{Q}(j,i)p(j)}{\mathrm{Q}(i,j)p(i)},1\right)
 \]
 
 \end_inset
@@ -1591,7 +1621,7 @@ We now define
 A Markov chain where the following holds is called time reversible:
 \begin_inset Formula 
 \begin{equation}
-P(i,j)\boldsymbol{\pi}(i)=P(j,i)\boldsymbol{\pi}(j),\forall i,j\label{eq:time_reversible}
+\mathrm{P}(i,j)p(i)=\mathrm{P}(j,i)p(j),\forall i,j\label{eq:time_reversible}
 \end{equation}
 
 \end_inset
@@ -1604,7 +1634,11 @@ Such a chain will have stationary probability
 \begin_inset Formula $\boldsymbol{\pi}$
 \end_inset
 
-.
+ (remember 
+\begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+ is the corresponding probaility mass function).
  We see this intuitively, if the probability of going from 
 \begin_inset Formula $i$
 \end_inset
@@ -1654,7 +1688,7 @@ reference "eq:time_reversible"
  we get:
 \begin_inset Formula 
 \[
-Q(i,j)\alpha(i,j)\boldsymbol{\pi}(i)=Q(j,i)\alpha(j,i)\boldsymbol{\pi}(j)
+Q(i,j)\alpha(i,j)p(i)=Q(j,i)\alpha(j,i)p(j)
 \]
 
 \end_inset
@@ -1664,14 +1698,14 @@ Q(i,j)\alpha(i,j)\boldsymbol{\pi}(i)=Q(j,i)\alpha(j,i)\boldsymbol{\pi}(j)
 
 \begin_layout Standard
 Now assume 
-\begin_inset Formula $Q(i,j)\boldsymbol{\pi}(i)>Q(j,i)\boldsymbol{\pi}(j)$
+\begin_inset Formula $Q(i,j)p(i)>Q(j,i)p(j)$
 \end_inset
 
 :
 \begin_inset Formula 
 \begin{align*}
-Q(i,j)\frac{Q(j,i)\boldsymbol{\pi}(j)}{Q(i,j)\boldsymbol{\pi}(i)}\boldsymbol{\pi}(i) & =Q(j,i)\boldsymbol{\pi}(j)\\
-Q(j,i)\boldsymbol{\pi}(j) & =Q(j,i)\boldsymbol{\pi}(j)
+Q(i,j)\frac{Q(j,i)p(j)}{Q(i,j)p(i)}p(i) & =Q(j,i)p(j)\\
+Q(j,i)p(j) & =Q(j,i)p(j)
 \end{align*}
 
 \end_inset
@@ -1681,7 +1715,7 @@ Q(j,i)\boldsymbol{\pi}(j) & =Q(j,i)\boldsymbol{\pi}(j)
 
 \begin_layout Standard
 If 
-\begin_inset Formula $Q(i,j)\boldsymbol{\pi}(i)<Q(j,i)\boldsymbol{\pi}(j)$
+\begin_inset Formula $Q(i,j)p(i)<Q(j,i)p(j)$
 \end_inset
 
  we have a similar result, and if 
@@ -1697,7 +1731,7 @@ reference "eq:time_reversible"
 
  is trivially satisfied.
  So we see that by choosing 
-\begin_inset Formula $P(i,j)$
+\begin_inset Formula $\mathrm{P}(i,j)$
 \end_inset
 
  in this manner 
@@ -1880,7 +1914,7 @@ name "alg:Metropolis-Hastings"
 \end_layout
 
 \begin_layout Standard
-Even if a proposed 
+Note that even if a proposed 
 \begin_inset Formula $x$
 \end_inset
 
@@ -1896,14 +1930,14 @@ reference "alg:Metropolis-Hastings"
 \begin_inset Formula $i=j$
 \end_inset
 
- in Equation 
+ in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:transition_probabilities"
 
 \end_inset
 
-.
+).
 \end_layout
 
 \begin_layout Subsubsection
@@ -1931,7 +1965,7 @@ A state,
 \end_inset
 
  if 
-\begin_inset Formula $P_{ii}^{n}=0$
+\begin_inset Formula $\mathrm{P}_{ii}^{n}=0$
 \end_inset
 
  whenever 
@@ -1969,19 +2003,18 @@ A state,
 \end_layout
 
 \begin_layout Standard
-There is also the question of what to do if we cannot obtain the initial
- sample from the target distribution.
- An initial starting value can be choosen at random, but do we then know
- if the chain will produce correct value always? Assuming the chain is irreducib
-le and ergodic we have the following: Define what is called the limiting
- probability for a state in the Markov chain: 
-\begin_inset Formula $\boldsymbol{\pi}(j)=\lim_{n\to\infty}P_{ij}^{n}$
+There is also the question of whether a sequence of states from an arbitrary
+ starting point will converge the stationary distribution of the chain.
+ Assuming the chain is irreducible and ergodic we have the following: Define
+ what is called the limiting probability for a state in the Markov chain:
+ 
+\begin_inset Formula $\boldsymbol{\pi}(j)=\lim_{n\to\infty}\mathrm{P}_{ij}^{n}$
 \end_inset
 
 .
  This probability will exist for all states and will be independent of the
  initial state of the chain assuming it is irreducible and ergodic.
- Note that the limiting probability will also be the stationary probability.
+ This limiting probability will also be the stationary probability.
 \end_layout
 
 \begin_layout Standard
@@ -2002,35 +2035,34 @@ Continuous distribution
 \begin_layout Standard
 In the above we have assumed that the state space was discrete, but we could
  imagine a process where a state vector is defined as 
-\begin_inset Formula $\pi\sim\mathrm{N}(0,1)$
+\begin_inset Formula $\boldsymbol{\pi}\sim\mathrm{N}(0,1)$
 \end_inset
 
 .
- The notation we have used in Equation 
+ The notation we have used in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:stationary_distribution"
 
 \end_inset
 
- breaks down when going to the continuous case however if we continue to
- view 
-\begin_inset Formula $P$
+) breaks down when going to the continuous case if we continue to view 
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
  as a matrix.
  Instead we view 
-\begin_inset Formula $P$
+\begin_inset Formula $\mathrm{P}$
 \end_inset
 
- as what is called a kernel, and keep using the notation in 
+ as what is called a kernel function, and keep using the notation in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:stationary_distribution"
 
 \end_inset
 
-.
+).
  Without going into details, what the kernel does is to give a probability
  of going from a state, say 
 \begin_inset Formula $i$
@@ -2045,9 +2077,9 @@ reference "eq:stationary_distribution"
 
 \begin_layout Standard
 The results for the discrete case do carry over to the continuous one.
- The proofs need need adjustments to deal with a continuous state space,
- but suffice to say that it is still irreducibility and ergodicity that
- we require from the Markov chain.
+ The proofs need adjustments to deal with a continuous state space, but
+ suffice to say that it is still irreducibility and ergodicity that we require
+ from the Markov chain.
  For details on how the results carry over see chapter 4.7 of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -2177,7 +2209,7 @@ name "fig:Target-and-proposal"
 
 \begin_layout Standard
 We can use the relationship between the two distributions, to give the samples
- we using 
+ we draw using 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
@@ -2191,11 +2223,11 @@ We can use the relationship between the two distributions, to give the samples
 \end_inset
 
 .
- Since we are drawing samples 
+ Since we are drawing samples using 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
- we call its corresponding distribution the proposal distribution.
+, we call its corresponding distribution the proposal distribution.
  
 \end_layout
 
@@ -2268,7 +2300,7 @@ Resample from the set
 
 .
  Denote this resampled set as 
-\begin_inset Formula $\boldsymbol{\tilde{x}}_{1},...,\boldsymbol{\tilde{x}}_{m}$
+\begin_inset Formula $\boldsymbol{x}'_{1},...,\boldsymbol{x}'_{m}$
 \end_inset
 
 .
@@ -2290,6 +2322,10 @@ A vector in the resampled set has a distribution such that
 
  has a distribution density function that is equal to 
 \begin_inset Formula $p(\boldsymbol{x})$
+\end_inset
+
+, in other words 
+\begin_inset Formula $\tilde{\boldsymbol{X}}=\boldsymbol{X}'$
 \end_inset
 
 .
@@ -2458,7 +2494,7 @@ What we have shown here is that the probability
 \end_layout
 
 \begin_layout Standard
-We see that when 
+When 
 \begin_inset Formula $n$
 \end_inset
 
@@ -2466,8 +2502,8 @@ We see that when
 \begin_inset Formula $m/n$
 \end_inset
 
- small, we get a good approximation to the distribution.
- The algorithm is known as the Sampling Importance Resampling (SIR) algorithm.
+ small, we expected to get a good approximation to the distribution.
+ This algorithm is known as the Sampling Importance Resampling (SIR) algorithm.
 \end_layout
 
 \begin_layout Standard
@@ -2488,7 +2524,7 @@ ty density function up to a constant.
 .
  We can still use the SIR algorithm to generate samples from a distribution
  that is proportional to the target distribution, but we then have to use
- standardised weights:
+ normalised weights:
 \begin_inset Formula 
 \begin{equation}
 w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i=1}^{n}p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}\label{eq:standardised_weights}
@@ -2500,7 +2536,7 @@ w(\boldsymbol{x}_{i})=\frac{p(\boldsymbol{x}_{i})/g(\boldsymbol{x}_{i})}{\sum_{i
 \end_layout
 
 \begin_layout Standard
-The reason why we standardise the weights, is that we then do not have to
+The reason why we normalise the weights, is that we then do not have to
  think about 
 \begin_inset Formula $\mathrm{c}$
 \end_inset
@@ -2656,7 +2692,7 @@ p(x_{k}|\boldsymbol{x}_{k-1})=\frac{p(\boldsymbol{x}_{k})}{p(\boldsymbol{x}_{k-1
 \end_layout
 
 \begin_layout Standard
-We are give the full distribution, 
+We are given the full distribution, 
 \begin_inset Formula $p(\boldsymbol{x}_{k})=p(\boldsymbol{x})$
 \end_inset
 
@@ -2725,7 +2761,16 @@ w_{t}(\boldsymbol{x}_{t}) & =w_{t-1}(\boldsymbol{x}_{t-1})\frac{\hat{p}(\boldsym
 \end_layout
 
 \begin_layout Standard
-To ease the notation we have defined 
+Where we have stepped away from using 
+\begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
+\end_inset
+
+, and instead operate with the approximation to the marginal 
+\begin_inset Formula $\hat{p}(\boldsymbol{x}_{t})$
+\end_inset
+
+.
+ To ease the notation we have defined 
 \begin_inset Formula $u_{t}(\boldsymbol{x}_{t-1})=\frac{\hat{p}(\boldsymbol{x}_{t})}{\hat{p}(\boldsymbol{x}_{t-1})g(x_{t}|\boldsymbol{x}_{t-1})}$
 \end_inset
 
@@ -2975,8 +3020,15 @@ worth.
 \end_inset
 
  This concept can also be used in MCMC settings, not just SMC.
- There are several measures for the ESS, and we look at a widely used definition
- from 
+ There are several measures for the ESS, see for instance 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "1602.03572"
+
+\end_inset
+
+ for some alternatives.
+ We look at a widely used definition from 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "liu2001monte"
@@ -3018,12 +3070,12 @@ n.
 \end_inset
 
  independent and identically drawn samples from the target distribution
- 
+ with density function 
 \begin_inset Formula $p$
 \end_inset
 
 (
-\begin_inset Formula $\boldsymbol{X})$
+\begin_inset Formula $\boldsymbol{x})$
 \end_inset
 
 .
@@ -3047,25 +3099,11 @@ reference "eq:ess"
 
 , and it occurs when the variance is 0.
  For instance if we set 
-\begin_inset Formula $g(\boldsymbol{X})=p(\boldsymbol{X})$
+\begin_inset Formula $g(\boldsymbol{x})=p(\boldsymbol{x})$
 \end_inset
 
 , proposal equals target distribution, this will occur, and it makes sense
  since then we are actually sampling from the target distribution.
- It could also occur if all the weights were equally bad, say all ratios
- weigths were 
-\begin_inset Formula $\frac{1}{1000}$
-\end_inset
-
-, so it is not a perfect measure.
- See for instance 
-\begin_inset CommandInset citation
-LatexCommand citet
-key "1602.03572"
-
-\end_inset
-
- for a discussion of this, and some alternative measures of ESS.
 \end_layout
 
 \begin_layout Standard
@@ -3210,7 +3248,7 @@ Where
 
 , and for our purposes we can take it to be the identity function.
  This expression is interpreted to mean that one sample from 
-\begin_inset Formula $p(\boldsymbol{X})$
+\begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
 , is worth about 
@@ -3222,7 +3260,7 @@ Where
 \begin_inset Formula $n$
 \end_inset
 
- samples, we multiple the expression by 
+ samples, we multiply the expression by 
 \begin_inset Formula $n$
 \end_inset
 
@@ -3248,7 +3286,7 @@ The justification of the above assumes that the weights,
 \end_inset
 
 , refer to the unnormalised weights.
- This is a problem if we use standardised weights as in (
+ This is a problem if we use normalised weights as in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:standardised_weights"
@@ -3326,7 +3364,7 @@ Where
 \begin_inset Formula $\underbar{w}_{i}(\boldsymbol{x})$
 \end_inset
 
- denotes the standardised weight for particle 
+ denotes the normalised weight for particle 
 \begin_inset Formula $i$
 \end_inset
 
@@ -3336,9 +3374,9 @@ Where
  A resampling step is triggered when it drops below a given threshold to
  be specified later.
  The rationale being that the weights at that point have spread out so much,
- that we are wasting computations on particles that are in low probably
- regions of the probability space, and should instead concentrate more on
- the regions were the particles with higher weights are located.
+ that we are wasting computations on particles that are in low probability
+ regions, and should instead concentrate more on the regions were the particles
+ with higher weights are located.
 \end_layout
 
 \begin_layout Standard
@@ -3353,8 +3391,7 @@ rule of thumb
 \begin_inset Quotes erd
 \end_inset
 
- that can be used to give an indication of how much the weighted sampled
- is worth.
+ that only gives an indication of how much the weighted sampled is worth.
 \end_layout
 
 \begin_layout Standard
@@ -3375,6 +3412,13 @@ FloatBarrier
 
 \begin_layout Section
 Approximate Bayesian Computation
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Approximate-Bayesian-Computation"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3392,14 +3436,13 @@ In such settings what are termed likelihood-free or ABC methods can be employed
  to draw inferences.
  The name refers to the fact that the methods do not explicitly evaluate
  the likelihood function, but instead approximate it using simulations.
- In the previous methods we described there is a requirement that given
+ In the previous methods we described there was a requirement that given
  a sample, we can evaluate its probability, and for the posterior this means
- being able to evaluate the likelihood, and the prior.
+ being able to evaluate the likelihood and the prior.
  The likelihood gets most of the attention here, since we have more freedom
  when it comes to selecting a prior.
  We could for instance use a non-informative prior if we had no good guesses
- what it should look like, while the likelihood is tied to the actual observed
- data.
+ what it should look like.
 \end_layout
 
 \begin_layout Standard
@@ -3407,7 +3450,7 @@ Likelihood-free methods are especially popular in fields like population
  genetics, epidemology, biology and ecology, where it is often the case
  that the model one wants to estimate parameters for is in the form of some
  stochastic process.
- This means that given a set of parameters it is possible to run the model
+ This means that given a set of parameters it is possible to run the process
  and get a realisation, but it is not clear how to go backwards from a realisati
 on of the process to find the most probable parameter values.
 \end_layout
@@ -3449,8 +3492,8 @@ The posterior can be retrieved by integrating out
 :
 \begin_inset Formula 
 \begin{align*}
-p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}\\
- & =p(\boldsymbol{\theta})\int_{Y}p(\boldsymbol{y},\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}
+p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto\int_{Y}p(\boldsymbol{y}|\boldsymbol{x},\boldsymbol{\theta})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}p(\boldsymbol{\theta})\\
+ & =\int_{Y}p(\boldsymbol{y},\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}p(\boldsymbol{\theta})
 \end{align*}
 
 \end_inset
@@ -3496,7 +3539,7 @@ If we were able to draw samples from the likelihood function such that
 \end_inset
 
 , we could estimate the posterior probability.
- A simple algorithm for this is shown in Algorithm 
+ A simple setup for this is shown in Algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Likelihood-free-sampling"
@@ -3514,7 +3557,7 @@ reference "alg:Likelihood-free-sampling"
  are exactly the same is 0, and for discrete probability distributions the
  probability for the being the same is also likely to be close to 0 in practical
  problems.
- Algorithm 
+ So algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Likelihood-free-sampling"
@@ -3701,13 +3744,8 @@ Keeping the core idea, we can make a couple of changes to make the algorithm
 \end_inset
 
  should be, and how it affects the approximation.
- Intuitively smaller values yields better approximations, but increases
- computation time, since more samples are discarded.
- We will examine strategies to determine 
-\begin_inset Formula $\epsilon$
-\end_inset
-
- later.
+ Intuitively smaller values yield better approximations, but increases computati
+on time, since more samples are discarded.
 \end_layout
 
 \begin_layout Standard
@@ -3771,14 +3809,7 @@ If we cannot find a suitable distance measure that works directly on the
 \begin_inset Formula $\boldsymbol{x}=\boldsymbol{y}.$
 \end_inset
 
- This improves the efficiency of Algorithm 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "alg:Likelihood-free-sampling"
 
-\end_inset
-
-, but again, probably not to such a degree to make it practically useful.
 \end_layout
 
 \begin_layout Standard
@@ -3807,8 +3838,8 @@ p(\boldsymbol{\theta},S(\boldsymbol{x})|S(\boldsymbol{y})) & \propto p(\boldsymb
 
 \begin_layout Standard
 Several strategies have been developed for dealing with the two main difficultie
-s in ABC: Finding suitable statistics automatically and improving the efficiency
-, see 
+s in ABC: Finding suitable statistics and improving the efficiency, see
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "approx_bayes_comp"
@@ -3816,9 +3847,8 @@ key "approx_bayes_comp"
 \end_inset
 
  for an overview.
- In the following we will focus on an method of improving the efficiency,
- and only give a short description of the problem of finding statistics
- to use.
+ In the following we will focus on a method of improving the efficiency,
+ and only give a short description of the problem of finding statistics.
  We make an assumption that proper statistics have already been chosen for
  the problem at hand.
  We give some examples of statistics used in problems where ABC methods
@@ -3841,7 +3871,7 @@ Choice of summary statistics
 \begin_layout Standard
 From the above we see that the approximation works when we choose sufficient
  statistics.
- However, in practical problems we are likely to be unable to find such.
+ However, in practical problems we are unlikely to find such.
  Note in passing that if we define our statistic to just be the sample itself,
  
 \begin_inset Formula $S(\boldsymbol{y})=\boldsymbol{y}$
@@ -3917,9 +3947,9 @@ key "RePEc:bla:jorssb:v:74:y:2012:i:3:p:419-474"
 \begin_layout Standard
 For statistics chosen by domain experts we give two examples.
  In both cases the model is specified as a stochastic process where it is
- not possible to find theoretical expressions for the parameters one wishes
- to estimate, and they are not directly observable from the process output
- either, so ABC methods are utilized.
+ not possible to find theoretical expressions for the parameters to be estimated
+, and they are not directly observable from the process output either, so
+ ABC methods are utilized.
 \end_layout
 
 \begin_layout Subsubsection
@@ -4208,7 +4238,11 @@ Require $
 \backslash
 boldsymbol{
 \backslash
-theta}_{init}, N$
+theta}_{init}, N, 
+\backslash
+boldsymbol{y}, 
+\backslash
+epsilon$
 \end_layout
 
 \begin_layout Plain Layout
@@ -4261,20 +4295,24 @@ While{$counter < N$}
 
 
 \backslash
-State $samples[counter] 
+State $counter 
 \backslash
-leftarrow 
-\backslash
-mathrm{DoMetropolisHastingsStep}(samples[counter - 1])$
+leftarrow counter + 1$
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-State $counter 
+State $samples[counter] 
 \backslash
-leftarrow counter + 1$
+leftarrow 
+\backslash
+mathrm{DoMetropolisHastingsStep}(samples[counter - 1], 
+\backslash
+boldsymbol{y}, 
+\backslash
+epsilon)$
 \end_layout
 
 \begin_layout Plain Layout
@@ -4333,7 +4371,7 @@ theta}_ {old},
 \backslash
 boldsymbol{
 \backslash
-theta}_ {new})$
+theta})$
 \end_layout
 
 \begin_layout Plain Layout
@@ -4543,6 +4581,13 @@ tion and running time, that is addressed by using SMC methods in ABC.
 
 \begin_layout Section
 Sequential Monte Carlo in an ABC setting
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Sequential-Monte-Carlo"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -4627,8 +4672,8 @@ key "citeulike:637817"
 
  instead operates on the same probability space through all the weight updates.
  This will be a key point later, since the sequence of approximations we
- use in the ABC SMC method to be developed are defined on the same space,
- so we need this property.
+ use in the ABC SMC method to are defined on the same space, so we need
+ this property.
 \end_layout
 
 \begin_layout Standard
@@ -4684,7 +4729,7 @@ reference "eq:weight_decomposition"
 
 \end_inset
 
-) is unavailable to us.
+) is assumed to be unavailable to us.
  The rationale behind the use of a kernel, is that as the target distribution
  evolves from one step to the next, it should be possible for us to use
  the particles at step 
@@ -4724,8 +4769,7 @@ Assuming we use the
 \begin_inset Formula $n$
 \end_inset
 
- particles we are evolving when doing the weight update above, we need to
- perform 
+ particles when doing the weight update above, we need to perform 
 \begin_inset Formula $n$
 \end_inset
 
@@ -5110,14 +5154,14 @@ Now we turn our attention to
 \end_inset
 
 .
- If we insert 
+ If we insert (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:optimal_backward_kernel"
 
 \end_inset
 
- into the expression for the weight update we get:
+) into the expression for the weight update we get:
 \begin_inset Formula 
 \[
 \frac{p_{i}(\boldsymbol{x}_{i})L_{i}(\boldsymbol{x}_{i},\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})}{p_{i-1}(\boldsymbol{x}_{i-1})K(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}\frac{g_{i-1}(\boldsymbol{x}_{i-1})K_{i}(\boldsymbol{x}_{i-1},\boldsymbol{x}_{i})}{g_{i}(\boldsymbol{x}_{i})}=\frac{p_{i}(\boldsymbol{x}_{i})g_{i-1}(\boldsymbol{x}_{i-1})}{p_{i-1}(\boldsymbol{x}_{i-1})g_{i}(\boldsymbol{x}_{i})}
@@ -5189,15 +5233,15 @@ key "adaptive_smc_for_abc"
 \end_inset
 
  and describe how the SMC sampler can be used in an ABC setting.
- Remembering the expression in Equation 
+ Remembering the expression in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:abc_sampling_distribution"
 
 \end_inset
 
- for the distribution we are sampling from in ABC, a possible sequence of
- approximations to the true posterior is given by decreasing the distance
+) for the distribution we are sampling from in ABC, a possible sequence
+ of approximations to the true posterior is given by decreasing the distance
  between the observations and drawn samples, that is: Let 
 \begin_inset Formula $\boldsymbol{x}$
 \end_inset
@@ -5245,14 +5289,14 @@ reference "eq:abc_sampling_distribution"
 \end_inset
 
 .
- If we let the likelihood function in 
+ If we let the likelihood function in (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:abc_sampling_distribution"
 
 \end_inset
 
- be an indiator function that is 1 if 
+) be an indiator function that is 1 if 
 \begin_inset Formula $d(\boldsymbol{x},\boldsymbol{y})<\epsilon$
 \end_inset
 
@@ -5453,7 +5497,7 @@ To justify the weight update step in the next section we need to establish
 \end_layout
 
 \begin_layout Standard
-To the proportionality of the marginals, we follow 
+To show the proportionality of the marginals, we follow 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Beaumont1139"
@@ -5867,7 +5911,7 @@ Showing that balance equation is fulfilled in this case.
 \end_layout
 
 \begin_layout Subsubsection
-Metropolis-Hastings ratio with likelihood
+Metropolis-Hastings ratio without evaluting likelihood
 \end_layout
 
 \begin_layout Standard
@@ -5887,10 +5931,10 @@ reference "eq:proportional_distributions"
 ), by replacing the MH-ratio with one using the proportional distributions:
 \begin_inset Formula 
 \begin{multline}
-\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)\propto\\
+\min\left(1,\frac{p_{\epsilon}(\boldsymbol{\theta}_{i+1},\{\boldsymbol{x}_{i+1}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{p_{\epsilon}(\boldsymbol{\theta}_{i},\{\boldsymbol{x}_{i}\}_{1:m}|\boldsymbol{y})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
 \text{insert expression from \ref{eq:proportional_distributions}}\\
-\min\left(1,\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}))p(\boldsymbol{\theta})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
-\min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta})}\right)\label{eq:mh_ratio_without_likelihood}
+\min\left(1,\frac{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1}))p(\boldsymbol{\theta}_{i+1})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i})}{(\frac{1}{m}\sum_{j=1}^{m}I_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)}))(\prod_{j=1}^{m}p(\boldsymbol{x}_{i}^{(j)}|\boldsymbol{\theta}_{i}))p(\boldsymbol{\theta}_{i})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})\prod_{j=1}^{m}p(\boldsymbol{x}_{i+1}^{(j)}|\boldsymbol{\theta}_{i+1})}\right)=\\
+\min\left(1,\frac{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i+1}^{(j)})q_{i}(\boldsymbol{\theta}_{i+1},\boldsymbol{\theta}_{i})p(\boldsymbol{\theta}_{i+1})}{\sum_{j=1}^{m}\mathrm{I}_{\epsilon,\boldsymbol{y}}(\boldsymbol{x}_{i}^{(j)})q_{i}(\boldsymbol{\theta}_{i},\boldsymbol{\theta}_{i+1})p(\boldsymbol{\theta}_{i})}\right)\label{eq:mh_ratio_without_likelihood}
 \end{multline}
 
 \end_inset
@@ -6766,7 +6810,7 @@ key "adaptive_smc_for_abc"
 
 .
  At each iteration the following equation is solved for 
-\begin_inset Formula $\epsilon_{n}$
+\begin_inset Formula $\epsilon_{i}$
 \end_inset
 
 :
@@ -6847,11 +6891,8 @@ Where
 \begin_inset Formula $\alpha\in(0,1)$
 \end_inset
 
- is some given constant that will be explained later.
-\end_layout
-
-\begin_layout Standard
-Where each particle has 
+ is some given constant that will be explained below, and where each particle
+ has 
 \begin_inset Formula $m$
 \end_inset
 
@@ -6890,15 +6931,6 @@ reference "eq:ess_update"
 \end_inset
 
  so that we make reasonable progress towards 0.
- Remember that we would like 
-\begin_inset Formula $\epsilon_{i}\to0$
-\end_inset
-
- as 
-\begin_inset Formula $i$
-\end_inset
-
- increases to get a better and better approximation to the distribution.
  The other concern when updating 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
@@ -6911,7 +6943,7 @@ reference "eq:ess_update"
 
 \begin_layout Standard
 To control the update schedule, the parameter 
-\begin_inset Formula $\alpha$
+\begin_inset Formula $\alpha\in\left\langle 0,1\right\rangle $
 \end_inset
 
  is given as input to the algorithm.
@@ -6934,7 +6966,7 @@ To control the update schedule, the parameter
 \begin_inset Formula $\approx1$
 \end_inset
 
-)works in the opposition direction: The final approximation is good, with
+) works in the opposition direction: The final approximation is good, with
  the caveat that the statistics we have chosen actually gives a good approximati
 on to the distribution when 
 \begin_inset Formula $\epsilon\to0$
@@ -6962,6 +6994,13 @@ FloatBarrier
 
 \begin_layout Section
 Examples
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Examples"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -7011,7 +7050,7 @@ key "Sisson06022007"
 
 .
  The distribution we wish to create a sample set from is given as follows,
- first the likelihood is specified as:
+ first the likelihood:
 \end_layout
 
 \begin_layout Standard
@@ -7031,7 +7070,7 @@ The parameter
 \end_inset
 
  is assumed to be uniform on the interval 
-\begin_inset Formula $[-10,10]$
+\begin_inset Formula $\left[-10,10\right]$
 \end_inset
 
 , and the posterior then has the form:
@@ -7084,8 +7123,8 @@ The proposal distribution
 
 -values for all the particles.
  This variance term was also used in the other articles, and we provide
- no rigourous arguments for its use here, just pointing out it gives good
- results in practice.
+ no rigourous arguments for its use here, just pointing out that it gives
+ good results in practice.
 \end_layout
 
 \begin_layout Standard
@@ -7544,6 +7583,11 @@ invertible
 \begin_layout Standard
 The conditions are enforced through the prior, which we define to be uniform
  on the set of allowed values.
+ The region of allowed values for 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ will have a triangle shape.
 \end_layout
 
 \begin_layout Standard
@@ -7572,7 +7616,7 @@ key "approx_bayes_comp"
 \begin_layout Standard
 Also in both cases the kernel update proceeds in a manner similar to the
  previous example.
- A random walk is done for 
+ A random walk is done for the 
 \begin_inset Formula $\theta_{1}$
 \end_inset
 
@@ -7581,7 +7625,7 @@ Also in both cases the kernel update proceeds in a manner similar to the
 \end_inset
 
  candidates, defined by a normal distribution 
-\begin_inset Formula $\mathrm{N}(0,\hat{\sigma}_{\theta}^{2})$
+\begin_inset Formula $\mathrm{N}(\theta,\hat{\sigma}_{\theta}^{2})$
 \end_inset
 
 , where 
@@ -7604,7 +7648,11 @@ Using the autocovariance as a statistic
 \end_layout
 
 \begin_layout Standard
-Given a time-series the distance to the observed series is here:
+Given a sampled time-series the distance to the observed series, 
+\begin_inset Formula $\boldsymbol{y}$
+\end_inset
+
+, is here:
 \begin_inset Formula 
 \[
 d=\frac{1}{n}\left(\sum_{i=2}^{n}\left(x_{i}x_{i-1}\right)-\sum_{i=2}^{n}\left(y_{i}y_{i-1}\right)\right)^{2}+\frac{1}{n}\left(\sum_{i=2}^{n}\left(x_{i}x_{i-2}\right)-\sum_{i=2}^{n}\left(y_{i}y_{i-2}\right)\right)^{2}
@@ -7724,6 +7772,17 @@ As is seen in the figures, the results are quite good in this case, which
 \end_inset
 
  from an MA(2) model.
+ Intuitively this makes sense since the autocovariance is a measure of how
+ much values that are 
+\begin_inset Formula $k$
+\end_inset
+
+ steps a part vary together, and this is very much affected by the values
+ of 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -7878,7 +7937,7 @@ These figures are from a run with 100 particles,
 
  (see histogram on the right above) that moving it slightly would cause
  a large change in 
-\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{n})-\alpha\mathrm{ESS}(\boldsymbol{w}_{n-1})$
+\begin_inset Formula $\mathrm{ESS}(\boldsymbol{w}_{i})-\alpha\mathrm{ESS}(\boldsymbol{w}_{i-1})$
 \end_inset
 
 , which can be seen from the figure on the left above.
@@ -8046,6 +8105,15 @@ The algorithm quickly reaches a state were it is not able to make progress.
 \end_layout
 
 \begin_layout Standard
+In general we see that the raw distance function gives a worse approximation
+ to 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ than the one using the covariances.
+\end_layout
+
+\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -8091,8 +8159,8 @@ The algorithm has a number of parameter/parts that can be set or changed
 \end_layout
 
 \begin_layout Standard
-A potential with the algorithm is the number of samples that need to be
- generated.
+A potential problem with the algorithm is the number of samples that need
+ to be generated.
  In more complex scenarios than the ones used for illustration here, this
  can cause the running time of the algorithm to become excessively long.
  Further work could be done to address this issue, again see 
@@ -8144,14 +8212,14 @@ Source code
 \end_layout
 
 \begin_layout Standard
-An implementation of the algorithm is available as R code 
+An implementation of the algorithm is available in R code 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "R_language"
 
 \end_inset
 
-, and the source code is available from GitHub at 
+, and is available from GitHub at 
 \begin_inset CommandInset href
 LatexCommand href
 name "https://github.com/torebre/abcProject"
@@ -8190,8 +8258,11 @@ One function in the devtools-package allows the user to install R-packages
  A vignette is term for long form documentation that can be included with
  R-packages.
  Building them can take some time, and all the suggested package installs
- specified in the package will also be installed when build_vignettes is
- set to true.
+ specified in the package will also be installed when 
+\shape italic
+build_vignettes
+\shape default
+ is set to true.
  If the user is not interested in viewing the vignettes, because he only
  wants to look at and use the code say, he can drop the build_vignettes
  argument from the install command, since the default value is false.
@@ -8219,7 +8290,7 @@ devtools::install_github("torebre/abcProject", build_vignettes = TRUE)
 
 \begin_layout Standard
 If the code is installed with the build_vignettes flag set to true, it is
- possible to see a vignette describing the mixture model example:
+ possible to see a vignette describing how to run the mixture model example:
 \end_layout
 
 \begin_layout Standard
@@ -8230,6 +8301,25 @@ status open
 \begin_layout Plain Layout
 
 vignette("smcToyExample")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And another vignette for the MA(2) example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+vignette("maExample")
 \end_layout
 
 \end_inset
@@ -8249,16 +8339,6 @@ status open
 \begin_layout Plain Layout
 
 devtools::uninstall("abcProject")
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Check that the uninstall works
 \end_layout
 
 \end_inset
@@ -8296,7 +8376,7 @@ Parallelize the sample generation.
 Implement parts of the code in C/C++.
  It is possible to include C/C++ code in various ways in R-packages, and
  this can make the code run faster.
- The sample generation can be targeted first for being rewritten is.
+ The sample generation can be targeted first for rewriting.
  This is a domain specific function, so it will need to be done for each
  problem the algorithm is applied to.
 \end_layout
