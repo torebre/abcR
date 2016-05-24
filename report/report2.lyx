@@ -60,6 +60,7 @@
 % Romerske tall på alt før selve rapporten starter er pent.
 \pagenumbering{roman}
 \end_preamble
+\options twoside,openright
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -127,6 +128,10 @@ filename "forside.tex"
 \end_inset
 
 
+\begin_inset Newpage cleardoublepage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -139,7 +144,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage newpage
+\begin_inset Newpage cleardoublepage
 \end_inset
 
 
@@ -8338,12 +8343,20 @@ status open
 
 \begin_layout Plain Layout
 
-devtools::uninstall("abcProject")
+devtools::uninstall(<installation path>)
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Where <installation path> refers to the path where the package was installed.
+ This is listed in the output when the package was installed, and can also
+ be found after the installation.
+ Look in the documentation for the devtools package for more information
+ about how the install and uninstall commands work.
 \end_layout
 
 \begin_layout Subsection
