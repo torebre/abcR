@@ -37,6 +37,7 @@
 
 % Needed to make authors appear in citations
 \bibliographystyle{plainnat}
+%\bibliographystyle{arxiv2}
 
 \usepackage{placeins}
 
@@ -47,6 +48,7 @@
 \usetikzlibrary{shapes,snakes}
 
 \usepackage{tkz-graph}
+\raggedbottom
 
 % \begin{document}
 
@@ -60,7 +62,7 @@
 % Romerske tall på alt før selve rapporten starter er pent.
 \pagenumbering{roman}
 \end_preamble
-\options twoside,openright
+\options openright, twoside
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -1661,14 +1663,14 @@ Such a chain will have stationary probability
 \end_inset
 
 , the state distribution should not change as the process iterates.
- Equation 
+ Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:time_reversible"
 
 \end_inset
 
- is also called the detailed balance equation.
+) is also called the detailed balance equation.
 \end_layout
 
 \begin_layout Standard
@@ -1676,21 +1678,21 @@ Looking at the case
 \begin_inset Formula $i\ne j$
 \end_inset
 
- first and inserting Equation 
+ first and inserting (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:transition_probabilities"
 
 \end_inset
 
- into Equation 
+) into (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:time_reversible"
 
 \end_inset
 
- we get:
+) we get:
 \begin_inset Formula 
 \[
 Q(i,j)\alpha(i,j)p(i)=Q(j,i)\alpha(j,i)p(j)
@@ -1727,14 +1729,14 @@ If
 \begin_inset Formula $i=j$
 \end_inset
 
- Equation 
+ (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:time_reversible"
 
 \end_inset
 
- is trivially satisfied.
+) is trivially satisfied.
  So we see that by choosing 
 \begin_inset Formula $\mathrm{P}(i,j)$
 \end_inset
@@ -8211,6 +8213,13 @@ pagebreak
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Newpage cleardoublepage
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 \start_of_appendix
 Source code
@@ -8285,7 +8294,7 @@ install.packages("devtools")
 
 \begin_layout Plain Layout
 
-devtools::install_github("torebre/abcProject", build_vignettes = TRUE)
+devtools::install_github("torebre/abcProject",build_vignettes = TRUE)
 \end_layout
 
 \end_inset
@@ -8405,6 +8414,13 @@ status open
 pagebreak
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage cleardoublepage
 \end_inset
 
 
