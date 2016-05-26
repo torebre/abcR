@@ -246,7 +246,7 @@ key "adaptive_smc_for_abc"
 
 \end_inset
 
- in detail.
+.
 \end_layout
 
 \begin_layout Standard
@@ -260,9 +260,9 @@ reference "sec:Bayesian-inference"
 
 , and point out that there is often a problem in evaluating the posterior
  probability for various reasons.
- From here we look at some strategies for approximating the posterior, before
- we move on to the situation where we cannot evaluate the likelihood, and
- it is here ABC becomes an alternative.
+ From there we look at some strategies for approximating the posterior,
+ before we move on to the situation where we cannot evaluate the likelihood,
+ and it is here ABC becomes an alternative.
  We then describe ABC in general in section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -277,7 +277,7 @@ reference "sec:Sequential-Monte-Carlo"
 
 \end_inset
 
-, and describing an algorithm implementation.
+, and describing an algorithm that has been implemented in R.
  In section 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -385,11 +385,11 @@ To make it more concrete,
 \end_layout
 
 \begin_layout Standard
-There are two approaches to viewing the parameters in a model 
+There are two approaches to viewing the parameters, 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
-.
+, in a model.
  One is called the frequentist approach, where 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
@@ -630,7 +630,7 @@ Concentrating on the
 \end_inset
 
  can take, 
-\begin_inset Formula $\boldsymbol{\theta}\sim\mathrm{Uniform}(\boldsymbol{\theta}_{min},\boldsymbol{\theta}_{max})$
+\begin_inset Formula $\mathrm{Uniform}(\boldsymbol{\theta}_{min},\boldsymbol{\theta}_{max})$
 \end_inset
 
 , presuming we at least know what is the possible range.
@@ -641,7 +641,7 @@ Concentrating on the
 \begin_layout Standard
 The expression for the likelihood is also formulated as a probability distributi
 on.
- Fot the height example: 
+ For the height example: 
 \begin_inset Formula $p(\boldsymbol{y}|\boldsymbol{\theta})\sim\mathrm{N}(\theta_{1},\theta_{2})$
 \end_inset
 
@@ -710,7 +710,7 @@ Going from the third to the fourth line above involves a bit of algebra,
 \begin_inset Formula $\theta_{1}$
 \end_inset
 
- can treated as constants, and thus removed when working with equations
+ can be treated as constants, and thus removed when working with equations
  that only need to be proportional to each other.
 \begin_inset Float figure
 wide false
@@ -872,7 +872,7 @@ The other point is that the final expression has the form of the probability
 d to be a normal distribution, so we say that the normal prior distribution
  is a conjugate family for normal likelihood.
  Several such couplings exist, for instance the beta prior distribution
- is a conjugate family for the binomial likelihood as shown in 
+ is a conjugate family for the binomial likelihood as shown in figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:Illustration-of-conjugacy"
@@ -1222,7 +1222,7 @@ day number,
 \end_layout
 
 \begin_layout Standard
-A Markov chain is a stochastic process that posesses what is called the
+A Markov chain is a stochastic process that possesses what is called the
  Markov property:
 \begin_inset Formula 
 \begin{align*}
@@ -1354,7 +1354,7 @@ weather distribution.
 
  That the distribution of time in each state settle down to some fixed proportio
 n as the sequence becomes long is a key feature that we require for MCMC
- methods to work, and we will say a bit more about later.
+ methods to work, which we will say a bit more about later.
 \end_layout
 
 \begin_layout Standard
@@ -2042,8 +2042,14 @@ In the above we have assumed that the state space was discrete, but we could
 \end_inset
 
 .
- The notation we have used in () breaks down when going to the continuous
- case if we continue to view 
+ The notation we have used in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:stationary_discrete_distribution"
+
+\end_inset
+
+) breaks down when going to the continuous case if we continue to view 
 \begin_inset Formula $\mathrm{P}$
 \end_inset
 
@@ -2193,7 +2199,7 @@ Illustration of what could a be a target and proposal distribution.
 \end_inset
 
  should cover the tails of 
-\begin_inset Formula $f(\boldsymbol{x})$
+\begin_inset Formula $p(\boldsymbol{x})$
 \end_inset
 
 .
@@ -2261,7 +2267,7 @@ We also define
 \begin_inset Formula $\boldsymbol{x}_{1},...,\boldsymbol{x}_{n}$
 \end_inset
 
- to be draws from the distribution of 
+ to be draws from the distribution corresponding to 
 \begin_inset Formula $g(\boldsymbol{x})$
 \end_inset
 
@@ -2491,7 +2497,7 @@ What we have shown here is that the probability
 \end_inset
 
 .
- In other words: Drawing samples from the distribution associated with
+ In other words: Drawing samples from the distribution associated with 
 \begin_inset Formula $\tilde{\boldsymbol{X}}$
 \end_inset
 
@@ -2511,7 +2517,7 @@ When
 \begin_inset Formula $m/n$
 \end_inset
 
- small, we expected to get a good approximation to the distribution.
+ small, we expect to get a good approximation to the distribution.
  This algorithm is known as the Sampling Importance Resampling (SIR) algorithm.
 \end_layout
 
@@ -2532,7 +2538,7 @@ ty density function up to a constant.
 
 .
  We can still use the SIR algorithm to generate samples from a distribution
- that is proportional to the target distribution, but we then have to use
+ that is proportional to the target distribution, but then we have to use
  normalised weights:
 \begin_inset Formula 
 \begin{equation}
@@ -2570,7 +2576,7 @@ A potential problem that is especially prone to appear in the tails of the
  the target distribution will be skewed away from the true target distribution.
  One solution, apart from the one of trying a different proposal distribution,
  is to do the final resampling step without replacement, to ensure excessive
- duplication (see 6.3.1 of 
+ duplication is avoided (see 6.3.1 of 
 \begin_inset CommandInset citation
 LatexCommand citet
 key "givens2012computational"
@@ -2655,15 +2661,8 @@ Where
 
 .
  Doing such a decomposition has some advantages when dealing with high-dimension
-al problems where it is difficult to find a good proposal distribution
-\begin_inset CommandInset citation
-LatexCommand cite
-after "pp. 46-47"
-key "liu2001monte"
-
-\end_inset
-
-: It lets us stop calculation of the weights early if we see some of them
+al problems where it is difficult to find a good proposal distribution:
+ It lets us stop calculation of the weights early if we see some of them
  becoming 0, and we can also make use of 
 \begin_inset Formula $p(x_{t}|\boldsymbol{x}_{t-1})$
 \end_inset
@@ -2686,7 +2685,7 @@ There is however a problem in that we need the marginal distributions,
 
 ,..., to get expressions for the conditional distributions.
  For instance, we need 
-\begin_inset Formula $p(x_{k}|x_{1},...,x_{k-1})=p(x_{k}|\boldsymbol{x}_{k-1})p(\boldsymbol{x}_{k-1})$
+\begin_inset Formula $p(x_{k}|x_{1},...,x_{k-1})=p(x_{k}|\boldsymbol{x}_{k-1})$
 \end_inset
 
  in the recursion and we have:
@@ -3064,8 +3063,7 @@ Where
 \begin_inset Formula $\mathrm{var}_{g}(w(\boldsymbol{X}))$
 \end_inset
 
- the variance of the normalised weights with respect to the proposal distributio
-n.
+ the variance of the weights with respect to the proposal distribution.
  We interpret it to mean that 
 \begin_inset Quotes eld
 \end_inset
@@ -3460,8 +3458,8 @@ Likelihood-free methods are especially popular in fields like population
  that the model one wants to estimate parameters for is in the form of some
  stochastic process.
  This means that given a set of parameters it is possible to run the process
- and get a realisation, but it is not clear how to go backwards from a realisati
-on of the process to find the most probable parameter values.
+ and get a realisation, but it is often not clear how to go backwards from
+ a realisation of the process to find the most probable parameter values.
 \end_layout
 
 \begin_layout Subsection
@@ -3533,8 +3531,8 @@ It is assumed that we have an expression for the prior,
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align}
-p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto p(\boldsymbol{\theta})\int_{Y}I(\boldsymbol{x}=\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}\nonumber \\
- & =p(\boldsymbol{\theta})p(\boldsymbol{y}|\boldsymbol{\theta})\label{eq:likelihood_dirac}
+p(\boldsymbol{\theta}|\boldsymbol{y}) & \propto\int_{Y}I(\boldsymbol{x}=\boldsymbol{y})p(\boldsymbol{x}|\boldsymbol{\theta})d\boldsymbol{x}p(\boldsymbol{\theta})\nonumber \\
+ & =p(\boldsymbol{y}|\boldsymbol{\theta})p(\boldsymbol{\theta})\label{eq:likelihood_dirac}
 \end{align}
 
 \end_inset
@@ -3548,7 +3546,7 @@ If we were able to draw samples from the likelihood function such that
 \end_inset
 
 , we could estimate the posterior probability.
- A simple setup for this is shown in Algorithm 
+ A simple setup for this is shown in algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Likelihood-free-sampling"
@@ -4203,7 +4201,7 @@ MCMC in ABC
 Turning to the computational aspect, we motivate the development of the
  SMC method which will be our focus by showing how MCMC can be used in an
  ABC setting.
- In Algorithm 
+ In algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Markov-Chain-Monte-in-ABC"
@@ -4530,14 +4528,14 @@ name "alg:Markov-Chain-Monte-in-ABC"
 
 \begin_layout Standard
 We recognize the Metropolis-Hastings step, but see that is has been modified
- (like a cross between Algorithm 
+ (like a cross between algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Metropolis-Hastings"
 
 \end_inset
 
- and Algorithm 
+ and algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:Likelihood-free-sampling"
@@ -5009,7 +5007,7 @@ has the form it does, and a requirement for an approximation distribution
 
 \begin_layout Standard
 This requirement is necessary to be able to recover the target distibution,
- and is fulfilled by in our case by the construction of the approximation,
+ and is fulfilled in our case by the construction of the approximation,
  as can be seen if we look at the integral for an arbitrary backward kernel:
 \begin_inset Formula 
 \[
@@ -5595,7 +5593,7 @@ Where
  as an example here):
 \begin_inset Formula 
 \begin{align*}
-p(\boldsymbol{\theta})\int p(\boldsymbol{x}_{2}|\boldsymbol{\theta})d\boldsymbol{x}_{2} & =\\
+p(\boldsymbol{\theta})\int p(\boldsymbol{x}\text{}|\boldsymbol{\theta})d\boldsymbol{x}_{2} & =\\
 \mathrm{c}p(\boldsymbol{\theta})
 \end{align*}
 
