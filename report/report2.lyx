@@ -5593,7 +5593,7 @@ Where
  as an example here):
 \begin_inset Formula 
 \begin{align*}
-p(\boldsymbol{\theta})\int p(\boldsymbol{x}\text{}|\boldsymbol{\theta})d\boldsymbol{x}_{2} & =\\
+p(\boldsymbol{\theta})\int p(\boldsymbol{x}^{(2)}|\boldsymbol{\theta})d\boldsymbol{x}^{(2)} & =\\
 \mathrm{c}p(\boldsymbol{\theta})
 \end{align*}
 
@@ -5686,7 +5686,7 @@ reference "eq:weight_update_step"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-w_{i}(\boldsymbol{z}_{i})=w_{i-1}(\boldsymbol{z}_{i-1})\frac{p_{i}(\boldsymbol{z}_{i})L_{i}(\boldsymbol{z}_{i},\boldsymbol{z}_{i-1})}{p_{i-1}(\boldsymbol{z}_{i-1})K(\boldsymbol{z}_{i-1},\boldsymbol{z}_{i})}\label{eq:abc_weight_update}
+w_{i}(\boldsymbol{z}_{i})=w_{i-1}(\boldsymbol{z}_{i-1})\frac{p_{i}(\boldsymbol{z}_{i})L(\boldsymbol{z}_{i},\boldsymbol{z}_{i-1})}{p_{i-1}(\boldsymbol{z}_{i-1})K(\boldsymbol{z}_{i-1},\boldsymbol{z}_{i})}\label{eq:abc_weight_update}
 \end{equation}
 
 \end_inset
@@ -5766,16 +5766,7 @@ Specification of particle update kernel
 \end_layout
 
 \begin_layout Standard
-Following 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "adaptive_smc_for_abc"
-
-\end_inset
-
- the kernel uses a Metropolis-Hastings (MH) step to achieve the desired
- invariant density.
- To show the form of the kernel update step we start by defining a proposal
+To show the form of the kernel update step we start by defining a proposal
  distribution:
 \begin_inset Formula 
 \begin{equation}
@@ -5994,7 +5985,7 @@ name "sub:Algorithm"
 
 \begin_layout Standard
 Using a kernel function on the form described, the full algorithm looks
- as the pseduo-code given in 
+ as the pseudo-code given in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:SMC-in-ABC"
@@ -6156,7 +6147,9 @@ boldsymbol{w})$
 
 
 \backslash
-State Update and normalize weights based on new value for $
+State 
+\backslash
+# Update and normalize weights based on new value for $
 \backslash
 epsilon$
 \end_layout
@@ -6237,8 +6230,6 @@ theta},
 boldsymbol{x}, 
 \backslash
 boldsymbol{w})$
-\backslash
-Comment{Resampling}
 \end_layout
 
 \begin_layout Plain Layout
@@ -6299,7 +6290,9 @@ EndWhile
 
 
 \backslash
-State Do a final resampling
+State 
+\backslash
+# Do a final resampling
 \end_layout
 
 \begin_layout Plain Layout
@@ -6331,7 +6324,9 @@ boldsymbol{w})$
 
 
 \backslash
-State Return a sample set
+State 
+\backslash
+# Return a sample set
 \end_layout
 
 \begin_layout Plain Layout
@@ -6403,7 +6398,9 @@ boldsymbol{w_{n-1}}$}
 
 
 \backslash
-State The weights $
+State 
+\backslash
+# The weights $
 \backslash
 boldsymbol{w}_{n}$ are computed for different values of $
 \backslash
@@ -6469,7 +6466,9 @@ theta}_{old}$}
 
 
 \backslash
-State Note that the $q(
+State 
+\backslash
+# Note that the $q(
 \backslash
 boldsymbol{
 \backslash
@@ -6750,7 +6749,7 @@ Tunable behaviour
 \end_layout
 
 \begin_layout Standard
-A number of aspects of Algorithm 
+A number of aspects of algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:SMC-in-ABC"
@@ -6801,7 +6800,7 @@ Resampling schedule
 \end_layout
 
 \begin_layout Standard
-In Algorithm 
+In algorithm 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "alg:SMC-in-ABC"
@@ -6926,14 +6925,14 @@ reference "eq:ess_update"
 \end_layout
 
 \begin_layout Standard
-The idea behind 
+The idea behind (
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:ess_update"
 
 \end_inset
 
- is to find a 
+) is to find a 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
 
@@ -7209,7 +7208,7 @@ name "fig:different_number_of_particles"
 \end_layout
 
 \begin_layout Standard
-In Figure 
+In figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:different_number_of_particles"
@@ -7771,9 +7770,15 @@ name "fig:autocovariance_dist_ma_plot2"
 \end_layout
 
 \begin_layout Standard
-As is seen in the figures, the results are quite good in this case, which
- points to the autocovariance being a good statistic when trying to estimate
- 
+As is seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:autocovariance_dist_ma_plot1"
+
+\end_inset
+
+, the results are quite good in this case, which points to the autocovariance
+ being a good statistic when trying to estimate 
 \begin_inset Formula $\boldsymbol{\theta}$
 \end_inset
 
@@ -7835,7 +7840,8 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Same setup as in the case where autovariances are used in the distance measure.
+Same setup as in the case where autovariances were used, but now with the
+ raw distance.
  The final density plot looks suspicious.
  It is not clear from looking at the top plot, where each particle is represente
 d by a dot, but there is a very large concentration of particles within
@@ -7900,8 +7906,15 @@ The algorithm here rapidly runs into problems moving the particles.
 \end_layout
 
 \begin_layout Standard
-Some explanation to what happens when the algorithm gets stuck may be in
- order.
+Some explanation to what happens when the algorithm gets in the cases shown
+ here is given in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stuck_particles_explanation"
+
+\end_inset
+
+.
 \begin_inset Float figure
 wide false
 sideways false
@@ -7955,6 +7968,13 @@ These figures are from a run with 100 particles,
  the same particles.
  If some steps are accepted the algorithm can break out of this situation,
  but it is unlikely it will make significant progress, and it can be aborted.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:stuck_particles_explanation"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -8062,7 +8082,11 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Here 5 replicates are used.
+Here 5 replicates are used, and 1000 particles and 
+\begin_inset Formula $\alpha=0.99$
+\end_inset
+
+.
  More particles manage to stay alive, giving a more diffuse distribution.
  Note that the algorithm was aborted after 100 iterations since it stopped
  making progress.
