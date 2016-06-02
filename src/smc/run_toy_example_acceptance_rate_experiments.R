@@ -36,6 +36,7 @@ toy.example.results.3 <-
     alpha = 0.95,
     number.of.particles = 10000,
     number.of.replicates = 20,
+    start.epsilon = 100,
     stop.epsilon = 0.01,
     verbose = T
   )
@@ -77,13 +78,13 @@ CreatePlotForReplicateExperiment <-
     dev.off()
 
     # PlotParticles(particles, weights, use.max = distance.max)
-    # CreateGifAnimation(toy.example.results.2, "toy_example_results_2.gif")
-
+    CreateMovie(example.results, paste(plot.prefix, ".mp4", sep = ""), interval = 0.1)
   }
 
-CreatePlotForReplicateExperiment("configuration1_replicates", toy.example.configuration, toy.example.result)
-CreatePlotForReplicateExperiment("configuration2_replicates", toy.example.configuration.2, toy.example.results.2)
-CreatePlotForReplicateExperiment("configuration3_replicates", toy.example.configuration.3, toy.example.results.3)
+# CreatePlotForReplicateExperiment("configuration1_replicates", toy.example.configuration, toy.example.result)
+# CreatePlotForReplicateExperiment("configuration2_replicates", toy.example.configuration.2, toy.example.results.2)
+# CreatePlotForReplicateExperiment("configuration3_replicates", toy.example.configuration.3, toy.example.results.3)
 
-# CreatePlotForReplicateExperiment("configuration3_5_replicates", toy.example.configuration.3, toy.example.results.3)
-
+DoWeightPlot(toy.example.result, "configuration1_replicates.mp4", interval = 0.1)
+DoWeightPlot(toy.example.results.2, "configuration2_replicates.mp4", interval = 0.1)
+DoWeightPlot(toy.example.results.3, "configuration3_replicates.mp4", interval = 0.1)
